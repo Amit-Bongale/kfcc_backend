@@ -14,6 +14,7 @@ public class CustomUserDetails implements UserDetails {
     private final String firstName;
     private final Collection<? extends GrantedAuthority> authorities;
 
+
     public CustomUserDetails(Users user) {
         this.userId = user.getId();
         this.mobileNo = user.getMobileNo();
@@ -46,6 +47,7 @@ public class CustomUserDetails implements UserDetails {
     public String getUsername() {
         return mobileNo;
     }
+
 
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }

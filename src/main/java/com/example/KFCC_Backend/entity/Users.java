@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +22,8 @@ public class Users {
 
     private String email;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER )
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<UserRole> roles = new HashSet<>();
 
 
