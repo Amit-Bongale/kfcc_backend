@@ -6,12 +6,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CustomUserDetails implements UserDetails {
 
     private final Long userId;
     private final String mobileNo;
     private final String firstName;
+    private final Set<String> roles;
     private final Collection<? extends GrantedAuthority> authorities;
 
 
@@ -23,6 +26,10 @@ public class CustomUserDetails implements UserDetails {
                 .stream()
                 .map(r -> new SimpleGrantedAuthority("ROLE_" + r.getRole().name()))
                 .toList();
+        this.roles = user.getRoles()
+                .stream()
+                .map(r -> r.getRole().name())
+                .collect(Collectors.toSet());
     }
 
     public Long getUserId() {
@@ -46,6 +53,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return mobileNo;
+    }
+
+    public Set<String> getRoles() {
+        return roles;
     }
 
 

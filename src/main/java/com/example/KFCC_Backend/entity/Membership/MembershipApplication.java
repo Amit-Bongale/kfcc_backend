@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.entity.Membership;
 
+import com.example.KFCC_Backend.Enum.MembershipCategory;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.entity.Users;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -11,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,8 +50,9 @@ public class MembershipApplication {
     @NotNull(message = "Pin code is required")
     private int applicantPinCode;
 
+    @Enumerated(EnumType.STRING)
     @NotBlank(message = "Membership category is required")
-    private String applicantMembershipCategory;
+    private MembershipCategory applicantMembershipCategory;
 
     @NotBlank(message = "Membership firm name is required")
     private String applicantFirmName;
@@ -130,7 +133,7 @@ public class MembershipApplication {
     private LocalDate membershipExpiryDate;
 
 
-
+    private LocalDateTime submittedAt = LocalDateTime.now();
 
 
 
@@ -217,11 +220,11 @@ public class MembershipApplication {
     }
 
 
-    public String getApplicantMembershipCategory() {
+    public MembershipCategory getApplicantMembershipCategory() {
         return applicantMembershipCategory;
     }
 
-    public void setApplicantMembershipCategory(String applicantMembershipCategory) {
+    public void setApplicantMembershipCategory(MembershipCategory applicantMembershipCategory) {
         this.applicantMembershipCategory = applicantMembershipCategory;
     }
 
@@ -400,4 +403,13 @@ public class MembershipApplication {
     public void setApplicantSignature(String applicantSignature) {
         this.applicantSignature = applicantSignature;
     }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(LocalDateTime submittedAt) {
+        this.submittedAt = submittedAt;
+    }
+
 }

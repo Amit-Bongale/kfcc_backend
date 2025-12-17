@@ -1,19 +1,28 @@
 package com.example.KFCC_Backend.Service;
 
-import com.example.KFCC_Backend.DTO.MembershipApplicationRequest;
+import com.example.KFCC_Backend.Components.ApplicationFetchConfig;
+import com.example.KFCC_Backend.DTO.MembershipApplicationRequestDTO;
+import com.example.KFCC_Backend.DTO.MembershipApplicationsResponseDTO;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Repository.MembershipRepository;
+import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Utility.FileStorageUtil;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
-import com.example.KFCC_Backend.entity.Membership.Partners;
+
 import com.example.KFCC_Backend.entity.Membership.Proprietor;
 import com.example.KFCC_Backend.entity.Users;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class MembershipApplicationService {
@@ -24,6 +33,9 @@ public class MembershipApplicationService {
     @Autowired
     private FileStorageUtil fileStorageUtil;
 
+    @Autowired
+    private ApplicationFetchConfig applicationFetchConfig;
+
 
     private void validateMember(Long membershipId) {
         if (!membershipRepository.existsByMembershipIdAndMembershipStatus(
@@ -33,10 +45,10 @@ public class MembershipApplicationService {
     }
 
 
-
+/*------ Need to fix Images ------------------- */
     public MembershipApplication submitApplication(
             Users user,
-            MembershipApplicationRequest request,
+            MembershipApplicationRequestDTO request,
 
             MultipartFile applicantPhoto,
             MultipartFile applicantPan,
@@ -239,8 +251,71 @@ public class MembershipApplicationService {
 
         return membershipRepository.save(finalApp);
 
-
     }
 
 
+    // get pending applications for approval [staff , ONM, EC , Secretary]
+    public List<MembershipApplicationsResponseDTO>  getPendingApplications (CustomUserDetails user){
+
+        Set<String> roles = user.getRoles();
+        System.out.println(roles);
+
+
+        Set<MembershipStatus> allowedStatuses =
+                applicationFetchConfig.getAllowedStatuses(roles);
+
+        System.out.println("allowed status" + allowedStatuses);
+
+        if (allowedStatuses.isEmpty()) {
+            return List.of();
+        }
+
+
+
+        return membershipRepository
+                .findByCurrentStatusIn(allowedStatuses)
+                .stream()
+                .map(app -> new MembershipApplicationsResponseDTO(
+                        app.getApplicationId(),
+                        app.getUser().getId(),
+                        app.getUser().getFirstName() + " " + app.getUser().getLastName(),
+                        app.getUser().getMobileNo(),
+                        app.getApplicantMembershipCategory(),
+                        app.getMembershipStatus(),
+                        app.getSubmittedAt()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+
+    // get application details on ID
+    public MembershipApplication getApplicationDetailsByID(Long applicationId) {
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        CustomUserDetails currentUser =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        MembershipApplication application =
+                membershipRepository.findByApplicationId(applicationId)
+                        .orElseThrow(() ->
+                                new RuntimeException("Membership application not found"));
+
+        boolean isUserRole = currentUser.getRoles().contains("USER");
+
+        if (isUserRole) {
+            Long applicationUserId = application.getUser().getId();
+
+            if (!applicationUserId.equals(currentUser.getUserId())) {
+                throw new AccessDeniedException(
+                        "You are not allowed to view this application"
+                );
+            }
+        }
+
+        return application;
+
+    }
 }

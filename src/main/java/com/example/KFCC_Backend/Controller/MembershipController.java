@@ -1,9 +1,11 @@
 package com.example.KFCC_Backend.Controller;
 
-import com.example.KFCC_Backend.DTO.MembershipApplicationRequest;
+import com.example.KFCC_Backend.DTO.MembershipApplicationRequestDTO;
 import com.example.KFCC_Backend.Repository.MembershipRepository;
 import com.example.KFCC_Backend.Repository.UsersRepository;
+import com.example.KFCC_Backend.DTO.MembershipApplicationsResponseDTO;
 
+import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.MembershipApplicationService;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.entity.Users;
@@ -11,10 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,44 +35,14 @@ public class MembershipController {
     @Autowired
     private UsersRepository usersRepository;
 
-//    @PostMapping(value = "/apply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<?> submitApplication(
-//            @RequestPart("request") MembershipApplicationRequest request,
-//            @RequestPart("applicantPhoto") MultipartFile applicantPhoto,
-//            @RequestPart( value = "proprietorPan", required = false) MultipartFile proprietorPan,
-//            @RequestPart( value = "proprietorESignature", required = false) MultipartFile proprietorESignature,
-//            @RequestPart(value = "proprietorAadhaar", required = false) MultipartFile proprietorAadhaar
-//    ) throws IOException {
-//
-//        Users user = usersRepository.findById(request.getUserId())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        MembershipApplication app =
-//                membershipApplicationService.submitApplication(
-//                        user,
-//                        request,
-//                        applicantPhoto,
-//                        proprietorPan,
-//                        proprietorAadhaar,
-//                        proprietorESignature
-//                );
-//
-//        return ResponseEntity.ok(Map.of(
-//                "applicationId", app.getApplicationId(),
-//                "status", "SUBMITTED"
-//        ));
-//    }
-
-
 
     @GetMapping("/{applicationId}")
+    @PreAuthorize("hasAnyRole('USER','STAFF','ONM_COMMITTEE','ONM_COMMITTEE_LEADER','EC_MEMBER','SECRETARY','PRESIDENT')")
     public ResponseEntity<?> getMembershipApplicationById(
             @PathVariable Long applicationId
     ) {
         MembershipApplication application =
-                membershipRepository.findByApplicationId(applicationId)
-                        .orElseThrow(() ->
-                                new RuntimeException("Membership application not found"));
+                membershipApplicationService.getApplicationDetailsByID(applicationId);
 
         return ResponseEntity.ok(application);
     }
@@ -76,7 +51,7 @@ public class MembershipController {
     @PostMapping(value = "/apply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> submitApplication(
 
-            @RequestPart("request") MembershipApplicationRequest request,
+            @RequestPart("request") MembershipApplicationRequestDTO request,
 
             // Applicant
             @RequestPart(value = "applicantPhoto", required = false ) MultipartFile applicantPhoto,
@@ -133,5 +108,16 @@ public class MembershipController {
         ));
     }
 
+
+    @GetMapping("/request")
+    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
+    public ResponseEntity<List<MembershipApplicationsResponseDTO>> getPendingApplications(
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        System.out.println("user:" + user);
+        return ResponseEntity.ok(
+                membershipApplicationService.getPendingApplications(user)
+        );
+    }
 
 }

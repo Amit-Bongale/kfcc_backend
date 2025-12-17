@@ -1,11 +1,13 @@
 package com.example.KFCC_Backend.Controller;
 
-import com.example.KFCC_Backend.DTO.SignupRequest;
+import com.example.KFCC_Backend.DTO.SignupRequestDTO;
+import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Repository.MembershipRepository;
 import com.example.KFCC_Backend.Repository.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetailsService;
 import com.example.KFCC_Backend.Service.OtpService;
+import com.example.KFCC_Backend.entity.UserRole;
 import com.example.KFCC_Backend.entity.Users;
 import com.example.KFCC_Backend.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +56,7 @@ public class AuthController {
 
     // create user validating otp
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupRequest request){
+    public ResponseEntity<?> signup(@RequestBody SignupRequestDTO request){
 
         if(userRepository.findByMobileNo(request.getMobileNo()).isPresent()){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error" , "User Already Exist"));
@@ -77,6 +79,14 @@ public class AuthController {
         user.setLastName(request.getLastName());
         user.setMobileNo(request.getMobileNo());
         user.setEmail(request.getEmail());
+        user.getBloodGroup(request.getBloodGroup());
+        user.setDob(request.getDob());
+
+        UserRole userRole = new UserRole();
+        userRole.setRole(UserRoles.USER);
+        userRole.setUser(user);
+
+        user.getRoles().add(userRole);
 
         userRepository.save(user);
 

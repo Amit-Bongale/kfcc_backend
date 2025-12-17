@@ -1,9 +1,21 @@
 package com.example.KFCC_Backend.Enum;
 
 public enum MembershipStatus {
-    SUBMITTED,
-    ACCEPT_STAFF, REJECT_STAFF, REMARK_STAFF,
-    ONM_ACCEPT, ONM_REJECT, ONM_REMARK,
-    ACCEPT_EC_MEMBER, REJECT_EC_MEMBER, REMARK_EC_MEMBER,
+
+    DRAFT,                 // user editable
+    SUBMITTED,              // submitted by user
+    STAFF_REJECTED,
+    STAFF_REMARKED,
+    STAFF_APPROVED,
+
+    ONM_VOTING,
+    ONM_REJECTED,
+    ONM_REMARKED,
+    ONM_APPROVED,
+
+    EC_REJECTED,
+    EC_REMARKED,
+    EC_HOLD,
+
     FINAL_APPROVED
 }

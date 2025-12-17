@@ -1,15 +1,16 @@
 package com.example.KFCC_Backend.DTO;
 
+import com.example.KFCC_Backend.Enum.MembershipCategory;
 import com.example.KFCC_Backend.entity.Membership.*;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class MembershipApplicationRequest {
+public class MembershipApplicationRequestDTO {
 
     private Long userId;
-    private String applicantMembershipCategory;
+    private MembershipCategory applicantMembershipCategory;
     private String applicantFirmName;
     private String applicantOwnershipType;
     private String applicantGstNo;
@@ -33,7 +34,7 @@ public class MembershipApplicationRequest {
         return userId;
     }
 
-    public String getApplicantMembershipCategory() {
+    public MembershipCategory getApplicantMembershipCategory() {
         return applicantMembershipCategory;
     }
 

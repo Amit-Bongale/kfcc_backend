@@ -1,7 +1,9 @@
 package com.example.KFCC_Backend.DTO;
 
 
-public class SignupRequest {
+import java.time.LocalDate;
+
+public class SignupRequestDTO {
 
     private String firstName;
     private String middleName;
@@ -9,6 +11,8 @@ public class SignupRequest {
     private String mobileNo;
     private String otp;
     private String email;
+    private String bloodGroup;
+    private LocalDate dob;
 
 
     public String getFirstName() {
@@ -33,5 +37,13 @@ public class SignupRequest {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getBloodGroup() {
+        return bloodGroup;
+    }
+
+    public LocalDate getDob() {
+        return dob;
     }
 }

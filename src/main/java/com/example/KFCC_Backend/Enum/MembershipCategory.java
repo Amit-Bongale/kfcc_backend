@@ -1,6 +1,6 @@
 package com.example.KFCC_Backend.Enum;
 
-public enum membershipCategory {
+public enum MembershipCategory {
     PRODUCER,
     DISTRIBUTOR,
     EXHIBITOR,
@@ -8,4 +8,5 @@ public enum membershipCategory {
     ASSOCIATE,
     HONORARY,
     TEMPORARY
+
 }

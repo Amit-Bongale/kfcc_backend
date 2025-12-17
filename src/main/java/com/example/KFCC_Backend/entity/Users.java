@@ -2,6 +2,8 @@ package com.example.KFCC_Backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,9 +24,14 @@ public class Users {
 
     private String email;
 
+    private String bloodGroup;
+
+    private LocalDate dob;
+
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<UserRole> roles = new HashSet<>();
+
 
 
     public Long getId() {
@@ -81,5 +88,21 @@ public class Users {
 
     public void setRoles(Set<UserRole> roles) {
         this.roles = roles;
+    }
+
+    public String getBloodGroup(String bloodGroup) {
+        return this.bloodGroup;
+    }
+
+    public void setBloodGroup(String bloodGroup) {
+        this.bloodGroup = bloodGroup;
+    }
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
     }
 }

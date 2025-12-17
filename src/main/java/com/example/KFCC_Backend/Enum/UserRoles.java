@@ -2,11 +2,12 @@ package com.example.KFCC_Backend.Enum;
 
 
 public enum UserRoles {
-    USER,
 
+    USER,
     // Office bearers
     STAFF,
     ONM_COMMITTEE,
+    ONM_COMMITTEE_VOTER,
     ONM_COMMITTEE_LEADER,
     EC_MEMBER,
     SECRETARY,
