@@ -6,6 +6,15 @@ import jakarta.persistence.*;
 
 
 @Entity
+@Table(
+        name = "user_role",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_user_role_userid_role",
+                        columnNames = {"user_id", "role"}
+                )
+        }
+)
 public class UserRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

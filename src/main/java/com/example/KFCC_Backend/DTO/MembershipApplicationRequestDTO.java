@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.DTO;
 
 import com.example.KFCC_Backend.Enum.MembershipCategory;
+import com.example.KFCC_Backend.Enum.OwnershipType;
 import com.example.KFCC_Backend.entity.Membership.*;
 import lombok.Data;
 
@@ -12,7 +13,7 @@ public class MembershipApplicationRequestDTO {
     private Long userId;
     private MembershipCategory applicantMembershipCategory;
     private String applicantFirmName;
-    private String applicantOwnershipType;
+    private OwnershipType applicantOwnershipType;
     private String applicantGstNo;
     private String applicantAddressLine1;
     private String applicantAddressLine2;
@@ -42,7 +43,7 @@ public class MembershipApplicationRequestDTO {
         return applicantFirmName;
     }
 
-    public String getApplicantOwnershipType() {
+    public OwnershipType getApplicantOwnershipType() {
         return applicantOwnershipType;
     }
 

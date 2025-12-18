@@ -13,6 +13,7 @@ public enum MembershipStatus {
     ONM_REMARKED,
     ONM_APPROVED,
 
+
     EC_REJECTED,
     EC_REMARKED,
     EC_HOLD,

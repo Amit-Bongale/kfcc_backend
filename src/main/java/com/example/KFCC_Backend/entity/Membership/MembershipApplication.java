@@ -2,6 +2,7 @@ package com.example.KFCC_Backend.entity.Membership;
 
 import com.example.KFCC_Backend.Enum.MembershipCategory;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
+import com.example.KFCC_Backend.Enum.OwnershipType;
 import com.example.KFCC_Backend.entity.Users;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -18,6 +19,15 @@ import java.util.List;
 
 
 @Entity
+@Table(
+        name = "membership_application",
+        indexes = {
+                @Index(
+                        name = "idx_membership_status",
+                        columnList = "membership_status"
+                )
+        }
+)
 public class MembershipApplication {
 
     @Id
@@ -58,7 +68,8 @@ public class MembershipApplication {
     private String applicantFirmName;
 
     @NotBlank(message = "Ownership type required")
-    private String applicantOwnershipType;
+    @Enumerated(EnumType.STRING)
+    private OwnershipType applicantOwnershipType;
 
     @NotBlank(message = "GST number is required")
     @Pattern(
@@ -70,8 +81,10 @@ public class MembershipApplication {
 
     // status
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "membership_status", nullable = false)
     private MembershipStatus membershipStatus;
+
+    private String remark;
 
 
     /* ---------------- DOCUMENTS ---------------- */
@@ -236,11 +249,11 @@ public class MembershipApplication {
         this.applicantFirmName = applicantFirmName;
     }
 
-    public String getApplicantOwnershipType() {
+    public OwnershipType getApplicantOwnershipType() {
         return applicantOwnershipType;
     }
 
-    public void setApplicantOwnershipType(String applicantOwnershipType) {
+    public void setApplicantOwnershipType(OwnershipType applicantOwnershipType) {
         this.applicantOwnershipType = applicantOwnershipType;
     }
 
@@ -258,6 +271,14 @@ public class MembershipApplication {
 
     public void setMembershipStatus(MembershipStatus membershipStatus) {
         this.membershipStatus = membershipStatus;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     public Proprietor getProprietor() {

@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.Controller;
 
+import com.example.KFCC_Backend.DTO.ApplicationActionRequestDTO;
 import com.example.KFCC_Backend.DTO.MembershipApplicationRequestDTO;
 import com.example.KFCC_Backend.Repository.MembershipRepository;
 import com.example.KFCC_Backend.Repository.UsersRepository;
@@ -9,6 +10,7 @@ import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.MembershipApplicationService;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.entity.Users;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +39,7 @@ public class MembershipController {
 
 
     @GetMapping("/{applicationId}")
-    @PreAuthorize("hasAnyRole('USER','STAFF','ONM_COMMITTEE','ONM_COMMITTEE_LEADER','EC_MEMBER','SECRETARY','PRESIDENT')")
+//    @PreAuthorize("hasAnyRole('USER','STAFF','ONM_COMMITTEE','ONM_COMMITTEE_LEADER','EC_MEMBER','SECRETARY','PRESIDENT')")
     public ResponseEntity<?> getMembershipApplicationById(
             @PathVariable Long applicationId
     ) {
@@ -107,9 +109,8 @@ public class MembershipController {
                 "status", "SUBMITTED"
         ));
     }
-
-
-    @GetMapping("/request")
+//    Fetch user submitted applications
+    @GetMapping("/pending/requests")
     @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
     public ResponseEntity<List<MembershipApplicationsResponseDTO>> getPendingApplications(
             @AuthenticationPrincipal CustomUserDetails user) {
@@ -119,5 +120,16 @@ public class MembershipController {
                 membershipApplicationService.getPendingApplications(user)
         );
     }
+
+    @PostMapping("/{id}/action")
+    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
+    public ResponseEntity<?> ApplcationAction( @PathVariable Long id,
+                                               @RequestBody @Valid ApplicationActionRequestDTO request,
+                                               @AuthenticationPrincipal CustomUserDetails user){
+        membershipApplicationService.MembershipApplicationAction(id , request, user);
+        return ResponseEntity.ok(Map.of("message" , "Application Status Updated"));
+    }
+
+
 
 }

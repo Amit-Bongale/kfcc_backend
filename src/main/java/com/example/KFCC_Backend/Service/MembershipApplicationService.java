@@ -1,9 +1,12 @@
 package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.Components.ApplicationFetchConfig;
+import com.example.KFCC_Backend.DTO.ApplicationActionRequestDTO;
 import com.example.KFCC_Backend.DTO.MembershipApplicationRequestDTO;
 import com.example.KFCC_Backend.DTO.MembershipApplicationsResponseDTO;
+import com.example.KFCC_Backend.Enum.ApplicationAction;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
+import com.example.KFCC_Backend.Enum.OwnershipType;
 import com.example.KFCC_Backend.Repository.MembershipRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Utility.FileStorageUtil;
@@ -11,6 +14,7 @@ import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
 
 import com.example.KFCC_Backend.entity.Membership.Proprietor;
 import com.example.KFCC_Backend.entity.Users;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -85,7 +89,7 @@ public class MembershipApplicationService {
         // Ownership rules
 
         boolean isProprietor =
-                "PROPRIETOR".equalsIgnoreCase(request.getApplicantOwnershipType());
+                request.getApplicantOwnershipType() == OwnershipType.PROPRIETOR;
 
         if (isProprietor) {
             if (request.getProprietor() == null) {
@@ -282,7 +286,8 @@ public class MembershipApplicationService {
                         app.getUser().getMobileNo(),
                         app.getApplicantMembershipCategory(),
                         app.getMembershipStatus(),
-                        app.getSubmittedAt()
+                        app.getSubmittedAt(),
+                        app.getRemark()
                 ))
                 .collect(Collectors.toList());
     }
@@ -303,9 +308,11 @@ public class MembershipApplicationService {
                         .orElseThrow(() ->
                                 new RuntimeException("Membership application not found"));
 
-        boolean isUserRole = currentUser.getRoles().contains("USER");
+        Set<String> roles = currentUser.getRoles();
 
-        if (isUserRole) {
+        boolean isOnlyUser =  roles.size() == 1 && roles.contains("USER");
+
+        if (isOnlyUser) {
             Long applicationUserId = application.getUser().getId();
 
             if (!applicationUserId.equals(currentUser.getUserId())) {
@@ -318,4 +325,130 @@ public class MembershipApplicationService {
         return application;
 
     }
+
+    /* ---------- Applcaiton Action Helpers --------------- */
+
+    private void requireRole(Set<String> roles, String required) {
+        if (!roles.contains(required)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+    }
+
+    private void requireRemarks(ApplicationActionRequestDTO request) {
+        if (request.getRemark() == null || request.getRemark().isBlank()) {
+            throw new IllegalArgumentException("Remarks required");
+        }
+    }
+
+
+    // Approve / Reject /  Remark Applications
+    @Transactional
+    public void MembershipApplicationAction(Long applicationId, ApplicationActionRequestDTO request , CustomUserDetails user){
+
+        MembershipApplication application = membershipRepository.findByApplicationId(applicationId).orElseThrow(() -> new RuntimeException("Application not found"));
+
+        MembershipStatus currentStatus = application.getMembershipStatus();
+        Set<String> roles = user.getRoles();
+
+        MembershipStatus newStatus;
+
+
+
+        // Staff stage
+        if(currentStatus ==  MembershipStatus.SUBMITTED){
+
+            requireRole(roles , "STAFF");
+
+            newStatus = switch (request.getAction()){
+                case APPROVE -> MembershipStatus.STAFF_APPROVED;
+                case REJECT -> {
+                    requireRemarks(request);
+                    yield MembershipStatus.STAFF_REJECTED;
+                }
+                case REMARK -> {
+                    requireRemarks(request);
+                    yield MembershipStatus.STAFF_REMARKED;
+                }
+                default -> throw new IllegalStateException("Invalid action");
+            };
+        }
+
+        //  ONM STAGE
+        else if (currentStatus == MembershipStatus.STAFF_APPROVED) {
+
+            requireRole(roles, "ONM_COMMITTEE_LEADER");
+
+            newStatus = switch (request.getAction()) {
+                case APPROVE -> MembershipStatus.ONM_APPROVED;
+                case REJECT -> {
+                    requireRemarks(request);
+                    yield MembershipStatus.ONM_REJECTED;
+                }
+                case REMARK -> {
+                    requireRemarks(request);
+                    yield MembershipStatus.DRAFT;
+                }
+                default -> throw new IllegalStateException("Invalid action");
+            };
+        }
+
+        else if (currentStatus == MembershipStatus.ONM_APPROVED) {
+
+            requireRole(roles, "ROLE_SECRETARY");
+
+            newStatus = switch (request.getAction()) {
+                case APPROVE -> MembershipStatus.FINAL_APPROVED;
+                case REJECT -> {
+                    requireRemarks(request);
+                    yield MembershipStatus.EC_REJECTED;
+                }
+                case HOLD -> MembershipStatus.EC_HOLD;
+                case REMARK -> {
+                    requireRemarks(request);
+                    yield MembershipStatus.DRAFT;
+                }
+                default -> throw new IllegalStateException("Invalid action");
+            };
+        }
+
+        else {
+            throw new IllegalStateException(
+                    "Application not in actionable state"
+            );
+        }
+
+
+        application.setMembershipStatus(newStatus);
+
+        if (request.getRemark() != null || !request.getRemark().isBlank()) {
+            application.setRemark(request.getRemark());
+        }
+
+        membershipRepository.save(application);
+
+
+        /* ----- implement a extra table if log is required  in future --------- */
+
+//        logAction(app, request, user);
+
+        //    private void logAction(
+//            MembershipApplication app,
+//            ApplicationActionRequest request,
+//            CustomUserDetails user
+//    ) {
+//        ApplicationActionLog log = new ApplicationActionLog();
+//        log.setApplication(app);
+//        log.setAction(request.getAction());
+//        log.setRemarks(request.getRemarks());
+//        log.setActionBy(user.getUser());
+//        log.setActionAt(LocalDateTime.now());
+//
+//        actionLogRepository.save(log);
+//    }
+
+
+    }
+
+
+
 }

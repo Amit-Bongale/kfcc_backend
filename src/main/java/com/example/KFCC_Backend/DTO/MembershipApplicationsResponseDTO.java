@@ -17,6 +17,7 @@ public class MembershipApplicationsResponseDTO {
     private MembershipCategory membershipCategory;
     private MembershipStatus status;
     private LocalDateTime submittedAt;
+    private String remark;
 
     public MembershipApplicationsResponseDTO(
             Long applicationId,
@@ -25,7 +26,8 @@ public class MembershipApplicationsResponseDTO {
             String mobileNo,
             MembershipCategory membershipCategory,
             MembershipStatus status,
-            LocalDateTime submittedAt
+            LocalDateTime submittedAt,
+            String remark
     ) {
         this.applicationId = applicationId;
         this.userId = userId;
@@ -34,6 +36,7 @@ public class MembershipApplicationsResponseDTO {
         this.membershipCategory = membershipCategory;
         this.status = status;
         this.submittedAt = submittedAt;
+        this.remark = remark;
     }
 
 
@@ -91,5 +94,9 @@ public class MembershipApplicationsResponseDTO {
 
     public void setSubmittedAt(LocalDateTime submittedAt) {
         this.submittedAt = submittedAt;
+    }
+
+    public String getRemark() {
+        return remark;
     }
 }
