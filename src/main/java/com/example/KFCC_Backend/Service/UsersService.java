@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.Service;
 
+import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Repository.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 
@@ -9,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,6 +48,9 @@ public class UsersService {
                 "roles", roles
         );
 
+    }
 
+    public List<Users> getUsersByRole(UserRoles role) {
+        return usersRepository.findUsersByRole(role);
     }
 }

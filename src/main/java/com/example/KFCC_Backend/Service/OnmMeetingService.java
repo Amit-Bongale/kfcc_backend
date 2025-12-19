@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class OnmMeetingService {
@@ -131,6 +133,18 @@ public class OnmMeetingService {
 
             // validate ONM role
             // if (!member.hasRole(UserRole.ONM)) { throw ... }
+
+            boolean exists = userRoleRepository
+                    .existsByUserAndRole(member, UserRoles.ONM_COMMITTEE_VOTER);
+
+            if (exists) {
+                throw new IllegalStateException("User already has this role");
+            }
+
+            UserRole role = new UserRole();
+            role.setUser(member);
+            role.setRole(UserRoles.ONM_COMMITTEE_VOTER);
+            userRoleRepository.save(role);
 
             OnmMeetingMember meetingMember = new OnmMeetingMember();
             meetingMember.setMeeting(meeting);
@@ -245,6 +259,63 @@ public class OnmMeetingService {
 
         return new VoteSummaryResponseDTO(applicationId, approve, reject);
     }
+
+    //Terminates meeting and remove onm leader role
+    @Transactional
+    public void terminateMeeting(
+            Long meetingId,
+            CustomUserDetails userDetails
+    ) {
+
+        // Fetch manager
+        Users manager = usersRepository.findById(userDetails.getUserId())
+                .orElseThrow(() -> new IllegalStateException("Manager not found"));
+
+        // Fetch meeting
+        OnmMeeting meeting = onmMeetingRepository.findById(meetingId)
+                .orElseThrow(() ->
+                        new IllegalStateException("Meeting not found")
+                );
+
+        //  Validate ACTIVE
+        if (meeting.getStatus() != OnmMeeting.MeetingStatus.ACTIVE) {
+            throw new IllegalStateException("Meeting already terminated");
+        }
+
+        //  Collect leader & members BEFORE delete
+        Long leaderId = meeting.getLeader().getId();
+
+        List<OnmMeetingMember> members =
+                onmMeetingMemberRepository.findByMeetingId(meetingId);
+
+        Set<Long> memberUserIds = members.stream()
+                .map(m -> m.getMember().getId())
+                .collect(Collectors.toSet());
+
+        // Remove temporary ONM roles
+        userRoleRepository.deleteByUserIdsAndRole(
+                Set.of(leaderId),
+                UserRoles.ONM_COMMITTEE_LEADER
+        );
+
+        if (!memberUserIds.isEmpty()) {
+            userRoleRepository.deleteByUserIdsAndRole(
+                    memberUserIds,
+                    UserRoles.ONM_COMMITTEE_VOTER
+            );
+        }
+
+
+        // Update meeting status
+        meeting.setStatus(OnmMeeting.MeetingStatus.TERMINATED);
+        meeting.setTerminatedAt(LocalDateTime.now());
+        onmMeetingRepository.save(meeting);
+
+        //  Cleanup temporary data
+        onmMeetingMemberRepository.deleteByMeeting(meeting);
+        onmVoteRepository.deleteByMeeting(meeting);
+    }
+
 
 
 }

@@ -85,5 +85,21 @@ public class OnmMeetingController {
         return ResponseEntity.ok(response);
     }
 
+    //terminates meeting
+    @PostMapping("/{meetingId}/terminate")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<?> terminateMeeting(
+            @PathVariable Long meetingId,
+            @AuthenticationPrincipal CustomUserDetails user
+    ) {
+
+        meetingService.terminateMeeting(meetingId, user);
+
+        return ResponseEntity.ok(
+                Map.of("message", "Meeting terminated successfully")
+        );
+
+    }
+
 }
 

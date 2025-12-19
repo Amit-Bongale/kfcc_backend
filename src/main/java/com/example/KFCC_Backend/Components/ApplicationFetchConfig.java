@@ -25,4 +25,5 @@ public class ApplicationFetchConfig {
                 .flatMap(role -> ROLE_STATUS_MAP.get(role).stream())
                 .collect(Collectors.toSet());
     }
+
 }

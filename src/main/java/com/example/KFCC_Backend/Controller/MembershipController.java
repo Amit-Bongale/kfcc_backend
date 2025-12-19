@@ -109,6 +109,8 @@ public class MembershipController {
                 "status", "SUBMITTED"
         ));
     }
+
+
 //    Fetch user submitted applications
     @GetMapping("/pending/requests")
     @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
