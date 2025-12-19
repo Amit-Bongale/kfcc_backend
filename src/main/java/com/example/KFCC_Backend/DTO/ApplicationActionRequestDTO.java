@@ -9,7 +9,7 @@ public class ApplicationActionRequestDTO {
 
     @NotNull
     private ApplicationAction action;
-    private String Remark;
+    private String remark;
 
     public ApplicationAction getAction() {
         return action;
@@ -20,10 +20,10 @@ public class ApplicationActionRequestDTO {
     }
 
     public String getRemark() {
-        return Remark;
+        return remark;
     }
 
     public void setRemark(String remark) {
-        Remark = remark;
+        this.remark = remark;
     }
 }

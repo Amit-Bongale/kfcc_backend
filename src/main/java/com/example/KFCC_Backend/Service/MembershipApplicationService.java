@@ -326,7 +326,7 @@ public class MembershipApplicationService {
 
     }
 
-    /* ---------- Applcaiton Action Helpers --------------- */
+    /* ---------- Application Action Helpers --------------- */
 
     private void requireRole(Set<String> roles, String required) {
         if (!roles.contains(required)) {
@@ -351,7 +351,6 @@ public class MembershipApplicationService {
         Set<String> roles = user.getRoles();
 
         MembershipStatus newStatus;
-
 
 
         // Staff stage
@@ -420,7 +419,7 @@ public class MembershipApplicationService {
 
         application.setMembershipStatus(newStatus);
 
-        if (request.getRemark() != null || !request.getRemark().isBlank()) {
+        if (request.getRemark() != null && !request.getRemark().isBlank()) {
             application.setRemark(request.getRemark());
         }
 
@@ -448,6 +447,8 @@ public class MembershipApplicationService {
 
 
     }
+
+
 
 
 
