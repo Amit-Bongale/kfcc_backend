@@ -12,4 +12,10 @@ public interface OnmMeetingRepository extends JpaRepository<OnmMeeting , Long> {
 
     List<OnmMeeting> findByStatus(OnmMeeting.MeetingStatus status);
 
+    // Fetch all meetings
+    List<OnmMeeting> findAllByOrderByCreatedAtDesc();
+
+    // Fetch by status
+    List<OnmMeeting> findByStatusOrderByCreatedAtDesc(OnmMeeting.MeetingStatus status);
+
 }

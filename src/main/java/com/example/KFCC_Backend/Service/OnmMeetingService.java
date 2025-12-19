@@ -77,24 +77,17 @@ public class OnmMeetingService {
 
     }
 
-    //Auto Delete Meeting at end of the day
-    @Scheduled(cron = "0 0 23 * * ?")
-    @Transactional
-    public void autoTerminateMeetings() {
-
-        List<OnmMeeting> activeMeetings =
-                onmMeetingRepository.findByStatus(OnmMeeting.MeetingStatus.ACTIVE);
-
-        for (OnmMeeting meeting : activeMeetings) {
-            meeting.setStatus(OnmMeeting.MeetingStatus.TERMINATED);
-            meeting.setTerminatedAt(LocalDateTime.now());
-            onmMeetingMemberRepository.deleteByMeeting(meeting);
-            onmVoteRepository.deleteByMeeting(meeting);
-
-        }
-
-        userRoleRepository.deleteByRole(UserRoles.ONM_COMMITTEE_LEADER);
+    //Fetch all meetings
+    public List<OnmMeeting> getAllMeetings() {
+        return onmMeetingRepository.findAllByOrderByCreatedAtDesc();
     }
+
+    // Fetch meetings by status
+    public List<OnmMeeting> getMeetingsByStatus(OnmMeeting.MeetingStatus status) {
+        return onmMeetingRepository.findByStatusOrderByCreatedAtDesc(status);
+    }
+
+
 
     // Add Members to Meeting
     @Transactional
@@ -316,6 +309,25 @@ public class OnmMeetingService {
         onmVoteRepository.deleteByMeeting(meeting);
     }
 
+
+    //Auto Delete Meeting at end of the day
+    @Scheduled(cron = "0 0 23 * * ?")
+    @Transactional
+    public void autoTerminateMeetings() {
+
+        List<OnmMeeting> activeMeetings =
+                onmMeetingRepository.findByStatus(OnmMeeting.MeetingStatus.ACTIVE);
+
+        for (OnmMeeting meeting : activeMeetings) {
+            meeting.setStatus(OnmMeeting.MeetingStatus.TERMINATED);
+            meeting.setTerminatedAt(LocalDateTime.now());
+            onmMeetingMemberRepository.deleteByMeeting(meeting);
+            onmVoteRepository.deleteByMeeting(meeting);
+
+        }
+
+        userRoleRepository.deleteByRole(UserRoles.ONM_COMMITTEE_LEADER);
+    }
 
 
 }

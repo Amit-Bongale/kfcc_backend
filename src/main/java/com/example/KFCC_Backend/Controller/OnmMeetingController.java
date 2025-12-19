@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,6 +36,25 @@ public class OnmMeetingController {
                         "status", meeting.getStatus(),
                         "leaderId", meeting.getLeader().getId()
                 )
+        );
+    }
+
+    //Fetch all ONM meetings
+    @GetMapping
+    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE_LEADER','ONM_COMMITTEE_VOTER' , 'MANAGER')")
+    public ResponseEntity<List<OnmMeeting>> getAllMeetings() {
+        return ResponseEntity.ok(
+                meetingService.getAllMeetings()
+        );
+    }
+
+    //Fetch meetings by status
+    @GetMapping("/status")
+    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE_LEADER','ONM_COMMITTEE_VOTER', 'MANAGER' )")
+    public ResponseEntity<List<OnmMeeting>> getMeetingsByStatus(
+            @RequestParam OnmMeeting.MeetingStatus status ) {
+        return ResponseEntity.ok(
+                meetingService.getMeetingsByStatus(status)
         );
     }
 
