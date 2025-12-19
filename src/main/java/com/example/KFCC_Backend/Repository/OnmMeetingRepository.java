@@ -1,6 +1,8 @@
 package com.example.KFCC_Backend.Repository;
 
 import com.example.KFCC_Backend.entity.ONM.OnmMeeting;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +15,7 @@ public interface OnmMeetingRepository extends JpaRepository<OnmMeeting , Long> {
     List<OnmMeeting> findByStatus(OnmMeeting.MeetingStatus status);
 
     // Fetch all meetings
-    List<OnmMeeting> findAllByOrderByCreatedAtDesc();
+    Page<OnmMeeting> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     // Fetch by status
     List<OnmMeeting> findByStatusOrderByCreatedAtDesc(OnmMeeting.MeetingStatus status);

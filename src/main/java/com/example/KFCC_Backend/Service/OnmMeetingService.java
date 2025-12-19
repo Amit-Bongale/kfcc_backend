@@ -15,6 +15,9 @@ import com.example.KFCC_Backend.entity.UserRole;
 import com.example.KFCC_Backend.entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -79,7 +82,12 @@ public class OnmMeetingService {
 
     //Fetch all meetings
     public List<OnmMeeting> getAllMeetings() {
-        return onmMeetingRepository.findAllByOrderByCreatedAtDesc();
+        Pageable pageable = PageRequest.of(0, 30);
+        Page<OnmMeeting> page =
+                onmMeetingRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        List<OnmMeeting> meetings = page.getContent();
+        return meetings;
     }
 
     // Fetch meetings by status
