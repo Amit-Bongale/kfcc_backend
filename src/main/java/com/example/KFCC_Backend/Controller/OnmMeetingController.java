@@ -65,6 +65,8 @@ public class OnmMeetingController {
     public ResponseEntity<?> addMembers( @PathVariable Long meetingId, @RequestBody @Valid AddMembersToMeetingDTO request,
             @AuthenticationPrincipal CustomUserDetails user) {
 
+        System.out.println("add members route");
+
         meetingService.addMembers(meetingId, request, user);
 
         return ResponseEntity.ok(

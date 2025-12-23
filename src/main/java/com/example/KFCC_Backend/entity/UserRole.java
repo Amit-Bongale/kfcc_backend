@@ -21,6 +21,7 @@ public class UserRole {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
     private UserRoles role;
 
     @ManyToOne(fetch = FetchType.LAZY)
