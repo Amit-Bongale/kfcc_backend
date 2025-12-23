@@ -1,0 +1,14 @@
+package com.example.KFCC_Backend.Enum;
+
+public enum TitleApplicationStatus {
+    DRAFT,
+    SUBMITTED,
+    STAFF_ACCEPTED,
+    TITLE_COMMITTEE_VOTING,
+    TITLE_COMMITTEE_LEADER_REVIEW,
+    TITLE_COMMITTEE_ACCEPTED,
+    EC_COMMITTEE_REVIEW,
+    APPROVED,
+    REJECTED,
+    REMARKED
+}

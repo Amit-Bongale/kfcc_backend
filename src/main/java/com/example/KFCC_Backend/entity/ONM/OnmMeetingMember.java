@@ -15,8 +15,6 @@ public class OnmMeetingMember {
     @ManyToOne(fetch = FetchType.LAZY)
     private Users member;
 
-
-
     public Long getId() {
         return id;
     }

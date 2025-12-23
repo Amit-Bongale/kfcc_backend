@@ -5,6 +5,7 @@ import com.example.KFCC_Backend.DTO.ONMMeeting.CastVoteRequestDTO;
 import com.example.KFCC_Backend.DTO.ONMMeeting.VoteSummaryResponseDTO;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.UserRoles;
+import com.example.KFCC_Backend.Enum.VoteDecision;
 import com.example.KFCC_Backend.Repository.*;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
@@ -251,9 +252,9 @@ public class OnmMeetingService {
         long reject = 0;
 
         for (VoteCountProjection c : votes) {
-            if (c.getVote() == OnmVote.VoteDecision.APPROVE) {
+            if (c.getVote() == VoteDecision.APPROVE) {
                 approve = c.getCount();
-            } else if (c.getVote() == OnmVote.VoteDecision.REJECT) {
+            } else if (c.getVote() == VoteDecision.REJECT) {
                 reject = c.getCount();
             }
         }

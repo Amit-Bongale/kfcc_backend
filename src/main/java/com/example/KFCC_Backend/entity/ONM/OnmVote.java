@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.entity.ONM;
 
+import com.example.KFCC_Backend.Enum.VoteDecision;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.entity.Users;
 import jakarta.persistence.*;
@@ -27,9 +28,7 @@ public class OnmVote {
     @JoinColumn(name = "voter_id", nullable = false)
     private Users voter;
 
-    public enum VoteDecision{
-        APPROVE , REJECT
-    }
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
