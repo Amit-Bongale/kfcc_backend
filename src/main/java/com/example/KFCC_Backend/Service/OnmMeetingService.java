@@ -105,18 +105,28 @@ public class OnmMeetingService {
         OnmMeeting meeting = onmMeetingRepository.findById(meetingId)
                 .orElseThrow(() -> new IllegalStateException("Meeting not found") );
 
+        System.out.println("meetings: " + meeting);
+
+        System.out.println("requested member IDs: " + request);
+
         //  Validate meeting is active
         if (meeting.getStatus() != OnmMeeting.MeetingStatus.ACTIVE) {
+            System.out.println("meeting not active");
             throw new IllegalStateException("Meeting is not active");
         }
 
         //  Validate leader
         if (!meeting.getLeader().getId().equals(userDetails.getUserId())) {
+            System.out.println("User is not leader");
             throw new AccessDeniedException("Only leader can add members");
         }
 
+        System.out.println("add members process init");
+
         // 4. Add members
         for (Long memberId : request.getMemberIds()) {
+
+            System.out.println("trying to add members: " + memberId);
 
             // Leader cannot add himself
             if (memberId.equals(meeting.getLeader().getId())) {

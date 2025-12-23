@@ -28,7 +28,7 @@ public class Users {
 
     private LocalDate dob;
 
-    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER,  cascade = CascadeType.ALL,  orphanRemoval = true)
     @JsonIgnore
     private Set<UserRole> roles = new HashSet<>();
 
