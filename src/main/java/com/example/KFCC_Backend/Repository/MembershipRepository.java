@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,19 @@ public interface MembershipRepository  extends JpaRepository <MembershipApplicat
     SELECT a FROM MembershipApplication a
     WHERE a.membershipStatus IN :statuses
     ORDER BY a.submittedAt DESC
-       """)
+    """)
     List<MembershipApplication> findByCurrentStatusIn( @Param("statuses") Set<MembershipStatus> statuses);
+
+    @Query("""
+        SELECT COUNT(m) > 0
+        FROM MembershipApplication m
+        WHERE m.user.id = :userId
+          AND m.membershipStatus = :status
+          AND m.membershipExpiryDate >= :today
+    """)
+    boolean hasValidMembership(
+            @Param("userId") Long userId,
+            @Param("status") MembershipStatus status,
+            @Param("today") LocalDate today
+    );
 }

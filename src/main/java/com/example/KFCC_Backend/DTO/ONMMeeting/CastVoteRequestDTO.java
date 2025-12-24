@@ -1,7 +1,6 @@
 package com.example.KFCC_Backend.DTO.ONMMeeting;
 
 import com.example.KFCC_Backend.Enum.VoteDecision;
-import com.example.KFCC_Backend.entity.ONM.OnmVote;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

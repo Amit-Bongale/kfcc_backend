@@ -6,17 +6,22 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
+@Table(
+        name = "title_registration",
+        indexes = {
+                @Index(name = "idx_title_registration_title", columnList = "title")
+        }
+)
 public class TitleRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY , optional = false)
     private Users producer;
 
     @Column(nullable = false , unique = true)
@@ -34,7 +39,8 @@ public class TitleRegistration {
     private String leadActor;
     private String category;
     private String gstNo;
-    private Date acceptedDate;
+    private LocalDate acceptedDate;
+    private LocalDate expireDate;
 
     @OneToMany(
             mappedBy = "application",
@@ -44,6 +50,7 @@ public class TitleRegistration {
 
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 50)
     private TitleApplicationStatus status;
 
     private LocalDateTime createdAt;
@@ -71,6 +78,8 @@ public class TitleRegistration {
     public String getTitle() {
         return title;
     }
+
+
 
     public void setTitle(String title) {
         this.title = title;
@@ -172,12 +181,20 @@ public class TitleRegistration {
         this.gstNo = gstNo;
     }
 
-    public Date getAcceptedDate() {
+    public LocalDate getAcceptedDate() {
         return acceptedDate;
     }
 
-    public void setAcceptedDate(Date acceptedDate) {
+    public void setAcceptedDate(LocalDate acceptedDate) {
         this.acceptedDate = acceptedDate;
+    }
+
+    public LocalDate getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(LocalDate expireDate) {
+        this.expireDate = expireDate;
     }
 
     public List<TitleRegistrationDocuments> getDocuments() {

@@ -5,7 +5,7 @@ import com.example.KFCC_Backend.DTO.ONMMeeting.CastVoteRequestDTO;
 import com.example.KFCC_Backend.DTO.ONMMeeting.VoteSummaryResponseDTO;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.OnmMeetingService;
-import com.example.KFCC_Backend.entity.ONM.OnmMeeting;
+import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeeting;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +75,7 @@ public class OnmMeetingController {
     }
 
     @PostMapping("/{meetingId}/vote")
-    @PreAuthorize("hasRole('ONM_COMMITTEE')")
+    @PreAuthorize("hasRole('ONM_COMMITTEE_VOTER')")
     public ResponseEntity<?> castVote(
             @PathVariable Long meetingId,
             @RequestBody @Valid CastVoteRequestDTO request,

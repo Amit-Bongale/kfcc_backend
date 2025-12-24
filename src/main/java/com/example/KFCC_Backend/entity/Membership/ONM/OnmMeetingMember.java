@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.entity.ONM;
+package com.example.KFCC_Backend.entity.Membership.ONM;
 
 import com.example.KFCC_Backend.entity.Users;
 import jakarta.persistence.*;

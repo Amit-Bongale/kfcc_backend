@@ -1,12 +1,10 @@
 package com.example.KFCC_Backend.entity.Title;
 
-import com.example.KFCC_Backend.Enum.VoteDecision;
+
 import com.example.KFCC_Backend.entity.Users;
 import jakarta.persistence.*;
 
-@Entity
-public class TitleVote {
-
+public class TitleMeetingMembers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,12 +13,5 @@ public class TitleVote {
     private TitleMeeting meeting;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private TitleRegistration application;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Users voter;
-
-    @Enumerated(EnumType.STRING)
-    private VoteDecision vote; // APPROVE / REJECT
-
+    private Users member;
 }

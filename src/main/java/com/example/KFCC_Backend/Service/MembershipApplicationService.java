@@ -3,6 +3,7 @@ package com.example.KFCC_Backend.Service;
 import com.example.KFCC_Backend.Components.ApplicationFetchConfig;
 import com.example.KFCC_Backend.DTO.ApplicationActionRequestDTO;
 import com.example.KFCC_Backend.DTO.MembershipApplicationRequestDTO;
+import com.example.KFCC_Backend.DTO.MembershipApplicationUpdateRequest;
 import com.example.KFCC_Backend.DTO.MembershipApplicationsResponseDTO;
 import com.example.KFCC_Backend.Enum.ApplicationAction;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
@@ -16,6 +17,7 @@ import com.example.KFCC_Backend.entity.Membership.Proprietor;
 import com.example.KFCC_Backend.entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -448,6 +450,64 @@ public class MembershipApplicationService {
 
     }
 
+
+
+
+    public void updateApplication(
+            Long applicationId,
+            MembershipApplicationUpdateRequest request,
+            CustomUserDetails userDetails
+    ) {
+
+        MembershipApplication application =
+                membershipRepository.findById(applicationId)
+                        .orElseThrow(() -> new RuntimeException("Application not found"));
+
+        // Ownership validation
+        if (!application.getUser().getId().equals(userDetails.getUserId())) {
+            throw new AccessDeniedException("You cannot edit this application");
+        }
+
+        //  Status validation
+        if (application.getMembershipStatus() != MembershipStatus.DRAFT)  {
+            throw new IllegalStateException("Applications cannot be edited");
+        }
+
+        // Update simple fields
+        application.setApplicantDistrict(request.getDistrict());
+        application.setApplicantState(request.getState());
+        application.setApplicantPinCode(request.getPinCode());
+        application.setApplicantGstNo(request.getGstNo());
+
+        application.setApplicantMembershipCategory(request.getCategory());
+        application.setApplicantOwnershipType(request.getOwnershipType());
+        application.setApplicantFirmName(request.getFirmName());
+        application.setApplicantAddressLine1(request.getAddressLine1());
+        application.setApplicantAddressLine2(request.getAddressLine2());
+
+
+        // Nominees
+        if (request.getNominees() != null) {
+            if (request.getNominees().size() > 2)
+                throw new IllegalArgumentException("Max 2 nominees allowed");
+
+//            application.updateNominees(request.getNominees());
+        }
+
+        //  Partners
+        if (request.getOwnershipType() != OwnershipType.PROPRIETOR) {
+            if (request.getPartners() != null && request.getPartners().size() > 6)
+                throw new IllegalArgumentException("Max 6 partners allowed");
+
+//            application.updatePartners(request.getPartners());
+
+        } else {
+//            application.clearPartners();
+        }
+
+        membershipRepository.save(application);
+
+    }
 
 
 

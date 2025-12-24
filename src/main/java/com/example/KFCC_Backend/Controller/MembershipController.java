@@ -113,7 +113,7 @@ public class MembershipController {
 
 //    Fetch user submitted applications
     @GetMapping("/pending/requests")
-    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
+    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE_VOTER', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
     public ResponseEntity<List<MembershipApplicationsResponseDTO>> getPendingApplications(
             @AuthenticationPrincipal CustomUserDetails user) {
 
@@ -124,7 +124,7 @@ public class MembershipController {
     }
 
     @PostMapping("/{id}/action")
-    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
+    @PreAuthorize("hasAnyRole('STAFF', 'ONM_COMMITTEE_LEADER' ,'SECRETARY' , 'PRESIDENT' )")
     public ResponseEntity<?> ApplcationAction( @PathVariable Long id,
                                                @RequestBody @Valid ApplicationActionRequestDTO request,
                                                @AuthenticationPrincipal CustomUserDetails user){

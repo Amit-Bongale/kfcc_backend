@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.entity.ONM;
+package com.example.KFCC_Backend.entity.Membership.ONM;
 
 import com.example.KFCC_Backend.Enum.VoteDecision;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
@@ -27,7 +27,6 @@ public class OnmVote {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "voter_id", nullable = false)
     private Users voter;
-
 
 
     @Enumerated(EnumType.STRING)

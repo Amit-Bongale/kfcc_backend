@@ -1,7 +1,7 @@
 package com.example.KFCC_Backend.Repository;
 
-import com.example.KFCC_Backend.entity.ONM.OnmMeeting;
-import com.example.KFCC_Backend.entity.ONM.OnmMeetingMember;
+import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeeting;
+import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeetingMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
