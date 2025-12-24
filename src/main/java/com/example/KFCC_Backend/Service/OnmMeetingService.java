@@ -6,6 +6,8 @@ import com.example.KFCC_Backend.DTO.ONMMeeting.VoteSummaryResponseDTO;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Enum.VoteDecision;
+import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
+import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.*;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
@@ -239,12 +241,12 @@ public class OnmMeetingService {
         // Fetch meeting
         OnmMeeting meeting = onmMeetingRepository.findById(meetingId)
                 .orElseThrow(() ->
-                        new IllegalStateException("Meeting not found")
+                        new ResourceNotFoundException("Meeting not found")
                 );
 
         // Validate ACTIVE
         if (meeting.getStatus() != OnmMeeting.MeetingStatus.ACTIVE) {
-            throw new IllegalStateException("Meeting is not active");
+            throw new BadRequestException("Meeting is not active");
         }
 
         // Leader-only access
@@ -281,17 +283,17 @@ public class OnmMeetingService {
 
         // Fetch manager
         Users manager = usersRepository.findById(userDetails.getUserId())
-                .orElseThrow(() -> new IllegalStateException("Manager not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Manager not found"));
 
         // Fetch meeting
         OnmMeeting meeting = onmMeetingRepository.findById(meetingId)
                 .orElseThrow(() ->
-                        new IllegalStateException("Meeting not found")
+                        new ResourceNotFoundException("Meeting not found")
                 );
 
         //  Validate ACTIVE
         if (meeting.getStatus() != OnmMeeting.MeetingStatus.ACTIVE) {
-            throw new IllegalStateException("Meeting already terminated");
+            throw new BadRequestException("Meeting already terminated");
         }
 
         //  Collect leader & members BEFORE delete
