@@ -395,7 +395,7 @@ public class MembershipApplicationService {
 
         else if (currentStatus == MembershipStatus.ONM_APPROVED) {
 
-            requireRole(roles, "ROLE_SECRETARY");
+            requireRole(roles, "SECRETARY");
 
             newStatus = switch (request.getAction()) {
                 case APPROVE -> MembershipStatus.FINAL_APPROVED;

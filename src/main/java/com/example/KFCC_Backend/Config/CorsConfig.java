@@ -20,7 +20,8 @@ public class CorsConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",      // React dev
                 "http://localhost:5173",      // Vite
-                "https://yourdomain.com"      // Production
+                "https://yourdomain.com",
+                "http://192.168.1.5:5173"// Production
         ));
 
         // ✅ Allowed HTTP methods
