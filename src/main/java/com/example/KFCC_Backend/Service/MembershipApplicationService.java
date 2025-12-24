@@ -1,11 +1,10 @@
 package com.example.KFCC_Backend.Service;
 
-import com.example.KFCC_Backend.Components.ApplicationFetchConfig;
 import com.example.KFCC_Backend.DTO.ApplicationActionRequestDTO;
 import com.example.KFCC_Backend.DTO.MembershipApplicationRequestDTO;
 import com.example.KFCC_Backend.DTO.MembershipApplicationUpdateRequest;
 import com.example.KFCC_Backend.DTO.MembershipApplicationsResponseDTO;
-import com.example.KFCC_Backend.Enum.ApplicationAction;
+
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
 import com.example.KFCC_Backend.Repository.MembershipRepository;
@@ -17,16 +16,20 @@ import com.example.KFCC_Backend.entity.Membership.Proprietor;
 import com.example.KFCC_Backend.entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,9 +41,6 @@ public class MembershipApplicationService {
 
     @Autowired
     private FileStorageUtil fileStorageUtil;
-
-    @Autowired
-    private ApplicationFetchConfig applicationFetchConfig;
 
 
     private void validateMember(Long membershipId) {
@@ -80,7 +80,7 @@ public class MembershipApplicationService {
         // Nominee validation
         if (request.getNominees() == null || request.getNominees().isEmpty() ||
                 request.getNominees().size() > 2) {
-            throw new IllegalArgumentException("Minimum 1 and maximum 2 nominees allowed");
+            throw new BadRequestException("Minimum 1 and maximum 2 nominees allowed");
         }
 
 
@@ -95,14 +95,14 @@ public class MembershipApplicationService {
 
         if (isProprietor) {
             if (request.getProprietor() == null) {
-                throw new IllegalArgumentException("Proprietor details are mandatory");
+                throw new BadRequestException("Proprietor details are mandatory");
             }
             if (request.getPartners() != null && !request.getPartners().isEmpty()) {
-                throw new IllegalArgumentException("Proprietor cannot have partners");
+                throw new BadRequestException("Proprietor cannot have partners");
             }
         } else {
             if (request.getPartners() != null && request.getPartners().size() > 6) {
-                throw new IllegalArgumentException("Maximum 6 partners allowed");
+                throw new BadRequestException("Maximum 6 partners allowed");
             }
 
 //            if (partnershipDeed == null || partnershipDeed.isEmpty()) {
@@ -149,7 +149,7 @@ public class MembershipApplicationService {
 //            throw new IllegalArgumentException("Too many documents uploaded");
 //        }
 
-        String appFolder = "APP-" + String.format("%06d", application.getApplicationId());
+        String appFolder = "membership/documents/APP-" + String.format("%06d", application.getApplicationId());
 
         String applicantImgPath =  fileStorageUtil.saveFile(appFolder, "applicant", applicantPhoto);
         application.setApplicantImage(applicantImgPath);
@@ -260,6 +260,30 @@ public class MembershipApplicationService {
     }
 
 
+    @Component
+    public static class ApplicationFetchConfig {
+        private static final Map<String, Set<MembershipStatus>> ROLE_STATUS_MAP =
+                Map.of(
+                        "STAFF", Set.of(MembershipStatus.SUBMITTED),
+                        "ONM_COMMITTEE", Set.of(MembershipStatus.STAFF_APPROVED),
+                        "ONM_COMMITTEE_LEADER", Set.of(MembershipStatus.STAFF_APPROVED),
+                        "EC_MEMBER", Set.of(MembershipStatus.ONM_APPROVED),
+                        "SECRETARY", Set.of(MembershipStatus.ONM_APPROVED),
+                        "PRESIDENT" , Set.of(MembershipStatus.ONM_APPROVED)
+                );
+
+        public static Set<MembershipStatus> getAllowedStatuses(Set<String> roles) {
+            return roles.stream()
+                    .filter(ROLE_STATUS_MAP::containsKey)
+                    .flatMap(role -> ROLE_STATUS_MAP.get(role).stream())
+                    .collect(Collectors.toSet());
+        }
+
+    }
+
+
+
+
     // get pending applications for approval [staff , ONM, EC , Secretary]
     public List<MembershipApplicationsResponseDTO>  getPendingApplications (CustomUserDetails user){
 
@@ -268,7 +292,7 @@ public class MembershipApplicationService {
 
 
         Set<MembershipStatus> allowedStatuses =
-                applicationFetchConfig.getAllowedStatuses(roles);
+                ApplicationFetchConfig.getAllowedStatuses(roles);
 
         System.out.println("allowed status" + allowedStatuses);
 
@@ -389,7 +413,7 @@ public class MembershipApplicationService {
                     requireRemarks(request);
                     yield MembershipStatus.DRAFT;
                 }
-                default -> throw new IllegalStateException("Invalid action");
+                default -> throw new BadRequestException("Invalid action");
             };
         }
 
@@ -408,12 +432,12 @@ public class MembershipApplicationService {
                     requireRemarks(request);
                     yield MembershipStatus.DRAFT;
                 }
-                default -> throw new IllegalStateException("Invalid action");
+                default -> throw new BadRequestException("Invalid action");
             };
         }
 
         else {
-            throw new IllegalStateException(
+            throw new BadRequestException(
                     "Application not in actionable state"
             );
         }

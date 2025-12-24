@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.entity.Title;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,6 +11,7 @@ public class TitleRegistrationDocuments {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id", nullable = false)
+    @JsonIgnore
     private TitleRegistration application;
 
     private String path;

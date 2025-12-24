@@ -13,14 +13,14 @@ import java.util.UUID;
 @Component
 public class FileStorageUtil {
 
-    private static final String BASE_PATH = "uploads/membership/documents";
+    private static final String BASE_PATH = "uploads";
 
-    public String saveFile(String applicationId, String subFolder, MultipartFile file)
+    public String saveFile(String folderName, String subFolder, MultipartFile file)
             throws IOException {
 
         if (file == null || file.isEmpty()) return null;
 
-        String dirPath = BASE_PATH + "/" + applicationId + "/" + subFolder;
+        String dirPath = BASE_PATH + "/" + folderName + "/" + subFolder;
         Path directory = Paths.get(dirPath);
 
         if (!Files.exists(directory)) {

@@ -23,6 +23,8 @@ public class OnmMeetingController {
     @Autowired
     private OnmMeetingService meetingService;
 
+
+    // create ONM meeting and appoint Leader using User Id
     @PostMapping("/create/{leaderId}")
     @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<?> createMeeting( @PathVariable Long leaderId,
@@ -74,6 +76,7 @@ public class OnmMeetingController {
         );
     }
 
+    //perform voting
     @PostMapping("/{meetingId}/vote")
     @PreAuthorize("hasRole('ONM_COMMITTEE_VOTER')")
     public ResponseEntity<?> castVote(
@@ -90,7 +93,7 @@ public class OnmMeetingController {
     }
 
 
-    // get application Votes
+    // get application Votes summary
     @GetMapping("/{meetingId}/votes/{applicationId}")
     @PreAuthorize("hasRole('ONM_COMMITTEE_LEADER')")
     public ResponseEntity<VoteSummaryResponseDTO> getVoteSummary(

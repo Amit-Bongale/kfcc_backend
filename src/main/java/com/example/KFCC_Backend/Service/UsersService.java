@@ -1,11 +1,13 @@
 package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.Enum.UserRoles;
+import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 
 import com.example.KFCC_Backend.entity.Users;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -27,14 +29,14 @@ public class UsersService {
                 SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Unauthenticated user");
+            throw new AccessDeniedException("Unauthenticated user");
         }
 
         CustomUserDetails userDetails =
                 (CustomUserDetails) authentication.getPrincipal();
 
         Users user = usersRepository.findByIdWithRoles(userDetails.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Set<String> roles = user.getRoles()
                 .stream()
@@ -53,4 +55,5 @@ public class UsersService {
     public List<Users> getUsersByRole(UserRoles role) {
         return usersRepository.findUsersByRole(role);
     }
+
 }

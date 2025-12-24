@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.Service;
 
+import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 import com.example.KFCC_Backend.Repository.OtpRepository;
 import com.example.KFCC_Backend.entity.OtpVerification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import java.util.Random;
 @Service
 public class OtpService {
 
+    // set otp attemps = 5 and resend timer to 60 sec
     private static final int MAX_ATTEMPTS = 5;
     private static final int RESEND_SECONDS = 60;
 
@@ -25,7 +27,7 @@ public class OtpService {
 
         if (otp.getLastSentAt() != null &&
                 Duration.between(otp.getLastSentAt(), LocalDateTime.now()).getSeconds() < RESEND_SECONDS) {
-            throw new IllegalStateException("OTP resend limit exceeded");
+            throw new BadRequestException("OTP resend limit exceeded");
         }
 
         String code = String.valueOf(100000 + new Random().nextInt(900000));
@@ -45,10 +47,10 @@ public class OtpService {
     public boolean verifyOtp(String mobileNo, String otpCode) {
         OtpVerification otp = otpRepository
                 .findByMobileNo(mobileNo)
-                .orElseThrow(() -> new RuntimeException("OTP not found"));
+                .orElseThrow(() -> new BadRequestException("OTP not sent"));
 
         if (otp.getAttempts() >= MAX_ATTEMPTS)
-            throw new IllegalStateException("OTP attempts exceeded");
+            throw new BadRequestException("OTP attempts exceeded");
 
         otp.setAttempts(otp.getAttempts() + 1);
         otpRepository.save(otp);

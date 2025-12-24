@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,18 +21,32 @@ public class TitleRegistrationController {
     @Autowired
     private TitleRegistrationService titleRegistrationService;
 
+    //get particular application details by ID
+    @GetMapping("/{applicationId}")
+    public ResponseEntity<?> getTitleDetails(@PathVariable Long applicationId){
+
+        TitleRegistration application = titleRegistrationService.getApplicationDetailsById(applicationId);
+
+        return ResponseEntity.ok(application);
+
+    }
+
+    //Apply for title Registration
     @PreAuthorize("hasAnyRole('PRODUCER')")
     @RequestMapping("/apply")
-    public ResponseEntity<?> submitTitleApplication( @RequestBody TitleRegistration request,
-                                                    @AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<?> submitTitleApplication( @RequestPart("request") TitleRegistration request,
+                                                    @RequestPart("files") List<MultipartFile> files,
+                                                    @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
 
-        TitleRegistration application = titleRegistrationService.submitApplication(request , userDetails);
+        TitleRegistration application = titleRegistrationService.submitApplication(request , userDetails , files);
 
         return ResponseEntity.ok(Map.of("message" , "Title Registered Successfully" ,
                 "application" , application)
         );
 
     }
+
+
 
 
 }
