@@ -6,6 +6,7 @@ import com.example.KFCC_Backend.Repository.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 
 import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,9 @@ public class UsersService {
 
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     public Map<String, Object> getUserDetails() {
 
@@ -43,11 +47,18 @@ public class UsersService {
                 .map(r -> r.getRole().name())
                 .collect(Collectors.toSet());
 
+
+        String token = jwtUtil.generateToken(
+                userDetails,
+                roles
+        );
+
         return Map.of(
                 "userId", user.getId(),
                 "firstName", user.getFirstName(),
                 "mobile", user.getMobileNo(),
-                "roles", roles
+                "roles", roles,
+                "token" , token
         );
 
     }

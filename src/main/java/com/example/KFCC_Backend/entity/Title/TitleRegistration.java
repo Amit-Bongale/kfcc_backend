@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.entity.Title;
 
 import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
+import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.entity.Users;
 import jakarta.persistence.*;
 
@@ -26,7 +27,6 @@ public class TitleRegistration {
 
     @Column(nullable = false , unique = true)
     private String title;
-
     private String titleInKannada;
 
     private LocalDate date;
@@ -54,6 +54,9 @@ public class TitleRegistration {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 50)
     private TitleApplicationStatus status;
+
+    private String remark;
+    private UserRoles remarkedBy;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -220,6 +223,22 @@ public class TitleRegistration {
 
     public void setStatus(TitleApplicationStatus status) {
         this.status = status;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public UserRoles getRemarkedBy() {
+        return remarkedBy;
+    }
+
+    public void setRemarkedBy(UserRoles remarkedBy) {
+        this.remarkedBy = remarkedBy;
     }
 
     public LocalDateTime getCreatedAt() {

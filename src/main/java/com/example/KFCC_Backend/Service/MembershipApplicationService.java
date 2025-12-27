@@ -51,7 +51,7 @@ public class MembershipApplicationService {
     }
 
 
-/*------ Need to fix Images ------------------- */
+    /*------ Need to fix Images ------------------- */
     public MembershipApplication submitApplication(
             Users user,
             MembershipApplicationRequestDTO request,
@@ -392,7 +392,8 @@ public class MembershipApplicationService {
                 }
                 case REMARK -> {
                     requireRemarks(request);
-                    yield MembershipStatus.STAFF_REMARKED;
+                    application.setRemarkedBy("STAFF");
+                    yield MembershipStatus.DRAFT;
                 }
                 default -> throw new IllegalStateException("Invalid action");
             };
@@ -411,6 +412,7 @@ public class MembershipApplicationService {
                 }
                 case REMARK -> {
                     requireRemarks(request);
+                    application.setRemarkedBy("ONM_COMMITTEE");
                     yield MembershipStatus.DRAFT;
                 }
                 default -> throw new BadRequestException("Invalid action");
@@ -430,6 +432,7 @@ public class MembershipApplicationService {
                 case HOLD -> MembershipStatus.EC_HOLD;
                 case REMARK -> {
                     requireRemarks(request);
+                    application.setRemarkedBy("EC_MEMBERS");
                     yield MembershipStatus.DRAFT;
                 }
                 default -> throw new BadRequestException("Invalid action");
@@ -437,9 +440,7 @@ public class MembershipApplicationService {
         }
 
         else {
-            throw new BadRequestException(
-                    "Application not in actionable state"
-            );
+            throw new BadRequestException( "Application not in actionable state");
         }
 
 

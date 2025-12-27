@@ -85,6 +85,7 @@ public class MembershipApplication {
     private MembershipStatus membershipStatus;
 
     private String remark;
+    private String remarkedBy;
 
 
     /* ---------------- DOCUMENTS ---------------- */
@@ -279,6 +280,18 @@ public class MembershipApplication {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getRemarkedBy() {
+        return remarkedBy;
+    }
+
+    public void setRemarkedBy(String remarkedBy) {
+        this.remarkedBy = remarkedBy;
+    }
+
+    public void setApplicantPinCode(Integer applicantPinCode) {
+        this.applicantPinCode = applicantPinCode;
     }
 
     public Proprietor getProprietor() {

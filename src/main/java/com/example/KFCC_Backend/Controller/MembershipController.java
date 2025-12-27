@@ -37,7 +37,7 @@ public class MembershipController {
     @Autowired
     private UsersRepository usersRepository;
 
-
+    // get membership application details by ID
     @GetMapping("/{applicationId}")
 //    @PreAuthorize("hasAnyRole('USER','STAFF','ONM_COMMITTEE','ONM_COMMITTEE_LEADER','EC_MEMBER','SECRETARY','PRESIDENT')")
     public ResponseEntity<?> getMembershipApplicationById(
@@ -50,6 +50,7 @@ public class MembershipController {
     }
 
 
+    // submit Membership Registration request
     @PostMapping(value = "/apply", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> submitApplication(
 
@@ -111,7 +112,7 @@ public class MembershipController {
     }
 
 
-//    Fetch user submitted applications
+    // Fetch submitted applications for all Roles
     @GetMapping("/pending/requests")
     @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE_VOTER', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
     public ResponseEntity<List<MembershipApplicationsResponseDTO>> getPendingApplications(
@@ -123,6 +124,7 @@ public class MembershipController {
         );
     }
 
+    // Approve / Reject /  Remark Applications for all Roles
     @PostMapping("/{id}/action")
     @PreAuthorize("hasAnyRole('STAFF', 'ONM_COMMITTEE_LEADER' ,'SECRETARY' , 'PRESIDENT' )")
     public ResponseEntity<?> ApplcationAction( @PathVariable Long id,

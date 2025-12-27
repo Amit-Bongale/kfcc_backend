@@ -1,8 +1,10 @@
 package com.example.KFCC_Backend.Controller;
 
+import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.TitleRegistrationService;
 import com.example.KFCC_Backend.entity.Title.TitleRegistration;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,6 +50,14 @@ public class TitleRegistrationController {
     }
 
 
-
+    // Approve / Reject /  Remark Applications for all Roles
+    @PostMapping("/{id}/action")
+    @PreAuthorize("hasAnyRole('STAFF', 'TITLE_COMMITTEE_LEADER' ,'SECRETARY' , 'PRESIDENT' )")
+    public ResponseEntity<?> applicationAction( @PathVariable Long id,
+                                               @RequestBody @Valid ApplicationActionRequestDTO request,
+                                               @AuthenticationPrincipal CustomUserDetails user){
+        titleRegistrationService.TitleApplicationAction(id , request, user);
+        return ResponseEntity.ok(Map.of("message" , "Application Status Updated"));
+    }
 
 }

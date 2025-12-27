@@ -1,7 +1,9 @@
 package com.example.KFCC_Backend.Service;
 
+import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
+import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.MembershipRepository;
@@ -13,8 +15,9 @@ import com.example.KFCC_Backend.Utility.FileStorageUtil;
 import com.example.KFCC_Backend.entity.Title.TitleRegistration;
 import com.example.KFCC_Backend.entity.Title.TitleRegistrationDocuments;
 import com.example.KFCC_Backend.entity.Users;
-import org.aspectj.util.FileUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TitleRegistrationService {
@@ -58,7 +62,7 @@ public class TitleRegistrationService {
         }
 
         if (titleRegistrationRepository.existsByTitleIgnoreCase(request.getTitle())) {
-            throw new org.apache.coyote.BadRequestException("Title already registered or in process");
+            throw new BadRequestException("Title already registered or in process");
         }
 
         TitleRegistration app = new TitleRegistration();
@@ -95,7 +99,7 @@ public class TitleRegistrationService {
 
 //            String folderName = "TitleRegistration/" + application.getId().toString();
 
-            // REUSING UTILITY
+            //  UTILITY
             String storedPath = fileStorageUtil.saveFile(
                     "TitleRegistration/Documents",
                     application.getId().toString(),
@@ -120,6 +124,114 @@ public class TitleRegistrationService {
     public TitleRegistration getApplicationDetailsById(Long applicationId) {
         return titleRegistrationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+    }
+
+
+    /* ---------- Application Action Helpers --------------- */
+
+    private void requireRole(Set<String> roles, String required) {
+        if (!roles.contains(required)) {
+            throw new AccessDeniedException("Unauthorized");
+        }
+    }
+
+    private void requireRemarks(ApplicationActionRequestDTO request) {
+        if (request.getRemark() == null || request.getRemark().isBlank()) {
+            throw new IllegalArgumentException("Remarks required");
+        }
+    }
+
+    // Approve / Reject /  Remark Applications
+    @Transactional
+    public void TitleApplicationAction(Long applicationId, ApplicationActionRequestDTO request , CustomUserDetails user){
+
+        TitleRegistration application = titleRegistrationRepository.findById(applicationId).orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        TitleApplicationStatus currentStatus = application.getStatus();
+        Set<String> roles = user.getRoles();
+
+        TitleApplicationStatus newStatus;
+
+
+        // Staff stage
+        if(currentStatus ==  TitleApplicationStatus.SUBMITTED){
+
+            requireRole(roles , "STAFF");
+
+            newStatus = switch (request.getAction()){
+                case APPROVE -> TitleApplicationStatus.STAFF_APPROVED;
+                case REJECT -> {
+                    requireRemarks(request);
+                    yield TitleApplicationStatus.STAFF_REJECTED;
+                }
+                case REMARK -> {
+                    requireRemarks(request);
+                    application.setRemarkedBy(UserRoles.STAFF);
+                    yield TitleApplicationStatus.DRAFT;
+                }
+                default -> throw new IllegalStateException("Invalid action");
+            };
+        }
+
+        //  Title Committee STAGE
+        else if (currentStatus == TitleApplicationStatus.STAFF_APPROVED) {
+
+            requireRole(roles, "TITLE_COMMITTEE_LEADER");
+
+            newStatus = switch (request.getAction()) {
+                case APPROVE -> TitleApplicationStatus.TITLE_COMMITTEE_APPROVED;
+                case REJECT -> {
+                    requireRemarks(request);
+                    yield TitleApplicationStatus.TITLE_COMMITTEE_REJECTED;
+                }
+                case REMARK -> {
+                    requireRemarks(request);
+                    application.setRemarkedBy(UserRoles.TITLE_COMMITTEE);
+                    yield TitleApplicationStatus.DRAFT;
+                }
+                default -> throw new BadRequestException("Invalid action");
+            };
+        }
+
+        else if (currentStatus == TitleApplicationStatus.TITLE_COMMITTEE_APPROVED) {
+
+            requireRole(roles, "SECRETARY");
+
+            newStatus = switch (request.getAction()) {
+                case APPROVE -> TitleApplicationStatus.FINAL_APPROVED;
+                case REJECT -> {
+                    requireRemarks(request);
+                    yield TitleApplicationStatus.EC_COMMITTEE_REJECTED;
+                }
+                case HOLD -> TitleApplicationStatus.EC_COMMITTEE_HOLD;
+                case REMARK -> {
+                    requireRemarks(request);
+                    application.setRemarkedBy(UserRoles.EC_MEMBER);
+                    yield TitleApplicationStatus.DRAFT;
+                }
+                default -> throw new BadRequestException("Invalid action");
+            };
+        }
+
+        else {
+            throw new BadRequestException( "Application not in actionable state");
+        }
+
+
+        application.setStatus(newStatus);
+
+        if (request.getRemark() != null && !request.getRemark().isBlank()) {
+            application.setRemark(request.getRemark());
+        }
+
+        titleRegistrationRepository.save(application);
+
+
+        /* ----- implement a extra table if log is required  in future --------- */
+
+        //        logAction(app, request, user);
+
+
     }
 
 }
