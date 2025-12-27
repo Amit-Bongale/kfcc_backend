@@ -62,8 +62,9 @@ public class TitleRegistrationService {
         }
 
         TitleRegistration app = new TitleRegistration();
-        app.setProducer(producer);
         app.setTitle(request.getTitle().trim());
+        app.setTitleInKannada(request.getTitleInKannada());
+        app.setProducer(producer);
         app.setDate(request.getDate());
         app.setFirstFilm(request.getFirstFilm());
         app.setInstitution(request.getInstitution());
@@ -92,12 +93,12 @@ public class TitleRegistrationService {
 
             if (file.isEmpty()) continue;
 
-            String folderName = "TitleRegistration/" + application.getId().toString();
+//            String folderName = "TitleRegistration/" + application.getId().toString();
 
             // REUSING UTILITY
             String storedPath = fileStorageUtil.saveFile(
-                    folderName,
-                    "Documents",
+                    "TitleRegistration/Documents",
+                    application.getId().toString(),
                     file
             );
 

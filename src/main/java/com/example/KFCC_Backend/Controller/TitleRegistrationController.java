@@ -23,6 +23,7 @@ public class TitleRegistrationController {
 
     //get particular application details by ID
     @GetMapping("/{applicationId}")
+    @PreAuthorize("hasAnyRole( 'PRODUCER' , 'STAFF','ONM_COMMITTEE_VOTER', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER', 'SECRETARY' , 'PRESIDENT' )")
     public ResponseEntity<?> getTitleDetails(@PathVariable Long applicationId){
 
         TitleRegistration application = titleRegistrationService.getApplicationDetailsById(applicationId);

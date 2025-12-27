@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.DTO;
+package com.example.KFCC_Backend.DTO.Membership;
 
 import com.example.KFCC_Backend.Enum.ApplicationAction;
 import jakarta.validation.constraints.NotNull;

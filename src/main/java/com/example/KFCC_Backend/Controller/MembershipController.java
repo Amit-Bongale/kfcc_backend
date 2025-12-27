@@ -1,10 +1,10 @@
 package com.example.KFCC_Backend.Controller;
 
-import com.example.KFCC_Backend.DTO.ApplicationActionRequestDTO;
-import com.example.KFCC_Backend.DTO.MembershipApplicationRequestDTO;
+import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
+import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationRequestDTO;
 import com.example.KFCC_Backend.Repository.MembershipRepository;
 import com.example.KFCC_Backend.Repository.UsersRepository;
-import com.example.KFCC_Backend.DTO.MembershipApplicationsResponseDTO;
+import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.MembershipApplicationService;

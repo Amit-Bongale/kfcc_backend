@@ -27,6 +27,8 @@ public class TitleRegistration {
     @Column(nullable = false , unique = true)
     private String title;
 
+    private String titleInKannada;
+
     private LocalDate date;
     private Boolean isFirstFilm;
     private String institution;
@@ -80,9 +82,16 @@ public class TitleRegistration {
     }
 
 
-
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getTitleInKannada() {
+        return titleInKannada;
+    }
+
+    public void setTitleInKannada(String titleInKannada) {
+        this.titleInKannada = titleInKannada;
     }
 
     public LocalDate getDate() {

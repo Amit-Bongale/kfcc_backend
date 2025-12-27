@@ -1,9 +1,9 @@
 package com.example.KFCC_Backend.Service;
 
-import com.example.KFCC_Backend.DTO.ApplicationActionRequestDTO;
-import com.example.KFCC_Backend.DTO.MembershipApplicationRequestDTO;
-import com.example.KFCC_Backend.DTO.MembershipApplicationUpdateRequest;
-import com.example.KFCC_Backend.DTO.MembershipApplicationsResponseDTO;
+import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
+import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationRequestDTO;
+import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationUpdateRequest;
+import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;

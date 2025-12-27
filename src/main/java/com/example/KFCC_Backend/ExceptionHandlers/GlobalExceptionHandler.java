@@ -52,4 +52,5 @@ public class GlobalExceptionHandler {
                     "Internal server error"
             ));
     }
+
 }

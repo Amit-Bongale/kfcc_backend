@@ -7,13 +7,27 @@ public enum UserRoles {
 
     // Office bearers
     STAFF,
+
     ONM_COMMITTEE,
     ONM_COMMITTEE_VOTER,
     ONM_COMMITTEE_LEADER,
+
+    TITLE_COMMITTEE,
+    TITLE_COMMITTEE_VOTER,
+    TITLE_COMMITTEE_LEADER,
+
     EC_MEMBER,
+
     SECRETARY,
     MANAGER,
+
     PRESIDENT,
+
+
+    // Vice Presidents
+    VP_PRODUCER,
+    VP_EXHIBITOR,
+    VP_DISTRIBUTOR,
 
     // Members category
     PRODUCER,
@@ -21,11 +35,7 @@ public enum UserRoles {
     DISTRIBUTOR,
     STUDIO,
     HONORARY_MEMBER,
-    TEMPORARY_MEMBER,
+    TEMPORARY_MEMBER;
 
-    // Vice Presidents
-    VP_PRODUCER,
-    VP_EXHIBITOR,
-    VP_DISTRIBUTOR;
 
 }
