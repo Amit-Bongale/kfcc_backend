@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.Controller;
 
 import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
+import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.TitleRegistrationService;
 import com.example.KFCC_Backend.entity.Title.TitleRegistration;
@@ -47,6 +48,18 @@ public class TitleRegistrationController {
                 "application" , application)
         );
 
+    }
+
+
+    // Fetch submitted applications for all Roles
+    @GetMapping("/pending/requests")
+    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE_VOTER', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
+    public ResponseEntity<List<TitleRegistration>> getPendingApplications(
+            @AuthenticationPrincipal CustomUserDetails user) {
+
+        return ResponseEntity.ok(
+                titleRegistrationService.getPendingApplications(user)
+        );
     }
 
 

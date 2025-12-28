@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
+import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
 import com.example.KFCC_Backend.Enum.UserRoles;
@@ -24,8 +25,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TitleRegistrationService {
@@ -127,6 +130,36 @@ public class TitleRegistrationService {
     }
 
 
+    // Fetch submitted applications for all Roles
+    public List<TitleRegistration> getPendingApplications (CustomUserDetails user){
+
+        Set<String> roles = user.getRoles();
+
+       Set<TitleApplicationStatus> allowedStatuses = new HashSet<>();
+
+        for (String role : roles) {
+            switch (role) {
+
+                case "STAFF" -> allowedStatuses.add(TitleApplicationStatus.SUBMITTED);
+
+                case "TITLE_COMMITTEE" -> allowedStatuses.add(TitleApplicationStatus.STAFF_APPROVED);
+
+                case "EC_MEMBER", "SECRETARY" -> allowedStatuses.add(TitleApplicationStatus.TITLE_COMMITTEE_APPROVED);
+
+                default -> {}
+            }
+        }
+
+        if (allowedStatuses.isEmpty()) {
+            throw new AccessDeniedException("UnAuthorized");
+        }
+
+        return titleRegistrationRepository
+                .findByCurrentStatusIn(allowedStatuses);
+
+    }
+
+
     /* ---------- Application Action Helpers --------------- */
 
     private void requireRole(Set<String> roles, String required) {
@@ -217,7 +250,6 @@ public class TitleRegistrationService {
             throw new BadRequestException( "Application not in actionable state");
         }
 
-
         application.setStatus(newStatus);
 
         if (request.getRemark() != null && !request.getRemark().isBlank()) {
@@ -231,8 +263,9 @@ public class TitleRegistrationService {
 
         //        logAction(app, request, user);
 
-
     }
+
+
 
 }
 
