@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.Repository;
+package com.example.KFCC_Backend.Repository.Membership;
 
 import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeeting;
 import com.example.KFCC_Backend.entity.Membership.ONM.OnmVote;

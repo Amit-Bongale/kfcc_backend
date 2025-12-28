@@ -4,8 +4,8 @@ import com.example.KFCC_Backend.DTO.Meeting.AddMembersToMeetingDTO;
 import com.example.KFCC_Backend.DTO.Meeting.CastVoteRequestDTO;
 import com.example.KFCC_Backend.DTO.Meeting.VoteSummaryResponseDTO;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
-import com.example.KFCC_Backend.Service.OnmMeetingService;
-import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeeting;
+import com.example.KFCC_Backend.Service.TitleMeetingService;
+import com.example.KFCC_Backend.entity.Title.TitleMeeting;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,20 +17,28 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/onm/meetings")
-public class OnmMeetingController {
+@RequestMapping("/title/meeting")
+public class TitleMeetingController {
 
     @Autowired
-    private OnmMeetingService meetingService;
+    private TitleMeetingService titleMeetingService;
 
+    //Fetch all TITLE meetings
+    @GetMapping
+    @PreAuthorize("hasAnyRole('STAFF','TITLE_COMMITTEE_LEADER','TITLE_COMMITTEE_VOTER' , 'MANAGER')")
+    public ResponseEntity<List<TitleMeeting>> getAllMeetings() {
+        return ResponseEntity.ok(
+                titleMeetingService.getAllMeetings()
+        );
+    }
 
     // create ONM meeting and appoint Leader using User Id
     @PostMapping("/create/{leaderId}")
     @PreAuthorize("hasRole('MANAGER')")
-    public ResponseEntity<?> createMeeting( @PathVariable Long leaderId,
-                                            @AuthenticationPrincipal CustomUserDetails user) {
+    public ResponseEntity<?> createMeeting(@PathVariable Long leaderId,
+                                           @AuthenticationPrincipal CustomUserDetails user) {
 
-        OnmMeeting meeting =  meetingService.CreateMeeting(leaderId, user);
+        TitleMeeting meeting =  titleMeetingService.CreateMeeting(leaderId, user);
 
         return ResponseEntity.ok(
                 Map.of(
@@ -41,40 +49,33 @@ public class OnmMeetingController {
         );
     }
 
-    //Fetch all ONM meetings
-    @GetMapping
-    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE_LEADER','ONM_COMMITTEE_VOTER' , 'MANAGER')")
-    public ResponseEntity<List<OnmMeeting>> getAllMeetings() {
-        return ResponseEntity.ok(
-                meetingService.getAllMeetings()
-        );
-    }
 
     //Fetch meetings by status
     @GetMapping("/status")
-    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE_LEADER','ONM_COMMITTEE_VOTER', 'MANAGER' )")
-    public ResponseEntity<List<OnmMeeting>> getMeetingsByStatus(
-            @RequestParam OnmMeeting.MeetingStatus status ) {
+    @PreAuthorize("hasAnyRole('STAFF','TITLE_COMMITTEE_LEADER','TITLE_COMMITTEE_VOTER', 'MANAGER' )")
+    public ResponseEntity<List<TitleMeeting>> getMeetingsByStatus(
+            @RequestParam TitleMeeting.MeetingStatus status ) {
         return ResponseEntity.ok(
-                meetingService.getMeetingsByStatus(status)
+                titleMeetingService.getMeetingsByStatus(status)
         );
     }
 
 
-
+    //Add members to meeting
     @PostMapping("/{meetingId}/addMembers")
-    @PreAuthorize("hasRole('ONM_COMMITTEE_LEADER')")
+    @PreAuthorize("hasRole('TITLE_COMMITTEE_LEADER')")
     public ResponseEntity<?> addMembers( @PathVariable Long meetingId, @RequestBody @Valid AddMembersToMeetingDTO request,
-            @AuthenticationPrincipal CustomUserDetails user) {
+                                         @AuthenticationPrincipal CustomUserDetails user) {
 
         System.out.println("add members route");
 
-        meetingService.addMembers(meetingId, request, user);
+        titleMeetingService.addMembers(meetingId, request, user);
 
         return ResponseEntity.ok(
                 Map.of("message", "Members added successfully")
         );
     }
+
 
     //perform voting
     @PostMapping("/{meetingId}/vote")
@@ -85,7 +86,7 @@ public class OnmMeetingController {
             @AuthenticationPrincipal CustomUserDetails user
     ) {
 
-        meetingService.castVote(meetingId, request, user);
+        titleMeetingService.castVote(meetingId, request, user);
 
         return ResponseEntity.ok(
                 Map.of("message", "Vote submitted successfully")
@@ -103,12 +104,13 @@ public class OnmMeetingController {
     ) {
 
         VoteSummaryResponseDTO response =
-                meetingService.getVoteSummary(
+                titleMeetingService.getVoteSummary(
                         meetingId, applicationId, user
                 );
 
         return ResponseEntity.ok(response);
     }
+
 
     //terminates meeting
     @PostMapping("/{meetingId}/terminate")
@@ -118,13 +120,12 @@ public class OnmMeetingController {
             @AuthenticationPrincipal CustomUserDetails user
     ) {
 
-        meetingService.terminateMeeting(meetingId, user);
+        titleMeetingService.terminateMeeting(meetingId, user);
 
         return ResponseEntity.ok(
                 Map.of("message", "Meeting terminated successfully")
         );
-
     }
 
-}
 
+}

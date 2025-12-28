@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.Repository;
+package com.example.KFCC_Backend.Repository.Users;
 
 import com.example.KFCC_Backend.entity.OtpVerification;
 import org.springframework.data.jpa.repository.JpaRepository;

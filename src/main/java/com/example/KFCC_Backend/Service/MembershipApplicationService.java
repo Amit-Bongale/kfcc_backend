@@ -7,7 +7,7 @@ import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO
 
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
-import com.example.KFCC_Backend.Repository.MembershipRepository;
+import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Utility.FileStorageUtil;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;

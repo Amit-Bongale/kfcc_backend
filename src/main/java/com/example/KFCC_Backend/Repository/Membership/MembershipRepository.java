@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.Repository;
+package com.example.KFCC_Backend.Repository.Membership;
 
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

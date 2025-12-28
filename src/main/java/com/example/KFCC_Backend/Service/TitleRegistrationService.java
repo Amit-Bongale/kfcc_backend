@@ -1,16 +1,15 @@
 package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
-import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
-import com.example.KFCC_Backend.Repository.MembershipRepository;
-import com.example.KFCC_Backend.Repository.TitleRegistrationDocumentsRepository;
-import com.example.KFCC_Backend.Repository.TitleRegistrationRepository;
-import com.example.KFCC_Backend.Repository.UsersRepository;
+import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
+import com.example.KFCC_Backend.Repository.Title.TitleRegistrationDocumentsRepository;
+import com.example.KFCC_Backend.Repository.Title.TitleRegistrationRepository;
+import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Utility.FileStorageUtil;
 import com.example.KFCC_Backend.entity.Title.TitleRegistration;
@@ -19,6 +18,8 @@ import com.example.KFCC_Backend.entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,7 +29,6 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class TitleRegistrationService {
@@ -125,8 +125,33 @@ public class TitleRegistrationService {
 
     // get Application Details by Id
     public TitleRegistration getApplicationDetailsById(Long applicationId) {
-        return titleRegistrationRepository.findById(applicationId)
+
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        CustomUserDetails currentUser =
+                (CustomUserDetails) authentication.getPrincipal();
+
+
+        TitleRegistration application =  titleRegistrationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        Set<String> roles = currentUser.getRoles();
+
+        boolean isOnlyUser = roles.contains("USER") && roles.contains("PRODUCER") && roles.size() == 2;;
+
+        if (isOnlyUser) {
+            Long applicationUserId = application.getProducer().getId();
+
+            if (!applicationUserId.equals(currentUser.getUserId())) {
+                throw new AccessDeniedException(
+                        "You are not allowed to view this application"
+                );
+            }
+        }
+
+        return  application;
     }
 
 
@@ -265,6 +290,17 @@ public class TitleRegistrationService {
 
     }
 
+
+    public TitleRegistration updateApplication(Long applicationId , TitleRegistration request){
+
+        TitleRegistration application = titleRegistrationRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not Found"));
+
+        //update to be implemented
+
+        return application;
+
+    }
 
 
 }

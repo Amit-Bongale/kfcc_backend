@@ -2,8 +2,8 @@ package com.example.KFCC_Backend.Controller;
 
 import com.example.KFCC_Backend.DTO.SignupRequestDTO;
 import com.example.KFCC_Backend.Enum.UserRoles;
-import com.example.KFCC_Backend.Repository.MembershipRepository;
-import com.example.KFCC_Backend.Repository.UsersRepository;
+import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
+import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetailsService;
 import com.example.KFCC_Backend.Service.OtpService;

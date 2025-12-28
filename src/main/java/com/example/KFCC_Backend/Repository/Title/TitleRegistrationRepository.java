@@ -1,8 +1,6 @@
-package com.example.KFCC_Backend.Repository;
+package com.example.KFCC_Backend.Repository.Title;
 
-import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
-import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.entity.Title.TitleRegistration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

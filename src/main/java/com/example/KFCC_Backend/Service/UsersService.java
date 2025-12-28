@@ -2,7 +2,7 @@ package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
-import com.example.KFCC_Backend.Repository.UsersRepository;
+import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 
 import com.example.KFCC_Backend.entity.Users;

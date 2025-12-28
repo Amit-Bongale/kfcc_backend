@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.DTO.ONMMeeting;
+package com.example.KFCC_Backend.DTO.Meeting;
 
 import lombok.Data;
 

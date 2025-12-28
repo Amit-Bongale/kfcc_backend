@@ -31,4 +31,63 @@ public class TitleMeeting {
 
     private LocalDateTime createdAt;
     private LocalDateTime terminatedAt;
+
+
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDate getMeetingDate() {
+        return meetingDate;
+    }
+
+    public void setMeetingDate(LocalDate meetingDate) {
+        this.meetingDate = meetingDate;
+    }
+
+    public Users getLeader() {
+        return leader;
+    }
+
+    public void setLeader(Users leader) {
+        this.leader = leader;
+    }
+
+    public Users getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Users createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public MeetingStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MeetingStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getTerminatedAt() {
+        return terminatedAt;
+    }
+
+    public void setTerminatedAt(LocalDateTime terminatedAt) {
+        this.terminatedAt = terminatedAt;
+    }
 }

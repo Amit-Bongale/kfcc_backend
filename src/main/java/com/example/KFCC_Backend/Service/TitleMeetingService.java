@@ -3,19 +3,26 @@ package com.example.KFCC_Backend.Service;
 import com.example.KFCC_Backend.DTO.Meeting.AddMembersToMeetingDTO;
 import com.example.KFCC_Backend.DTO.Meeting.CastVoteRequestDTO;
 import com.example.KFCC_Backend.DTO.Meeting.VoteSummaryResponseDTO;
-import com.example.KFCC_Backend.Enum.MembershipStatus;
+import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Enum.VoteDecision;
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
-import com.example.KFCC_Backend.Repository.Membership.*;
+import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
+import com.example.KFCC_Backend.Repository.Membership.VoteCountProjection;
+import com.example.KFCC_Backend.Repository.Title.TItleMeetingMembersRepository;
+import com.example.KFCC_Backend.Repository.Title.TitleMeetingRepository;
+import com.example.KFCC_Backend.Repository.Title.TitleRegistrationRepository;
+import com.example.KFCC_Backend.Repository.Title.TitleVoteRepository;
 import com.example.KFCC_Backend.Repository.Users.UserRoleRepository;
 import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
-import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeeting;
 import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeetingMember;
-import com.example.KFCC_Backend.entity.Membership.ONM.OnmVote;
+import com.example.KFCC_Backend.entity.Title.TitleMeeting;
+import com.example.KFCC_Backend.entity.Title.TitleMeetingMembers;
+import com.example.KFCC_Backend.entity.Title.TitleRegistration;
+import com.example.KFCC_Backend.entity.Title.TitleVote;
 import com.example.KFCC_Backend.entity.UserRole;
 import com.example.KFCC_Backend.entity.Users;
 import jakarta.transaction.Transactional;
@@ -34,9 +41,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class OnmMeetingService {
+public class TitleMeetingService {
+
     @Autowired
-    private OnmMeetingRepository onmMeetingRepository;
+    private MembershipRepository membershipRepository;
 
     @Autowired
     private UsersRepository usersRepository;
@@ -45,20 +53,22 @@ public class OnmMeetingService {
     private UserRoleRepository userRoleRepository;
 
     @Autowired
-    private OnmMeetingMemberRepository onmMeetingMemberRepository;
+    private TitleRegistrationRepository titleRegistrationRepository;
 
     @Autowired
-    private OnmVoteRepository onmVoteRepository;
+    private TitleMeetingRepository titleMeetingRepository;
 
     @Autowired
-    private MembershipRepository membershipRepository;
+    private TItleMeetingMembersRepository tItleMeetingMembersRepository;
 
+    @Autowired
+    private TitleVoteRepository titleVoteRepository;
 
-    // Create ONM Meeting & appoints leader
+    // Create TITLE Meeting & appoints leader
     @Transactional
-    public OnmMeeting CreateMeeting(Long leaderId , CustomUserDetails userDetails){
+    public TitleMeeting CreateMeeting(Long leaderId , CustomUserDetails userDetails){
 
-        if(onmMeetingRepository.existsByStatus(OnmMeeting.MeetingStatus.ACTIVE)){
+        if(titleMeetingRepository.existsByStatus(TitleMeeting.MeetingStatus.ACTIVE)){
             throw new IllegalArgumentException("Meeting Already Exists");
         }
 
@@ -69,44 +79,43 @@ public class OnmMeetingService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         UserRole userRole = new UserRole();
-        userRole.setRole(UserRoles.ONM_COMMITTEE_LEADER);
+        userRole.setRole(UserRoles.TITLE_COMMITTEE_LEADER);
         userRole.setUser(leader);
         leader.getRoles().add(userRole);
         usersRepository.save(leader);
 
-        OnmMeeting meeting = new OnmMeeting();
+        TitleMeeting meeting = new TitleMeeting();
         meeting.setMeetingDate(LocalDate.now());
         meeting.setLeader(leader);
         meeting.setCreatedBy(manager);
-        meeting.setStatus(OnmMeeting.MeetingStatus.ACTIVE);
+        meeting.setStatus(TitleMeeting.MeetingStatus.ACTIVE);
         meeting.setCreatedAt(LocalDateTime.now());
 
-        return onmMeetingRepository.save(meeting);
+        return titleMeetingRepository.save(meeting);
 
     }
 
     //Fetch all meetings
-    public List<OnmMeeting> getAllMeetings() {
+    public List<TitleMeeting> getAllMeetings() {
         Pageable pageable = PageRequest.of(0, 30);
-        Page<OnmMeeting> page =
-                onmMeetingRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<TitleMeeting> page =
+                titleMeetingRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        List<OnmMeeting> meetings = page.getContent();
+        List<TitleMeeting> meetings = page.getContent();
         return meetings;
     }
 
     // Fetch meetings by status
-    public List<OnmMeeting> getMeetingsByStatus(OnmMeeting.MeetingStatus status) {
-        return onmMeetingRepository.findByStatusOrderByCreatedAtDesc(status);
+    public List<TitleMeeting> getMeetingsByStatus(TitleMeeting.MeetingStatus status) {
+        return titleMeetingRepository.findByStatusOrderByCreatedAtDesc(status);
     }
-
 
 
     // Add Members to Meeting
     @Transactional
     public void addMembers(Long meetingId, AddMembersToMeetingDTO request, CustomUserDetails userDetails) {
 
-        OnmMeeting meeting = onmMeetingRepository.findById(meetingId)
+        TitleMeeting meeting = titleMeetingRepository.findById(meetingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Meeting not found") );
 
         System.out.println("meetings: " + meeting);
@@ -114,20 +123,16 @@ public class OnmMeetingService {
         System.out.println("requested member IDs: " + request);
 
         //  Validate meeting is active
-        if (meeting.getStatus() != OnmMeeting.MeetingStatus.ACTIVE) {
-            System.out.println("meeting not active");
+        if (meeting.getStatus() != TitleMeeting.MeetingStatus.ACTIVE) {
             throw new ResourceNotFoundException("Meeting is not active");
         }
 
         //  Validate leader
         if (!meeting.getLeader().getId().equals(userDetails.getUserId())) {
-            System.out.println("User is not leader");
             throw new BadRequestException("Only leader can add members");
         }
 
-        System.out.println("add members process init");
-
-        // 4. Add members
+        // Add members
         for (Long memberId : request.getMemberIds()) {
 
             System.out.println("trying to add members: " + memberId);
@@ -138,17 +143,12 @@ public class OnmMeetingService {
             }
 
             // Avoid duplicates
-            if (onmMeetingMemberRepository.existsByMeetingIdAndMemberId(meetingId, memberId)) {
+            if (tItleMeetingMembersRepository.existsByMeetingIdAndMemberId(meetingId, memberId)) {
                 continue;
             }
 
             Users member = usersRepository.findById(memberId)
-                    .orElseThrow(() ->
-                            new ResourceNotFoundException("User not found: " + memberId)
-                    );
-
-            // validate ONM role
-            // if (!member.hasRole(UserRole.ONM)) { throw ... }
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found: " + memberId));
 
             boolean exists = userRoleRepository
                     .existsByUserAndRole(member, UserRoles.ONM_COMMITTEE_VOTER);
@@ -162,14 +162,14 @@ public class OnmMeetingService {
             role.setRole(UserRoles.ONM_COMMITTEE_VOTER);
             userRoleRepository.save(role);
 
-            OnmMeetingMember meetingMember = new OnmMeetingMember();
+            TitleMeetingMembers meetingMember = new TitleMeetingMembers();
             meetingMember.setMeeting(meeting);
             meetingMember.setMember(member);
 
-            onmMeetingMemberRepository.save(meetingMember);
+            tItleMeetingMembersRepository.save(meetingMember);
         }
-
     }
+
 
     //submit vote for application
     @Transactional
@@ -180,19 +180,19 @@ public class OnmMeetingService {
     ) {
 
         // Fetch meeting
-        OnmMeeting meeting = onmMeetingRepository.findById(meetingId)
+        TitleMeeting meeting = titleMeetingRepository.findById(meetingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Meeting not found"));
 
         //Fetch application
-        MembershipApplication application = membershipRepository.findByApplicationId(request.getApplicationId())
+        TitleRegistration application = titleRegistrationRepository.findById(request.getApplicationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Application does not Exists"));
 
-        if(application.getMembershipStatus() != MembershipStatus.STAFF_APPROVED){
+        if(application.getStatus() != TitleApplicationStatus.STAFF_APPROVED){
             throw new BadRequestException("Application is not in Voting Stage"
             );
         }
 
-        if (meeting.getStatus() != OnmMeeting.MeetingStatus.ACTIVE) {
+        if (meeting.getStatus() != TitleMeeting.MeetingStatus.ACTIVE) {
             throw new ResourceNotFoundException("Meeting is not active");
         }
 
@@ -203,7 +203,7 @@ public class OnmMeetingService {
 
         // Validate meeting membership
         boolean isMember =
-                onmMeetingMemberRepository.existsByMeetingIdAndMemberId( meetingId, userDetails.getUserId());
+                tItleMeetingMembersRepository.existsByMeetingIdAndMemberId( meetingId, userDetails.getUserId());
 
         if (!isMember) {
             throw new AccessDeniedException("You are not part of this meeting");
@@ -211,7 +211,7 @@ public class OnmMeetingService {
 
 
         // Prevent double vote
-        if (onmVoteRepository.existsVote(
+        if (titleVoteRepository.existsVote(
                 meetingId,
                 request.getApplicationId(),
                 userDetails.getUserId()
@@ -223,13 +223,13 @@ public class OnmMeetingService {
         Users voter = usersRepository.findById(userDetails.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        OnmVote vote = new OnmVote();
+        TitleVote vote = new TitleVote();
         vote.setMeeting(meeting);
         vote.setApplication(application);
         vote.setVoter(voter);
         vote.setVote(request.getVote());
 
-        onmVoteRepository.save(vote);
+        titleVoteRepository.save(vote);
     }
 
 
@@ -241,13 +241,13 @@ public class OnmMeetingService {
     ) {
 
         // Fetch meeting
-        OnmMeeting meeting = onmMeetingRepository.findById(meetingId)
+        TitleMeeting meeting = titleMeetingRepository.findById(meetingId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Meeting not found")
                 );
 
         // Validate ACTIVE
-        if (meeting.getStatus() != OnmMeeting.MeetingStatus.ACTIVE) {
+        if (meeting.getStatus() != TitleMeeting.MeetingStatus.ACTIVE) {
             throw new BadRequestException("Meeting is not active");
         }
 
@@ -258,7 +258,7 @@ public class OnmMeetingService {
 
         //  Fetch votes
         List<VoteCountProjection> votes =
-                onmVoteRepository.getVoteSummary(
+                titleVoteRepository.getVoteSummary(
                         meetingId, applicationId
                 );
 
@@ -288,21 +288,21 @@ public class OnmMeetingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Manager not found"));
 
         // Fetch meeting
-        OnmMeeting meeting = onmMeetingRepository.findById(meetingId)
+        TitleMeeting meeting = titleMeetingRepository.findById(meetingId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Meeting not found")
                 );
 
         //  Validate ACTIVE
-        if (meeting.getStatus() != OnmMeeting.MeetingStatus.ACTIVE) {
+        if (meeting.getStatus() != TitleMeeting.MeetingStatus.ACTIVE) {
             throw new BadRequestException("Meeting already terminated");
         }
 
         //  Collect leader & members BEFORE delete
         Long leaderId = meeting.getLeader().getId();
 
-        List<OnmMeetingMember> members =
-                onmMeetingMemberRepository.findByMeetingId(meetingId);
+        List<TitleMeetingMembers> members =
+                tItleMeetingMembersRepository.findByMeetingId(meetingId);
 
         Set<Long> memberUserIds = members.stream()
                 .map(m -> m.getMember().getId())
@@ -311,26 +311,27 @@ public class OnmMeetingService {
         // Remove temporary ONM roles
         userRoleRepository.deleteByUserIdsAndRole(
                 Set.of(leaderId),
-                UserRoles.ONM_COMMITTEE_LEADER
+                UserRoles.TITLE_COMMITTEE_LEADER
         );
 
         if (!memberUserIds.isEmpty()) {
             userRoleRepository.deleteByUserIdsAndRole(
                     memberUserIds,
-                    UserRoles.ONM_COMMITTEE_VOTER
+                    UserRoles.TITLE_COMMITTEE_VOTER
             );
         }
 
 
         // Update meeting status
-        meeting.setStatus(OnmMeeting.MeetingStatus.TERMINATED);
+        meeting.setStatus(TitleMeeting.MeetingStatus.TERMINATED);
         meeting.setTerminatedAt(LocalDateTime.now());
-        onmMeetingRepository.save(meeting);
+        titleMeetingRepository.save(meeting);
 
         //  Cleanup temporary data
-        onmMeetingMemberRepository.deleteByMeeting(meeting);
-        onmVoteRepository.deleteByMeeting(meeting);
+        tItleMeetingMembersRepository.deleteByMeeting(meeting);
+        titleVoteRepository.deleteByMeeting(meeting);
     }
+
 
 
     //Auto Delete Meeting at end of the day
@@ -338,19 +339,17 @@ public class OnmMeetingService {
     @Transactional
     public void autoTerminateMeetings() {
 
-        List<OnmMeeting> activeMeetings =
-                onmMeetingRepository.findByStatus(OnmMeeting.MeetingStatus.ACTIVE);
+        List<TitleMeeting> activeMeetings =
+                titleMeetingRepository.findByStatus(TitleMeeting.MeetingStatus.ACTIVE);
 
-        for (OnmMeeting meeting : activeMeetings) {
-            meeting.setStatus(OnmMeeting.MeetingStatus.TERMINATED);
+        for (TitleMeeting meeting : activeMeetings) {
+            meeting.setStatus(TitleMeeting.MeetingStatus.TERMINATED);
             meeting.setTerminatedAt(LocalDateTime.now());
-            onmMeetingMemberRepository.deleteByMeeting(meeting);
-            onmVoteRepository.deleteByMeeting(meeting);
-
+            tItleMeetingMembersRepository.deleteByMeeting(meeting);
+            titleVoteRepository.deleteByMeeting(meeting);
         }
 
         userRoleRepository.deleteByRole(UserRoles.ONM_COMMITTEE_LEADER);
     }
-
 
 }
