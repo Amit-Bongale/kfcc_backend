@@ -14,7 +14,8 @@ import java.util.Set;
 
 @Repository
 public interface MembershipRepository  extends JpaRepository <MembershipApplication, Long> {
-    Optional<MembershipApplication> findByUserId(Long userId);
+
+    List<MembershipApplication> findByUserIdOrderBySubmittedAtDesc(Long userId);
 
     boolean existsByMembershipIdAndMembershipStatus(Long membershipId, MembershipStatus membershipStatus);
 

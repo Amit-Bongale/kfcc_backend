@@ -7,6 +7,7 @@ import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO
 
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
+import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Utility.FileStorageUtil;
@@ -259,6 +260,27 @@ public class MembershipApplicationService {
 
     }
 
+    // return all applications applied by a user
+    public List<MembershipApplicationsResponseDTO> getApplicationsByUserId(CustomUserDetails user) {
+
+        Long userID = user.getUserId();
+
+        return membershipRepository.findByUserIdOrderBySubmittedAtDesc(userID)
+                .stream()
+                .map(app -> new MembershipApplicationsResponseDTO(
+                        app.getApplicationId(),
+                        app.getUser().getId(),
+                        app.getUser().getFirstName() + " " + app.getUser().getLastName(),
+                        app.getUser().getMobileNo(),
+                        app.getApplicantMembershipCategory(),
+                        app.getMembershipStatus(),
+                        app.getSubmittedAt(),
+                        app.getRemark(),
+                        app.getRemarkedBy()
+                ))
+                .collect(Collectors.toList());
+    }
+
 
     @Component
     public static class ApplicationFetchConfig {
@@ -313,7 +335,8 @@ public class MembershipApplicationService {
                         app.getApplicantMembershipCategory(),
                         app.getMembershipStatus(),
                         app.getSubmittedAt(),
-                        app.getRemark()
+                        app.getRemark(),
+                        app.getRemarkedBy()
                 ))
                 .collect(Collectors.toList());
     }

@@ -134,6 +134,12 @@ public class MembershipController {
         return ResponseEntity.ok(Map.of("message" , "Application Status Updated"));
     }
 
+    // get all applications applied by user
+    @GetMapping("/applications")
+    public ResponseEntity<List<MembershipApplicationsResponseDTO>> getApplicationsByUerId(
+            @AuthenticationPrincipal CustomUserDetails user){
+         return  ResponseEntity.ok(membershipApplicationService.getApplicationsByUserId(user));
+    }
 
 
 }

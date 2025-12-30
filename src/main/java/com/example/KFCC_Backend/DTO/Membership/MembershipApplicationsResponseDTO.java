@@ -18,6 +18,7 @@ public class MembershipApplicationsResponseDTO {
     private MembershipStatus status;
     private LocalDateTime submittedAt;
     private String remark;
+    private String remarkedBy;
 
     public MembershipApplicationsResponseDTO(
             Long applicationId,
@@ -27,7 +28,8 @@ public class MembershipApplicationsResponseDTO {
             MembershipCategory membershipCategory,
             MembershipStatus status,
             LocalDateTime submittedAt,
-            String remark
+            String remark,
+            String remarkedBy
     ) {
         this.applicationId = applicationId;
         this.userId = userId;
@@ -37,6 +39,7 @@ public class MembershipApplicationsResponseDTO {
         this.status = status;
         this.submittedAt = submittedAt;
         this.remark = remark;
+        this.remarkedBy = remarkedBy;
     }
 
 
@@ -98,5 +101,17 @@ public class MembershipApplicationsResponseDTO {
 
     public String getRemark() {
         return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getRemarkedBy() {
+        return remarkedBy;
+    }
+
+    public void setRemarkedBy(String remarkedBy) {
+        this.remarkedBy = remarkedBy;
     }
 }

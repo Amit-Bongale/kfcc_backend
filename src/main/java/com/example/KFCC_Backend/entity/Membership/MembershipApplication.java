@@ -150,7 +150,6 @@ public class MembershipApplication {
     private LocalDateTime submittedAt = LocalDateTime.now();
 
 
-
     public Long getApplicationId() {
         return applicationId;
     }
