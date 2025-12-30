@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/title/meeting")
+@RequestMapping("/title/meetings")
 public class TitleMeetingController {
 
     @Autowired
@@ -79,7 +79,7 @@ public class TitleMeetingController {
 
     //perform voting
     @PostMapping("/{meetingId}/vote")
-    @PreAuthorize("hasRole('ONM_COMMITTEE_VOTER')")
+    @PreAuthorize("hasRole('TITLE_COMMITTEE_VOTER')")
     public ResponseEntity<?> castVote(
             @PathVariable Long meetingId,
             @RequestBody @Valid CastVoteRequestDTO request,
@@ -96,7 +96,7 @@ public class TitleMeetingController {
 
     // get application Votes summary
     @GetMapping("/{meetingId}/votes/{applicationId}")
-    @PreAuthorize("hasRole('ONM_COMMITTEE_LEADER')")
+    @PreAuthorize("hasRole('TITLE_COMMITTEE_LEADER')")
     public ResponseEntity<VoteSummaryResponseDTO> getVoteSummary(
             @PathVariable Long meetingId,
             @PathVariable Long applicationId,

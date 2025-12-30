@@ -17,6 +17,7 @@ import com.example.KFCC_Backend.entity.Title.TitleRegistrationDocuments;
 import com.example.KFCC_Backend.entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -167,7 +168,7 @@ public class TitleRegistrationService {
 
                 case "STAFF" -> allowedStatuses.add(TitleApplicationStatus.SUBMITTED);
 
-                case "TITLE_COMMITTEE" -> allowedStatuses.add(TitleApplicationStatus.STAFF_APPROVED);
+                case "TITLE_COMMITTEE" , "TITLE_COMMITTEE_LEADER" , "TITLE_COMMITTEE_VOTER" -> allowedStatuses.add(TitleApplicationStatus.STAFF_APPROVED);
 
                 case "EC_MEMBER", "SECRETARY" -> allowedStatuses.add(TitleApplicationStatus.TITLE_COMMITTEE_APPROVED);
 
@@ -256,7 +257,11 @@ public class TitleRegistrationService {
             requireRole(roles, "SECRETARY");
 
             newStatus = switch (request.getAction()) {
-                case APPROVE -> TitleApplicationStatus.FINAL_APPROVED;
+                case APPROVE -> {
+                    application.setAcceptedDate(LocalDate.now());
+                    application.setExpireDate(LocalDate.now().plusYears(1));
+                    yield TitleApplicationStatus.FINAL_APPROVED;
+                }
                 case REJECT -> {
                     requireRemarks(request);
                     yield TitleApplicationStatus.EC_COMMITTEE_REJECTED;
@@ -303,5 +308,9 @@ public class TitleRegistrationService {
     }
 
 
+    public List<TitleRegistration> getApplicationsByUser(CustomUserDetails user) {
+        Long userId = user.getUserId();
+        return titleRegistrationRepository.findByProducerIdOrderByCreatedAtDesc(userId);
+    }
 }
 

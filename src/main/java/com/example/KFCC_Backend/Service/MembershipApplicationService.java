@@ -447,7 +447,11 @@ public class MembershipApplicationService {
             requireRole(roles, "SECRETARY");
 
             newStatus = switch (request.getAction()) {
-                case APPROVE -> MembershipStatus.FINAL_APPROVED;
+                case APPROVE -> {
+                    application.setMembershipAcceptanceDate(LocalDate.now());
+                    application.setMembershipExpiryDate(LocalDate.now().plusYears(1));
+                    yield MembershipStatus.FINAL_APPROVED;
+                }
                 case REJECT -> {
                     requireRemarks(request);
                     yield MembershipStatus.EC_REJECTED;

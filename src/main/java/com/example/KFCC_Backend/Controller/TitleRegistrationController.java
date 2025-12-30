@@ -36,6 +36,15 @@ public class TitleRegistrationController {
     }
 
 
+    @GetMapping("/user/applications")
+    public ResponseEntity<List<TitleRegistration>> getApplicaitonsByUserID(@AuthenticationPrincipal CustomUserDetails user){
+
+        List<TitleRegistration> applictions = titleRegistrationService.getApplicationsByUser(user);
+
+        return ResponseEntity.ok(applictions);
+    }
+
+
     //Apply for title Registration
     @PreAuthorize("hasAnyRole('PRODUCER')")
     @RequestMapping("/apply")
@@ -54,7 +63,7 @@ public class TitleRegistrationController {
 
     // Fetch submitted applications for all Roles
     @GetMapping("/pending/requests")
-    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE_VOTER', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
+    @PreAuthorize("hasAnyRole('STAFF','TITLE_COMMITTEE_VOTER', 'TITLE_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
     public ResponseEntity<List<TitleRegistration>> getPendingApplications(
             @AuthenticationPrincipal CustomUserDetails user) {
 

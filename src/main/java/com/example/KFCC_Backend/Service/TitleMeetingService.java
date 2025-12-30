@@ -17,8 +17,7 @@ import com.example.KFCC_Backend.Repository.Title.TitleVoteRepository;
 import com.example.KFCC_Backend.Repository.Users.UserRoleRepository;
 import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
-import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeeting;
-import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeetingMember;
+
 import com.example.KFCC_Backend.entity.Title.TitleMeeting;
 import com.example.KFCC_Backend.entity.Title.TitleMeetingMembers;
 import com.example.KFCC_Backend.entity.Title.TitleRegistration;
@@ -65,11 +64,11 @@ public class TitleMeetingService {
     private TitleVoteRepository titleVoteRepository;
 
     // Create TITLE Meeting & appoints leader
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public TitleMeeting CreateMeeting(Long leaderId , CustomUserDetails userDetails){
 
         if(titleMeetingRepository.existsByStatus(TitleMeeting.MeetingStatus.ACTIVE)){
-            throw new IllegalArgumentException("Meeting Already Exists");
+            throw new BadRequestException("Meeting Already Exists");
         }
 
         Users manager = usersRepository.findById(userDetails.getUserId())
@@ -159,7 +158,7 @@ public class TitleMeetingService {
 
             UserRole role = new UserRole();
             role.setUser(member);
-            role.setRole(UserRoles.ONM_COMMITTEE_VOTER);
+            role.setRole(UserRoles.TITLE_COMMITTEE_VOTER);
             userRoleRepository.save(role);
 
             TitleMeetingMembers meetingMember = new TitleMeetingMembers();
