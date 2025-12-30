@@ -35,6 +35,7 @@ public class TitleRegistrationController {
 
     }
 
+
     //Apply for title Registration
     @PreAuthorize("hasAnyRole('PRODUCER')")
     @RequestMapping("/apply")

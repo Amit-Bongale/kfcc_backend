@@ -16,7 +16,7 @@ public interface TitleRegistrationRepository extends JpaRepository<TitleRegistra
 
     boolean existsByTitleIgnoreCase(String Title);
 
-    Optional<TitleRegistration> findByProducerId(Long ProducerId);
+    List<TitleRegistration> findByProducerIdOrderByCreatedAtDesc(Long ProducerId);
 
     @Query("""
     SELECT a FROM TitleRegistration a

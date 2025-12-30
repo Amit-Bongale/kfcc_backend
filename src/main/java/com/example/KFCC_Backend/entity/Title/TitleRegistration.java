@@ -13,7 +13,8 @@ import java.util.List;
 @Table(
         name = "title_registration",
         indexes = {
-                @Index(name = "idx_title_registration_title", columnList = "title")
+                @Index(name = "idx_title_registration_title", columnList = "title"),
+                @Index(name = "idx_title_registration_producer" , columnList = "producer_id")
         }
 )
 public class TitleRegistration {
@@ -23,6 +24,7 @@ public class TitleRegistration {
     private  Long id;
 
     @ManyToOne(fetch = FetchType.LAZY , optional = false)
+    @JoinColumn(name = "producer_id" ,  nullable = false)
     private Users producer;
 
     @Column(nullable = false , unique = true)

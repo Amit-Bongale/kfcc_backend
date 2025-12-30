@@ -22,10 +22,8 @@ import java.util.List;
 @Table(
         name = "membership_application",
         indexes = {
-                @Index(
-                        name = "idx_membership_status",
-                        columnList = "membership_status"
-                )
+                @Index(name = "idx_membership_status", columnList = "membership_status"),
+                @Index(name = "idx_membership_user", columnList = "user_id")
         }
 )
 public class MembershipApplication {

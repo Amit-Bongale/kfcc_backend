@@ -135,7 +135,7 @@ public class MembershipController {
     }
 
     // get all applications applied by user
-    @GetMapping("/applications")
+    @GetMapping("/user/applications")
     public ResponseEntity<List<MembershipApplicationsResponseDTO>> getApplicationsByUerId(
             @AuthenticationPrincipal CustomUserDetails user){
          return  ResponseEntity.ok(membershipApplicationService.getApplicationsByUserId(user));
