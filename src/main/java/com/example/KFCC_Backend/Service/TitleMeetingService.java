@@ -3,6 +3,7 @@ package com.example.KFCC_Backend.Service;
 import com.example.KFCC_Backend.DTO.Meeting.AddMembersToMeetingDTO;
 import com.example.KFCC_Backend.DTO.Meeting.CastVoteRequestDTO;
 import com.example.KFCC_Backend.DTO.Meeting.VoteSummaryResponseDTO;
+import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Enum.VoteDecision;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -351,4 +353,8 @@ public class TitleMeetingService {
         userRoleRepository.deleteByRole(UserRoles.ONM_COMMITTEE_LEADER);
     }
 
+    public List<Users> findAllMembers() {
+        List<Users> members = membershipRepository.findMembers(MembershipStatus.FINAL_APPROVED , LocalDate.now());
+        return members;
+    }
 }

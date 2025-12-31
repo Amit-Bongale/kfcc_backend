@@ -2,6 +2,7 @@ package com.example.KFCC_Backend.Repository.Membership;
 
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
+import com.example.KFCC_Backend.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -41,4 +42,13 @@ public interface MembershipRepository  extends JpaRepository <MembershipApplicat
             @Param("status") MembershipStatus status,
             @Param("today") LocalDate today
     );
+
+    @Query("""
+        SELECT user
+        FROM MembershipApplication m
+        WHERE m.membershipStatus = :status
+          AND m.membershipExpiryDate >= :today
+    """)
+    List<Users> findMembers(  @Param("status") MembershipStatus status,
+                              @Param("today") LocalDate today );
 }

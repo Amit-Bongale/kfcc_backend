@@ -6,6 +6,7 @@ import com.example.KFCC_Backend.DTO.Meeting.VoteSummaryResponseDTO;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.TitleMeetingService;
 import com.example.KFCC_Backend.entity.Title.TitleMeeting;
+import com.example.KFCC_Backend.entity.Users;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/title/meetings")
@@ -58,6 +60,13 @@ public class TitleMeetingController {
         return ResponseEntity.ok(
                 titleMeetingService.getMeetingsByStatus(status)
         );
+    }
+
+    @GetMapping("/allMembers")
+    @PreAuthorize("hasRole('TITLE_COMMITTEE_LEADER')")
+    public ResponseEntity<?> getAllMembers(){
+        List<Users> members = titleMeetingService.findAllMembers();
+        return  ResponseEntity.of(Optional.ofNullable(members));
     }
 
 
@@ -126,6 +135,8 @@ public class TitleMeetingController {
                 Map.of("message", "Meeting terminated successfully")
         );
     }
+
+
 
 
 }
