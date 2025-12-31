@@ -20,11 +20,12 @@ public class PublicityClearanceController {
     @Autowired
     private PublicityClearanceService publicityClearanceService;
 
+    // Apply for Publicity Clearance
     @PostMapping( value = "{titleId}/apply" ,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> applyClearance(
             @PathVariable Long titleId,
-            @RequestBody PublicityClearanceRequestDTO request,
+            @ModelAttribute PublicityClearanceRequestDTO request,
             @AuthenticationPrincipal CustomUserDetails user) throws IOException {
 
         PublicityClearanceApplication app = publicityClearanceService.applyClearance( titleId, request, user);
@@ -36,4 +37,7 @@ public class PublicityClearanceController {
         );
 
     }
+
+
+
 }

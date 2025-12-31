@@ -1,8 +1,10 @@
 package com.example.KFCC_Backend.ExceptionHandlers;
 
 import com.example.KFCC_Backend.DTO.ApiErrorResponse;
-import org.apache.coyote.BadRequestException;
 
+
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
 @RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -61,6 +64,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGeneric(Exception ex) {
+
+        if (ex instanceof BadRequestException) {
+            return handleBadRequest((BadRequestException) ex);
+        }
+        if (ex instanceof ResourceNotFoundException) {
+            return handleNotFound((ResourceNotFoundException) ex);
+        }
+
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(new ApiErrorResponse(

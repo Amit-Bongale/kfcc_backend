@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.entity.PublicityClearance;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,6 +12,7 @@ public class PublicityClearanceDocuments {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id")
+    @JsonIgnore
     private PublicityClearanceApplication application;
 
     private PublicityDocumentType documentType;

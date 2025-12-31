@@ -40,7 +40,7 @@ public class PublicityClearanceService {
     private UsersRepository usersRepository;
 
 
-//   @Transactional
+    @Transactional
     public PublicityClearanceApplication applyClearance(Long titleId, PublicityClearanceRequestDTO request , CustomUserDetails user) {
 
         TitleRegistration title = titleRegistrationRepository
@@ -49,9 +49,12 @@ public class PublicityClearanceService {
         Users producer = usersRepository.findById(user.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Producer not found"));
 
+        if (!title.getProducer().getId().equals(producer.getId())) {
+            throw new BadRequestException("Only the owner can apply for Clearance");
+        }
+
         //need to handle if exist;
         boolean isPresent = publicityClearanceRepository.existsByTitle_Id(titleId);
-
         if (isPresent){
             throw new BadRequestException("Publicity Clearance Application Already Exists");
         }
@@ -77,27 +80,31 @@ public class PublicityClearanceService {
 
         if (materials == null || materials.isEmpty()) return;
 
-        materials.forEach((type, files) -> {
+        for (Map.Entry<
+                PublicityClearanceDocuments.PublicityDocumentType,
+                List<MultipartFile>> entry : materials.entrySet()) {
 
-            for (MultipartFile file : files) {
+            for (MultipartFile file : entry.getValue()) {
 
-                String storedPath = null;
+                String storedPath;
                 try {
                     storedPath = fileStorageUtil.saveFile(
                             "publicityClearance",
-                            application.getTitle().getId().toString(), file
+                            application.getTitle().getId().toString(),
+                            file
                     );
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("File save failed", e);
                 }
 
-                PublicityClearanceDocuments material = new PublicityClearanceDocuments();
-                material.setApplication(application);
-                material.setDocumentType(type);
-                material.setFilePath(storedPath);
+                PublicityClearanceDocuments doc = new PublicityClearanceDocuments();
+                doc.setApplication(application);
+                doc.setDocumentType(entry.getKey());
+                doc.setFilePath(storedPath);
 
-                application.getDocuments().add(material);
+                application.getDocuments().add(doc);
             }
-        });
+        }
     }
+
 }

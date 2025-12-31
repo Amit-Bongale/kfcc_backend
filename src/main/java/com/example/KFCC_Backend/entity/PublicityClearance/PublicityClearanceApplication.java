@@ -3,6 +3,7 @@ package com.example.KFCC_Backend.entity.PublicityClearance;
 import com.example.KFCC_Backend.Enum.PublicityApplicationStatus;
 import com.example.KFCC_Backend.entity.Title.TitleRegistration;
 import com.example.KFCC_Backend.entity.Users;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class PublicityClearanceApplication {
 
     @ManyToOne
     @JoinColumn(name = "producer_id" , nullable = false)
+    @JsonIgnoreProperties("applications")
     private Users producer;
 
     @Enumerated(EnumType.STRING)
