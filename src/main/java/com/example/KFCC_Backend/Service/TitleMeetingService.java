@@ -111,6 +111,11 @@ public class TitleMeetingService {
         return titleMeetingRepository.findByStatusOrderByCreatedAtDesc(status);
     }
 
+    // Fetch all valid members to add for title meeting
+    public List<Users> findAllMembers() {
+        return membershipRepository.findMembers(MembershipStatus.FINAL_APPROVED , LocalDate.now());
+    }
+
 
     // Add Members to Meeting
     @Transactional
@@ -353,8 +358,6 @@ public class TitleMeetingService {
         userRoleRepository.deleteByRole(UserRoles.ONM_COMMITTEE_LEADER);
     }
 
-    public List<Users> findAllMembers() {
-        List<Users> members = membershipRepository.findMembers(MembershipStatus.FINAL_APPROVED , LocalDate.now());
-        return members;
-    }
+
+
 }

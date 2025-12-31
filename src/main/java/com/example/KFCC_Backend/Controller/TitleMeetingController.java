@@ -62,6 +62,7 @@ public class TitleMeetingController {
         );
     }
 
+    // Fetch all valid members to add for title meeting
     @GetMapping("/allMembers")
     @PreAuthorize("hasRole('TITLE_COMMITTEE_LEADER')")
     public ResponseEntity<?> getAllMembers(){
