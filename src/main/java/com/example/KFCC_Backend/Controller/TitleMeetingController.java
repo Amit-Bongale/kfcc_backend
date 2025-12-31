@@ -64,7 +64,7 @@ public class TitleMeetingController {
 
     // Fetch all valid members to add for title meeting
     @GetMapping("/allMembers")
-    @PreAuthorize("hasRole('TITLE_COMMITTEE_LEADER')")
+    @PreAuthorize("hasAnyRole('TITLE_COMMITTEE_LEADER' , 'MANAGER')")
     public ResponseEntity<?> getAllMembers(){
         List<Users> members = titleMeetingService.findAllMembers();
         return  ResponseEntity.of(Optional.ofNullable(members));
