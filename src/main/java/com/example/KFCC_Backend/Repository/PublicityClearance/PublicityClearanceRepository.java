@@ -1,7 +1,7 @@
 package com.example.KFCC_Backend.Repository.PublicityClearance;
 
 import com.example.KFCC_Backend.Enum.PublicityApplicationStatus;
-import com.example.KFCC_Backend.entity.PublicityClearance.PublicityClearanceApplication;
+import com.example.KFCC_Backend.Entity.PublicityClearance.PublicityClearanceApplication;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

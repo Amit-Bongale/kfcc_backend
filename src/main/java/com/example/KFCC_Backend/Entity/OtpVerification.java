@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.entity;
+package com.example.KFCC_Backend.Entity;
 
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;

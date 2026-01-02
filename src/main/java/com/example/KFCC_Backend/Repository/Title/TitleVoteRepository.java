@@ -1,9 +1,9 @@
 package com.example.KFCC_Backend.Repository.Title;
 
 import com.example.KFCC_Backend.Repository.Membership.VoteCountProjection;
-import com.example.KFCC_Backend.entity.Membership.ONM.OnmVote;
-import com.example.KFCC_Backend.entity.Title.TitleMeeting;
-import com.example.KFCC_Backend.entity.Title.TitleVote;
+import com.example.KFCC_Backend.Entity.Membership.ONM.OnmVote;
+import com.example.KFCC_Backend.Entity.Title.TitleMeeting;
+import com.example.KFCC_Backend.Entity.Title.TitleVote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

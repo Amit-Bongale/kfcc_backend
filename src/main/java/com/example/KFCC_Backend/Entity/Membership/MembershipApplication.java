@@ -1,9 +1,9 @@
-package com.example.KFCC_Backend.entity.Membership;
+package com.example.KFCC_Backend.Entity.Membership;
 
 import com.example.KFCC_Backend.Enum.MembershipCategory;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Users;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 

@@ -2,7 +2,7 @@ package com.example.KFCC_Backend.DTO.Membership;
 
 import com.example.KFCC_Backend.Enum.MembershipCategory;
 import com.example.KFCC_Backend.Enum.OwnershipType;
-import com.example.KFCC_Backend.entity.Membership.*;
+import com.example.KFCC_Backend.Entity.Membership.*;
 import lombok.Data;
 
 import java.util.List;

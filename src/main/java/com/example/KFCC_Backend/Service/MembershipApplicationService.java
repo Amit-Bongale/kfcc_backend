@@ -7,14 +7,13 @@ import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO
 
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
-import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Utility.FileStorageUtil;
-import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
+import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
 
-import com.example.KFCC_Backend.entity.Membership.Proprietor;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Membership.Proprietor;
+import com.example.KFCC_Backend.Entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 

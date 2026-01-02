@@ -2,7 +2,7 @@ package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 import com.example.KFCC_Backend.Repository.Users.OtpRepository;
-import com.example.KFCC_Backend.entity.OtpVerification;
+import com.example.KFCC_Backend.Entity.OtpVerification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

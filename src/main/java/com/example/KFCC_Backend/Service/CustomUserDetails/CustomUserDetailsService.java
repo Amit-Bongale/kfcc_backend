@@ -1,7 +1,7 @@
 package com.example.KFCC_Backend.Service.CustomUserDetails;
 
 import com.example.KFCC_Backend.Repository.Users.UsersRepository;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

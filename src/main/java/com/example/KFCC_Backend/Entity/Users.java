@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.entity;
+package com.example.KFCC_Backend.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

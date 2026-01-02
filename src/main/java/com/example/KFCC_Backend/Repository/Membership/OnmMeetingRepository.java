@@ -1,6 +1,6 @@
 package com.example.KFCC_Backend.Repository.Membership;
 
-import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeeting;
+import com.example.KFCC_Backend.Entity.Membership.ONM.OnmMeeting;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

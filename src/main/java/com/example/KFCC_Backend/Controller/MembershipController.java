@@ -8,8 +8,8 @@ import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO
 
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.MembershipApplicationService;
-import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
+import com.example.KFCC_Backend.Entity.Users;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

@@ -1,10 +1,9 @@
 package com.example.KFCC_Backend.Controller;
 
 import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
-import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.TitleRegistrationService;
-import com.example.KFCC_Backend.entity.Title.TitleRegistration;
+import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.entity.PublicityClearance;
+package com.example.KFCC_Backend.Entity.PublicityClearance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

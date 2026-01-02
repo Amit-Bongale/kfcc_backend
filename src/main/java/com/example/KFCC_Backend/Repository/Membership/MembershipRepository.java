@@ -1,8 +1,8 @@
 package com.example.KFCC_Backend.Repository.Membership;
 
 import com.example.KFCC_Backend.Enum.MembershipStatus;
-import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
+import com.example.KFCC_Backend.Entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

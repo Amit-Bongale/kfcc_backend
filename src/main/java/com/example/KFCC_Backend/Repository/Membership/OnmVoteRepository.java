@@ -1,7 +1,7 @@
 package com.example.KFCC_Backend.Repository.Membership;
 
-import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeeting;
-import com.example.KFCC_Backend.entity.Membership.ONM.OnmVote;
+import com.example.KFCC_Backend.Entity.Membership.ONM.OnmMeeting;
+import com.example.KFCC_Backend.Entity.Membership.ONM.OnmVote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

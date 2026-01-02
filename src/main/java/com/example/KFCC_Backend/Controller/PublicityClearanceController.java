@@ -5,8 +5,7 @@ import com.example.KFCC_Backend.DTO.PublicityClearance.PublicityClearanceRequest
 import com.example.KFCC_Backend.DTO.PublicityClearance.PublicityClearanceResponseDTO;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.PublicityClearanceService;
-import com.example.KFCC_Backend.entity.PublicityClearance.PublicityClearanceApplication;
-import com.example.KFCC_Backend.entity.Title.TitleRegistration;
+import com.example.KFCC_Backend.Entity.PublicityClearance.PublicityClearanceApplication;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

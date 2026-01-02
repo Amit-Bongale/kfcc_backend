@@ -1,6 +1,6 @@
 package com.example.KFCC_Backend.DTO.PublicityClearance;
 
-import com.example.KFCC_Backend.entity.PublicityClearance.PublicityClearanceDocuments;
+import com.example.KFCC_Backend.Entity.PublicityClearance.PublicityClearanceDocuments;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;

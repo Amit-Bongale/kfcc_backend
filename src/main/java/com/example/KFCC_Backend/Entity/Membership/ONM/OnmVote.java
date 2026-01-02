@@ -1,8 +1,8 @@
-package com.example.KFCC_Backend.entity.Membership.ONM;
+package com.example.KFCC_Backend.Entity.Membership.ONM;
 
 import com.example.KFCC_Backend.Enum.VoteDecision;
-import com.example.KFCC_Backend.entity.Membership.MembershipApplication;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
+import com.example.KFCC_Backend.Entity.Users;
 import jakarta.persistence.*;
 
 @Entity

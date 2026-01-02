@@ -5,7 +5,7 @@ import com.example.KFCC_Backend.DTO.Meeting.CastVoteRequestDTO;
 import com.example.KFCC_Backend.DTO.Meeting.VoteSummaryResponseDTO;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.OnmMeetingService;
-import com.example.KFCC_Backend.entity.Membership.ONM.OnmMeeting;
+import com.example.KFCC_Backend.Entity.Membership.ONM.OnmMeeting;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

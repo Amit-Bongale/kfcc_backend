@@ -1,6 +1,6 @@
 package com.example.KFCC_Backend.Repository.Title;
 
-import com.example.KFCC_Backend.entity.Title.TitleRegistrationDocuments;
+import com.example.KFCC_Backend.Entity.Title.TitleRegistrationDocuments;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

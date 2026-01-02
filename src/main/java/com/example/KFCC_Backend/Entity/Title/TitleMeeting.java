@@ -1,13 +1,13 @@
-package com.example.KFCC_Backend.entity.Membership.ONM;
+package com.example.KFCC_Backend.Entity.Title;
 
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Users;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-public class OnmMeeting {
+public class TitleMeeting {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +25,14 @@ public class OnmMeeting {
     public enum MeetingStatus{
         ACTIVE, TERMINATED
     }
+
     @Enumerated(EnumType.STRING)
     private MeetingStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime terminatedAt;
+
+
 
 
     public Long getId() {
@@ -88,4 +91,3 @@ public class OnmMeeting {
         this.terminatedAt = terminatedAt;
     }
 }
-

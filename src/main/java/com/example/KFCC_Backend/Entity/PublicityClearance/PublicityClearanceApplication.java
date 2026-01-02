@@ -1,8 +1,8 @@
-package com.example.KFCC_Backend.entity.PublicityClearance;
+package com.example.KFCC_Backend.Entity.PublicityClearance;
 
 import com.example.KFCC_Backend.Enum.PublicityApplicationStatus;
-import com.example.KFCC_Backend.entity.Title.TitleRegistration;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
+import com.example.KFCC_Backend.Entity.Users;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 

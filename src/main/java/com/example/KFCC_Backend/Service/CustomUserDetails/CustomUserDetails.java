@@ -1,6 +1,6 @@
 package com.example.KFCC_Backend.Service.CustomUserDetails;
 
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Users;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,7 +1,7 @@
-package com.example.KFCC_Backend.entity.Title;
+package com.example.KFCC_Backend.Entity.Title;
 
 import com.example.KFCC_Backend.Enum.VoteDecision;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Users;
 import jakarta.persistence.*;
 
 @Entity

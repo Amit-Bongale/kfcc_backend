@@ -1,8 +1,8 @@
 package com.example.KFCC_Backend.Repository.Users;
 
 import com.example.KFCC_Backend.Enum.UserRoles;
-import com.example.KFCC_Backend.entity.UserRole;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.UserRole;
+import com.example.KFCC_Backend.Entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

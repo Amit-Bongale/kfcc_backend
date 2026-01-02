@@ -1,19 +1,22 @@
-package com.example.KFCC_Backend.entity.Membership.ONM;
+package com.example.KFCC_Backend.Entity.Title;
 
-import com.example.KFCC_Backend.entity.Users;
+
+import com.example.KFCC_Backend.Entity.Users;
 import jakarta.persistence.*;
 
 @Entity
-public class OnmMeetingMember {
+public class TitleMeetingMembers {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private OnmMeeting meeting;
+    private TitleMeeting meeting;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Users member;
+
 
     public Long getId() {
         return id;
@@ -23,11 +26,11 @@ public class OnmMeetingMember {
         this.id = id;
     }
 
-    public OnmMeeting getMeeting() {
+    public TitleMeeting getMeeting() {
         return meeting;
     }
 
-    public void setMeeting(OnmMeeting meeting) {
+    public void setMeeting(TitleMeeting meeting) {
         this.meeting = meeting;
     }
 

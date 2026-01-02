@@ -19,12 +19,12 @@ import com.example.KFCC_Backend.Repository.Users.UserRoleRepository;
 import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 
-import com.example.KFCC_Backend.entity.Title.TitleMeeting;
-import com.example.KFCC_Backend.entity.Title.TitleMeetingMembers;
-import com.example.KFCC_Backend.entity.Title.TitleRegistration;
-import com.example.KFCC_Backend.entity.Title.TitleVote;
-import com.example.KFCC_Backend.entity.UserRole;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Title.TitleMeeting;
+import com.example.KFCC_Backend.Entity.Title.TitleMeetingMembers;
+import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
+import com.example.KFCC_Backend.Entity.Title.TitleVote;
+import com.example.KFCC_Backend.Entity.UserRole;
+import com.example.KFCC_Backend.Entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,7 +37,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 

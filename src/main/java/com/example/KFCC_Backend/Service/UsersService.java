@@ -5,7 +5,7 @@ import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Users;
 import com.example.KFCC_Backend.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;

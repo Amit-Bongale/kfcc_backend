@@ -1,6 +1,6 @@
 package com.example.KFCC_Backend.Repository.Title;
 
-import com.example.KFCC_Backend.entity.Title.TitleMeeting;
+import com.example.KFCC_Backend.Entity.Title.TitleMeeting;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

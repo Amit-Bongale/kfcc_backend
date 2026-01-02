@@ -2,7 +2,7 @@ package com.example.KFCC_Backend.Controller;
 
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Service.UsersService;
-import com.example.KFCC_Backend.entity.Users;
+import com.example.KFCC_Backend.Entity.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

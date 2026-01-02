@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.entity.Membership;
+package com.example.KFCC_Backend.Entity.Membership;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
