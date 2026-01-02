@@ -28,6 +28,7 @@ public class PublicityClearanceApplication {
     private Users producer;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PublicityApplicationStatus status;
 
     private Long cbcfCertificateNo;

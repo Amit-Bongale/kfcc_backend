@@ -1,7 +1,10 @@
 package com.example.KFCC_Backend.Service;
 
-import com.example.KFCC_Backend.DTO.PublicityClearanceRequestDTO;
+import com.example.KFCC_Backend.DTO.PublicityClearance.PublicityClearanceRequestDTO;
+import com.example.KFCC_Backend.DTO.PublicityClearance.TitleRegistrationPublicityDTO;
+import com.example.KFCC_Backend.DTO.PublicityClearance.TitleWithPublicityStatusDTO;
 import com.example.KFCC_Backend.Enum.PublicityApplicationStatus;
+import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.PublicityClearance.PublicityClearanceRepository;
@@ -19,10 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class PublicityClearanceService {
@@ -40,6 +41,47 @@ public class PublicityClearanceService {
     private UsersRepository usersRepository;
 
 
+    public List<TitleWithPublicityStatusDTO> getEligibleTitlesForClearance(
+            CustomUserDetails user
+    ) {
+
+        List<Object[]> rows =
+                publicityClearanceRepository
+                        .findFinalApprovedTitlesWithPublicityStatus(user.getUserId());
+
+        return rows.stream()
+                .map(row -> {
+
+                    TitleRegistration t = (TitleRegistration) row[0];
+
+                    PublicityApplicationStatus status =
+                            row[1] == null
+                                    ? PublicityApplicationStatus.NOT_SUBMITTED
+                                    : (PublicityApplicationStatus) row[1];
+
+
+                    TitleRegistrationPublicityDTO titleDto =
+                            new TitleRegistrationPublicityDTO(
+                                    t.getId(),
+                                    t.getTitle(),
+                                    t.getTitleInKannada(),
+                                    t.getAcceptedDate(),
+                                    t.getCategory(),
+                                    t.getCreatedAt(),
+                                    t.getDirector(),
+                                    t.getExpireDate(),
+                                    t.getLanguage(),
+                                    t.getLeadActor(),
+                                    t.getMusicDirector()
+                            );
+
+                    return new TitleWithPublicityStatusDTO(titleDto, status);
+
+                })
+                .toList();
+    }
+
+
     @Transactional
     public PublicityClearanceApplication applyClearance(Long titleId, PublicityClearanceRequestDTO request , CustomUserDetails user) {
 
@@ -53,12 +95,15 @@ public class PublicityClearanceService {
             throw new BadRequestException("Only the owner can apply for Clearance");
         }
 
-        //need to handle if exist;
+        // need to handle if exist;
         boolean isPresent = publicityClearanceRepository.existsByTitle_Id(titleId);
         if (isPresent){
             throw new BadRequestException("Publicity Clearance Application Already Exists");
         }
 
+        if(title.getStatus() != TitleApplicationStatus.FINAL_APPROVED){
+            throw new BadRequestException("Title not yet Approved");
+        }
 
         PublicityClearanceApplication application = new PublicityClearanceApplication();
 
@@ -106,5 +151,8 @@ public class PublicityClearanceService {
             }
         }
     }
+
+
+
 
 }

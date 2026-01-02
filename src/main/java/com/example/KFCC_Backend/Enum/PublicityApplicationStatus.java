@@ -2,7 +2,7 @@ package com.example.KFCC_Backend.Enum;
 
 public enum PublicityApplicationStatus {
     DRAFT,
-
+    NOT_SUBMITTED,
     SUBMITTED,
 
     STAFF_APPROVED,
