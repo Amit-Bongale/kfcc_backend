@@ -25,7 +25,8 @@ public class PublicityClearanceController {
     @Autowired
     private PublicityClearanceService publicityClearanceService;
 
-    // fetch titles for Publicity clearance
+
+    // fetch titles for Publicity clearance [clearance applied and not applied Titles]
     @PreAuthorize("hasRole('PRODUCER')")
     @GetMapping("/producer/titles/publicity-status")
     public ResponseEntity<List<PublicityClearanceResponseDTO>> getTitlesWithPublicityStatus(
@@ -56,16 +57,19 @@ public class PublicityClearanceController {
 
     }
 
+
     //get particular application details by ID
     @GetMapping("/{applicationId}")
     @PreAuthorize("hasAnyRole( 'PRODUCER' , 'STAFF','VP_PRODUCER', 'SECRETARY' , 'MANAGER' )")
-    public ResponseEntity<?> getTitleDetails(@PathVariable Long applicationId , @AuthenticationPrincipal CustomUserDetails user){
+    public ResponseEntity<?> getTitleDetails(
+            @PathVariable Long applicationId , @AuthenticationPrincipal CustomUserDetails user){
 
         PublicityClearanceApplication application = publicityClearanceService.getApplicationDetailsById(applicationId , user);
 
         return ResponseEntity.ok(application);
 
     }
+
 
     // Fetch submitted applications for all Roles
     @GetMapping("/pending/requests")
@@ -88,7 +92,6 @@ public class PublicityClearanceController {
         publicityClearanceService.applicationAction(id , request, user);
         return ResponseEntity.ok(Map.of("message" , "Application Status Updated"));
     }
-
 
 
 

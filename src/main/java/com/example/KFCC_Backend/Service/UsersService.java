@@ -6,7 +6,7 @@ import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 
 import com.example.KFCC_Backend.Entity.Users;
-import com.example.KFCC_Backend.jwt.JwtUtil;
+import com.example.KFCC_Backend.Jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;

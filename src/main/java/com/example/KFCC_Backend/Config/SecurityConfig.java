@@ -1,7 +1,7 @@
 package com.example.KFCC_Backend.Config;
 
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetailsService;
-import com.example.KFCC_Backend.jwt.JwtFilter;
+import com.example.KFCC_Backend.Jwt.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

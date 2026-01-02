@@ -45,7 +45,7 @@ public class PublicityClearanceService {
     @Autowired
     private UsersRepository usersRepository;
 
-    // fetch all Titles by user
+    // fetch all Titles by user [clearance applied and not applied Titles]
     public List<PublicityClearanceResponseDTO> getEligibleTitlesForClearance(
             CustomUserDetails user
     ) {
@@ -160,7 +160,7 @@ public class PublicityClearanceService {
     }
 
 
-    // Fetch submitted applications for all Roles
+    // Fetch Action Pending applications for all Roles
     public List<PublicityClearanceResponseDTO> getPendingApplications (CustomUserDetails user){
 
         Set<String> roles = user.getRoles();
@@ -215,9 +215,6 @@ public class PublicityClearanceService {
                 t.getMusicDirector()
         );
     }
-
-
-    // get application details on ID
     
 
 
@@ -345,6 +342,7 @@ public class PublicityClearanceService {
 
     }
 
+    //fetch file using PublicityClearance application ID
     public PublicityClearanceApplication getApplicationDetailsById(Long applicationId, CustomUserDetails user) {
 
         PublicityClearanceApplication application = publicityClearanceRepository.findById(applicationId)
@@ -367,4 +365,6 @@ public class PublicityClearanceService {
 
         return  application;
     }
+
+
 }

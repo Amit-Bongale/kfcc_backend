@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.jwt;
+package com.example.KFCC_Backend.Jwt;
 
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;

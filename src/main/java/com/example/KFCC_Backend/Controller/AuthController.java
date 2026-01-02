@@ -9,7 +9,7 @@ import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetailsServi
 import com.example.KFCC_Backend.Service.OtpService;
 import com.example.KFCC_Backend.Entity.UserRole;
 import com.example.KFCC_Backend.Entity.Users;
-import com.example.KFCC_Backend.jwt.JwtUtil;
+import com.example.KFCC_Backend.Jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
