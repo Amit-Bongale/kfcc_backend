@@ -1,8 +1,7 @@
 package com.example.KFCC_Backend.Repository.PublicityClearance;
 
-import com.example.KFCC_Backend.DTO.PublicityClearance.TitleWithPublicityStatusDTO;
+import com.example.KFCC_Backend.Enum.PublicityApplicationStatus;
 import com.example.KFCC_Backend.entity.PublicityClearance.PublicityClearanceApplication;
-import com.example.KFCC_Backend.entity.Title.TitleRegistration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface PublicityClearanceRepository extends JpaRepository<PublicityClearanceApplication , Long> {
@@ -19,7 +19,7 @@ public interface PublicityClearanceRepository extends JpaRepository<PublicityCle
     boolean existsByTitle_Id(Long titleId);
 
     @Query("""
-        SELECT t, p.status
+        SELECT t, p.status, p.id
         FROM TitleRegistration t
         LEFT JOIN PublicityClearanceApplication p
             ON p.title.id = t.id
@@ -29,5 +29,13 @@ public interface PublicityClearanceRepository extends JpaRepository<PublicityCle
     List<Object[]> findFinalApprovedTitlesWithPublicityStatus(
             @Param("producerId") Long producerId
     );
+
+    @Query("""
+    SELECT a FROM PublicityClearanceApplication a
+    WHERE a.status IN :statuses
+    ORDER BY a.submittedAt DESC
+    """)
+    List<PublicityClearanceApplication> findByCurrentStatusIn(@Param("statuses") Set<PublicityApplicationStatus> statuses);
+
 
 }
