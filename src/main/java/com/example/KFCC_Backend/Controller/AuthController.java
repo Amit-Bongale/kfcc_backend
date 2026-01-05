@@ -79,7 +79,7 @@ public class AuthController {
         user.setLastName(request.getLastName());
         user.setMobileNo(request.getMobileNo());
         user.setEmail(request.getEmail());
-        user.getBloodGroup(request.getBloodGroup());
+        user.setBloodGroup(request.getBloodGroup());
         user.setDob(request.getDob());
 
         UserRole userRole = new UserRole();

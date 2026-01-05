@@ -90,8 +90,8 @@ public class Users {
         this.roles = roles;
     }
 
-    public String getBloodGroup(String bloodGroup) {
-        return this.bloodGroup;
+    public String getBloodGroup() {
+        return bloodGroup;
     }
 
     public void setBloodGroup(String bloodGroup) {
