@@ -7,6 +7,7 @@ import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 
 import com.example.KFCC_Backend.Entity.Users;
 import com.example.KFCC_Backend.Jwt.JwtUtil;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -67,4 +68,8 @@ public class UsersService {
         return usersRepository.findUsersByRole(role);
     }
 
+    public Users getUserAllDetails(CustomUserDetails user) {
+        return usersRepository.findById(user.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not Found"));
+    }
 }
