@@ -19,7 +19,7 @@ public interface PublicityClearanceRepository extends JpaRepository<PublicityCle
     boolean existsByTitle_Id(Long titleId);
 
     @Query("""
-        SELECT t, p.status, p.id
+        SELECT t, p.status, p.id , p.remark , p.remarkedBy
         FROM TitleRegistration t
         LEFT JOIN PublicityClearanceApplication p
             ON p.title.id = t.id

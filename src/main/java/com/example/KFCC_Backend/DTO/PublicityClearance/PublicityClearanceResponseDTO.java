@@ -12,9 +12,14 @@ public class PublicityClearanceResponseDTO {
     // NOT_SUBMITTED or actual publicity status
     private PublicityApplicationStatus publicityClearanceStatus;
 
-    public PublicityClearanceResponseDTO(TitleRegistrationPublicityDTO title, Long publicityClearanceId, PublicityApplicationStatus publicityClearanceStatus) {
+    private String remark;
+    private String remarkBy;
+
+    public PublicityClearanceResponseDTO(TitleRegistrationPublicityDTO title, Long publicityClearanceId, PublicityApplicationStatus publicityClearanceStatus, String remark, String remarkBy) {
         this.title = title;
         this.publicityClearanceId = publicityClearanceId;
         this.publicityClearanceStatus = publicityClearanceStatus;
+        this.remark = remark;
+        this.remarkBy = remarkBy;
     }
 }

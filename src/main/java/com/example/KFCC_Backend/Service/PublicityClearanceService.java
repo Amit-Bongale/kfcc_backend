@@ -17,6 +17,7 @@ import com.example.KFCC_Backend.Entity.PublicityClearance.PublicityClearanceAppl
 import com.example.KFCC_Backend.Entity.PublicityClearance.PublicityClearanceDocuments;
 import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
 import com.example.KFCC_Backend.Entity.Users;
+import com.sun.jdi.event.StepEvent;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -66,6 +67,9 @@ public class PublicityClearanceService {
 
                     Long publicityClearanceId = row[2] == null ? null : (Long) row[2];
 
+                    String remark = row[3] == null ? null : (String) row[3];
+                    String remarkBy = row[4] == null ? null : (String) row[4];
+
                     TitleRegistrationPublicityDTO titleDto =
                             new TitleRegistrationPublicityDTO(
                                     t.getId(),
@@ -81,7 +85,9 @@ public class PublicityClearanceService {
                                     t.getMusicDirector()
                             );
 
-                    return new PublicityClearanceResponseDTO(titleDto, publicityClearanceId , status);
+
+
+                    return new PublicityClearanceResponseDTO(titleDto, publicityClearanceId , status , remark , remarkBy);
 
                 })
                 .toList();
@@ -192,7 +198,9 @@ public class PublicityClearanceService {
                 .map(app -> new PublicityClearanceResponseDTO(
                         mapToTitleRegistrationPublicityDTO(app.getTitle()),
                         app.getId(),                     // publicityClearanceId
-                        app.getStatus()               // current status
+                        app.getStatus(), // current status
+                        null,
+                        null
                 ))
                 .toList();
 
