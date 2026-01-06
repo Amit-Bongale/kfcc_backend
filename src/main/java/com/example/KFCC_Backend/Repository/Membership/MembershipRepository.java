@@ -51,4 +51,19 @@ public interface MembershipRepository  extends JpaRepository <MembershipApplicat
     """)
     List<Users> findMembers(  @Param("status") MembershipStatus status,
                               @Param("today") LocalDate today );
+
+
+    @Query("""
+        SELECT m
+        FROM MembershipApplication m
+        WHERE m.user.id = :userId
+          AND m.membershipStatus = :status
+          AND m.membershipExpiryDate > :today
+        ORDER BY m.submittedAt DESC
+    """)
+    List<MembershipApplication> findApprovedApplicationsWithValidMembership(
+            @Param("userId") Long userId,
+            @Param("status") MembershipStatus status,
+            @Param("today") LocalDate today
+    );
 }

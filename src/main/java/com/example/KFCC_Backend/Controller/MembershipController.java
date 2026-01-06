@@ -39,7 +39,7 @@ public class MembershipController {
 
     // get membership application details by ID
     @GetMapping("/{applicationId}")
-//    @PreAuthorize("hasAnyRole('USER','STAFF','ONM_COMMITTEE','ONM_COMMITTEE_LEADER','EC_MEMBER','SECRETARY','PRESIDENT')")
+    @PreAuthorize("hasAnyRole('USER','STAFF','ONM_COMMITTEE_VOTER','ONM_COMMITTEE_LEADER','EC_MEMBER','SECRETARY','PRESIDENT')")
     public ResponseEntity<?> getMembershipApplicationById(
             @PathVariable Long applicationId
     ) {
@@ -139,6 +139,13 @@ public class MembershipController {
     public ResponseEntity<List<MembershipApplicationsResponseDTO>> getApplicationsByUerId(
             @AuthenticationPrincipal CustomUserDetails user){
          return  ResponseEntity.ok(membershipApplicationService.getApplicationsByUserId(user));
+    }
+
+    //get only valid/active membership of user
+    @GetMapping("/user/activeMemberships")
+    public ResponseEntity<List<MembershipApplicationsResponseDTO>> getValidApplicationsByUerId(
+            @AuthenticationPrincipal CustomUserDetails user){
+        return  ResponseEntity.ok(membershipApplicationService.getActiveApplicationsByUserId(user));
     }
 
 

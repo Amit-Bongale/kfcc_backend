@@ -282,6 +282,29 @@ public class MembershipApplicationService {
     }
 
 
+    // return all Approved applications applied by a user
+    public List<MembershipApplicationsResponseDTO> getActiveApplicationsByUserId(CustomUserDetails user) {
+
+        Long userID = user.getUserId();
+
+        return membershipRepository.findApprovedApplicationsWithValidMembership(userID , MembershipStatus.FINAL_APPROVED , LocalDate.now())
+                .stream()
+                .map(app -> new MembershipApplicationsResponseDTO(
+                        app.getApplicationId(),
+                        app.getUser().getId(),
+                        app.getUser().getFirstName() + " " + app.getUser().getLastName(),
+                        app.getUser().getMobileNo(),
+                        app.getApplicantMembershipCategory(),
+                        app.getMembershipStatus(),
+                        app.getSubmittedAt(),
+                        app.getRemark(),
+                        app.getRemarkedBy(),
+                        app.getMembershipExpiryDate()
+                ))
+                .collect(Collectors.toList());
+    }
+
+
     @Component
     public static class ApplicationFetchConfig {
         private static final Map<String, Set<MembershipStatus>> ROLE_STATUS_MAP =
