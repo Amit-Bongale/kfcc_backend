@@ -120,4 +120,17 @@ public class IdCardRequestService {
                 .map(this::mapToDto)
                 .toList();
     }
+
+    //change status to issued
+    public void cardIssued( Long appId){
+
+        IdCardRequests requests = idCardRequestRepository.findById(appId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        requests.setStatus(IdCardRequests.IdCardStatus.ISSUED);
+        requests.setIssuedAt(LocalDate.now());
+
+        idCardRequestRepository.save(requests);
+    }
+
 }
