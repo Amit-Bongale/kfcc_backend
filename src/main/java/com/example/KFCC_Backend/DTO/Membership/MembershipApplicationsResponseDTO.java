@@ -5,6 +5,7 @@ import com.example.KFCC_Backend.Enum.MembershipStatus;
 import lombok.Data;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,6 +20,7 @@ public class MembershipApplicationsResponseDTO {
     private LocalDateTime submittedAt;
     private String remark;
     private String remarkedBy;
+    private LocalDate expiryDate;
 
     public MembershipApplicationsResponseDTO(
             Long applicationId,
@@ -29,7 +31,8 @@ public class MembershipApplicationsResponseDTO {
             MembershipStatus status,
             LocalDateTime submittedAt,
             String remark,
-            String remarkedBy
+            String remarkedBy,
+            LocalDate expiryDate
     ) {
         this.applicationId = applicationId;
         this.userId = userId;
@@ -40,6 +43,7 @@ public class MembershipApplicationsResponseDTO {
         this.submittedAt = submittedAt;
         this.remark = remark;
         this.remarkedBy = remarkedBy;
+        this.expiryDate = expiryDate;
     }
 
 

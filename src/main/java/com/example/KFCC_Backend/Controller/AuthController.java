@@ -2,6 +2,9 @@ package com.example.KFCC_Backend.Controller;
 
 import com.example.KFCC_Backend.DTO.SignupRequestDTO;
 import com.example.KFCC_Backend.Enum.UserRoles;
+
+import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
+import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
 import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
@@ -38,9 +41,7 @@ public class AuthController {
     public ResponseEntity<?> signupRequestOtp(@RequestParam String mobileNo) {
         System.out.println("signup otp request");
         if (userRepository.findByMobileNo(mobileNo).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body(Map.of("error", "User already registered"));
+            throw new BadRequestException("User already registered , Please Login");
         }
 
         otpService.sendOtp(mobileNo);
@@ -103,6 +104,11 @@ public class AuthController {
             return ResponseEntity
                     .badRequest()
                     .body(Map.of("error", "Invalid mobile number"));
+        }
+
+        if(userRepository.findByMobileNo(mobileNo).isEmpty()){
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error" , "User Does not Exist"));
+            throw new ResourceNotFoundException("User not Registered, Please Register to Login");
         }
 
         otpService.sendOtp(mobileNo);

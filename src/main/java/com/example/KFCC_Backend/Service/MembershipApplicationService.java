@@ -275,7 +275,8 @@ public class MembershipApplicationService {
                         app.getMembershipStatus(),
                         app.getSubmittedAt(),
                         app.getRemark(),
-                        app.getRemarkedBy()
+                        app.getRemarkedBy(),
+                        app.getMembershipExpiryDate()
                 ))
                 .collect(Collectors.toList());
     }
@@ -335,7 +336,8 @@ public class MembershipApplicationService {
                         app.getMembershipStatus(),
                         app.getSubmittedAt(),
                         app.getRemark(),
-                        app.getRemarkedBy()
+                        app.getRemarkedBy(),
+                        app.getMembershipExpiryDate()
                 ))
                 .collect(Collectors.toList());
     }
