@@ -50,6 +50,7 @@ public class IdCardRequestService {
                 user.getLastName(),
                 user.getBloodGroup(),
                 user.getDob(),
+                user.getMobileNo(),
 
                 // MEMBERSHIP
                 app.getApplicantMembershipCategory(),

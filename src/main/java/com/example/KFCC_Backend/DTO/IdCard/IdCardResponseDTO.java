@@ -13,6 +13,7 @@ public class IdCardResponseDTO {
     private String lastName;
     private String bloodGroup;
     private LocalDate dob;
+    private String mobileNo;
 
     // ---- MEMBERSHIP DETAILS ----
     private MembershipCategory membershipCategory;
@@ -30,12 +31,13 @@ public class IdCardResponseDTO {
     private LocalDate submittedAt;
 
 
-    public IdCardResponseDTO(String firstName, String middleName, String lastName, String bloodGroup, LocalDate dob, MembershipCategory membershipCategory, String membershipNumber, String firmName, String addressLine1, String addressLine2, LocalDate membershipExpiryDate, Long id, String applicantImage, String status, LocalDate issuedAt, LocalDate submittedAt) {
+    public IdCardResponseDTO(String firstName, String middleName, String lastName, String bloodGroup, LocalDate dob, String mobileNo, MembershipCategory membershipCategory, String membershipNumber, String firmName, String addressLine1, String addressLine2, LocalDate membershipExpiryDate, Long id, String applicantImage, String status, LocalDate issuedAt, LocalDate submittedAt) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
         this.bloodGroup = bloodGroup;
         this.dob = dob;
+        this.mobileNo = mobileNo;
         this.membershipCategory = membershipCategory;
         this.membershipNumber = membershipNumber;
         this.firmName = firmName;
