@@ -276,7 +276,8 @@ public class MembershipApplicationService {
                         app.getSubmittedAt(),
                         app.getRemark(),
                         app.getRemarkedBy(),
-                        app.getMembershipExpiryDate()
+                        app.getMembershipExpiryDate(),
+                        app.getMembershipId()
                 ))
                 .collect(Collectors.toList());
     }
@@ -292,14 +293,15 @@ public class MembershipApplicationService {
                 .map(app -> new MembershipApplicationsResponseDTO(
                         app.getApplicationId(),
                         app.getUser().getId(),
-                        app.getUser().getFirstName() + " " + app.getUser().getLastName(),
+                        app.getUser().getFirstName() + " " + app.getUser().getMiddleName() + " " + app.getUser().getLastName(),
                         app.getUser().getMobileNo(),
                         app.getApplicantMembershipCategory(),
                         app.getMembershipStatus(),
                         app.getSubmittedAt(),
                         app.getRemark(),
                         app.getRemarkedBy(),
-                        app.getMembershipExpiryDate()
+                        app.getMembershipExpiryDate(),
+                        app.getMembershipId()
                 ))
                 .collect(Collectors.toList());
     }
@@ -360,7 +362,8 @@ public class MembershipApplicationService {
                         app.getSubmittedAt(),
                         app.getRemark(),
                         app.getRemarkedBy(),
-                        app.getMembershipExpiryDate()
+                        app.getMembershipExpiryDate(),
+                        null
                 ))
                 .collect(Collectors.toList());
     }

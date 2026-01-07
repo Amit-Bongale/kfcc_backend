@@ -21,6 +21,7 @@ public class MembershipApplicationsResponseDTO {
     private String remark;
     private String remarkedBy;
     private LocalDate expiryDate;
+    private String membershipId;
 
     public MembershipApplicationsResponseDTO(
             Long applicationId,
@@ -32,7 +33,8 @@ public class MembershipApplicationsResponseDTO {
             LocalDateTime submittedAt,
             String remark,
             String remarkedBy,
-            LocalDate expiryDate
+            LocalDate expiryDate,
+            String membershipId
     ) {
         this.applicationId = applicationId;
         this.userId = userId;
@@ -44,6 +46,7 @@ public class MembershipApplicationsResponseDTO {
         this.remark = remark;
         this.remarkedBy = remarkedBy;
         this.expiryDate = expiryDate;
+        this.membershipId = membershipId;
     }
 
 
