@@ -15,7 +15,7 @@ public class OtpService {
 
     // set otp attemps = 5 and resend timer to 60 sec
     private static final int MAX_ATTEMPTS = 5;
-    private static final int RESEND_SECONDS = 60;
+    private static final int RESEND_SECONDS = 10;
 
     @Autowired
     private OtpRepository otpRepository;
