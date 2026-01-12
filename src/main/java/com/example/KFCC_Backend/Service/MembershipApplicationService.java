@@ -125,6 +125,7 @@ public class MembershipApplicationService {
         application.setApplicantAddressLine2(request.getApplicantAddressLine2());
         application.setApplicantDistrict(request.getApplicantDistrict());
         application.setApplicantState(request.getApplicantState());
+        application.setApplicantPinCode(request.getApplicantPinCode());
 
         application.setMembershipFee(request.getMembershipFee());
         application.setKalyanNidhi(request.getKalyanNidhi());

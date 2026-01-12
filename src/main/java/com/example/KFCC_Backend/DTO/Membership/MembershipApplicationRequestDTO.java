@@ -19,6 +19,7 @@ public class MembershipApplicationRequestDTO {
     private String applicantAddressLine2;
     private String applicantDistrict;
     private String applicantState;
+    private Integer applicantPinCode;
 
 
     private Integer membershipFee;
@@ -93,5 +94,13 @@ public class MembershipApplicationRequestDTO {
 
     public String getApplicantState() {
         return applicantState;
+    }
+
+    public Integer getApplicantPinCode() {
+        return applicantPinCode;
+    }
+
+    public void setApplicantPinCode(Integer applicantPinCode) {
+        this.applicantPinCode = applicantPinCode;
     }
 }

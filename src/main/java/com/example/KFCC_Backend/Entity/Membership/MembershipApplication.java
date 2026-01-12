@@ -55,7 +55,7 @@ public class MembershipApplication {
     @NotBlank(message = "State is required")
     private String applicantState;
 
-
+@NotNull(message = "Pin code is required ")
     private Integer applicantPinCode;
 
     @Enumerated(EnumType.STRING)
