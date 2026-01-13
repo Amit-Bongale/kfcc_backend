@@ -1,15 +1,14 @@
 package com.example.KFCC_Backend.Controller;
 
-import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
-import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationRequestDTO;
+import com.example.KFCC_Backend.DTO.Membership.*;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
 import com.example.KFCC_Backend.Repository.Users.UsersRepository;
-import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.MembershipApplicationService;
 import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.Entity.Users;
+import com.example.KFCC_Backend.Service.ProposerVerificationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -32,10 +31,13 @@ public class MembershipController {
     private MembershipApplicationService membershipApplicationService;
 
     @Autowired
-    MembershipRepository membershipRepository;
+    private MembershipRepository membershipRepository;
 
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private ProposerVerificationService proposerVerificationService;
 
     // get membership application details by ID
     @GetMapping("/{applicationId}")
@@ -48,6 +50,37 @@ public class MembershipController {
 
         return ResponseEntity.ok(application);
     }
+
+
+
+    //send otp to proposer
+    @PostMapping("proposer/send-otp/{membershipId}")
+    public ResponseEntity<?> sendOtp(
+            @AuthenticationPrincipal CustomUserDetails applicant,
+            @PathVariable String membershipId) {
+
+        proposerVerificationService.sendProposerOtp( applicant, membershipId );
+
+        return ResponseEntity.ok("OTP sent successfully");
+    }
+
+    // verify proposer otp
+    @PostMapping("proposer/verify-otp")
+    public ResponseEntity<ProposerDetailsResponseDTO> verifyOtp(
+            @AuthenticationPrincipal CustomUserDetails applicant,
+            @Valid @RequestBody ProposerOtpVerifyRequestDTO request) {
+
+        ProposerDetailsResponseDTO response =
+                proposerVerificationService.verifyProposerOtp(
+                        applicant,
+                        request.getProposerMembershipId(),
+                        request.getOtp()
+                );
+
+        return ResponseEntity.ok(response);
+    }
+
+
 
 
     // submit Membership Registration request

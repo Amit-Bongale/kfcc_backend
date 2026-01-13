@@ -8,6 +8,7 @@ import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
+import com.example.KFCC_Backend.Repository.Membership.ProposerVerificationRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Utility.FileStorageUtil;
 import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
@@ -42,11 +43,27 @@ public class MembershipApplicationService {
     @Autowired
     private FileStorageUtil fileStorageUtil;
 
+    @Autowired
+    private ProposerVerificationRepository proposerVerificationRepository;
+
 
     private void validateMember(Long membershipId) {
         if (!membershipRepository.existsByMembershipIdAndMembershipStatus(
                 membershipId, MembershipStatus.FINAL_APPROVED)) {
             throw new IllegalArgumentException("Invalid proposer/seconder membership");
+        }
+    }
+
+    private void validateProposerVerification(Long applicantUserId) {
+
+        boolean isVerified =
+                proposerVerificationRepository
+                        .existsByApplicantUserIdAndIsVerifiedTrue(applicantUserId);
+
+        if (!isVerified) {
+            throw new RuntimeException(
+                    "Proposer verification is mandatory before submitting membership application"
+            );
         }
     }
 
@@ -86,6 +103,8 @@ public class MembershipApplicationService {
 
         validateMember(request.getProposer().getProposerMembershipId());
         validateMember(request.getSeconder().getSeconderMembershipId());
+
+        validateProposerVerification(user.getId());
 
 
         // Ownership rules
@@ -248,6 +267,8 @@ public class MembershipApplicationService {
                 finalApp.getPartners().add(partner);
             }
         }
+
+
 
         request.getProposer().setMembershipApplication(finalApp);
         request.getSeconder().setMembershipApplication(finalApp);
