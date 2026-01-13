@@ -34,8 +34,6 @@ public class MembershipController {
     @Autowired
     private MembershipRepository membershipRepository;
 
-    @Autowired
-    private UsersRepository usersRepository;
 
     @Autowired
     private ProposerVerificationService proposerVerificationService;
@@ -111,16 +109,17 @@ public class MembershipController {
             // Ownership documents
             @RequestPart(value = "partnershipDeed", required = false) MultipartFile partnershipDeed,
             @RequestPart(value = "moa", required = false) MultipartFile moa,
-            @RequestPart(value = "aoa", required = false) MultipartFile aoa
+            @RequestPart(value = "aoa", required = false) MultipartFile aoa,
+
+            @AuthenticationPrincipal CustomUserDetails applicant
 
     ) throws IOException {
 
-        Users user = usersRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+
 
         MembershipApplication app =
                 membershipApplicationService.submitApplication(
-                        user,
+                        applicant,
                         request,
                         applicantPhoto,
                         applicantPan,

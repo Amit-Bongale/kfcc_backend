@@ -109,17 +109,17 @@ public class MembershipApplication {
     @JsonManagedReference
     private List<Partners> partners = new ArrayList<>();
 
-    // Upto 2 nominee for 1 applicaiton
+    // Upto 2 nominee for 1 application
     @OneToMany(mappedBy = "membershipApplication", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonManagedReference
     private List<Nominee> nominee = new ArrayList<>();
 
 
-    // 1 Mandatary Proposer [who is already an member of KFCC]
+    // 1 Mandatory Proposer [who is already an member of KFCC ]
     @OneToOne(mappedBy = "membershipApplication", cascade = CascadeType.ALL, orphanRemoval = true)
     private Proposer proposer;
 
-    // 1 Mandatary Seconder [who is already an member of KFCC]
+    // 1 Mandatory Seconder [who is already an member of KFCC ]
     @OneToOne(mappedBy = "membershipApplication", cascade = CascadeType.ALL, orphanRemoval = true)
     private Seconder seconder;
 

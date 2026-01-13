@@ -11,6 +11,7 @@ import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
 import com.example.KFCC_Backend.Repository.Membership.ProposerVerificationRepository;
+import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Utility.FileStorageUtil;
 import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
@@ -41,6 +42,9 @@ public class MembershipApplicationService {
 
     @Autowired
     private MembershipRepository membershipRepository;
+
+    @Autowired
+    private UsersRepository usersRepository;
 
     @Autowired
     private FileStorageUtil fileStorageUtil;
@@ -89,7 +93,7 @@ public class MembershipApplicationService {
 
     //submit membership application
     public MembershipApplication submitApplication(
-            Users user,
+            CustomUserDetails applicant,
             MembershipApplicationRequestDTO request,
 
             MultipartFile applicantPhoto,
@@ -113,12 +117,14 @@ public class MembershipApplicationService {
             MultipartFile aoa
     ) throws IOException {
 
+        Users user = usersRepository.findById(applicant.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         // Nominee validation
         if (request.getNominees() == null || request.getNominees().isEmpty() ||
                 request.getNominees().size() > 2) {
             throw new BadRequestException("Minimum 1 and maximum 2 nominees allowed");
         }
-
 
         validateMember(request.getProposer().getProposerMembershipId());
         validateMember(request.getSeconder().getSeconderMembershipId());
@@ -126,7 +132,7 @@ public class MembershipApplicationService {
         validateEndorserVerification(user.getId());
 
 
-        // Ownership rules
+        //Ownership rules
 
         boolean isProprietor =
                 request.getApplicantOwnershipType() == OwnershipType.PROPRIETOR;
@@ -149,7 +155,7 @@ public class MembershipApplicationService {
 
         }
 
-            /* ---------------- CREATE APPLICATION ---------------- */
+        /* ---------------- CREATE APPLICATION ---------------- */
 
         MembershipApplication application = new MembershipApplication();
         application.setUser(user);

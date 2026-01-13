@@ -10,7 +10,6 @@ import java.util.List;
 @Data
 public class MembershipApplicationRequestDTO {
 
-    private Long userId;
     private MembershipCategory applicantMembershipCategory;
     private String applicantFirmName;
     private OwnershipType applicantOwnershipType;
@@ -32,9 +31,6 @@ public class MembershipApplicationRequestDTO {
     private Proposer proposer;
     private Seconder seconder;
 
-    public Long getUserId() {
-        return userId;
-    }
 
     public MembershipCategory getApplicantMembershipCategory() {
         return applicantMembershipCategory;
