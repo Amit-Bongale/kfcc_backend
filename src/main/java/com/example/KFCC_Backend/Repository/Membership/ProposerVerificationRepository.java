@@ -4,6 +4,7 @@ import com.example.KFCC_Backend.Entity.Membership.ProposerVerification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -20,6 +21,13 @@ public interface ProposerVerificationRepository extends JpaRepository<ProposerVe
     boolean existsByApplicantUserIdAndEndorserTypeAndIsVerifiedTrue(
             Long applicantUserId,
             ProposerVerification.EndorserType endorserType
+    );
+
+    long countByApplicantUserIdAndProposerMembershipIdAndEndorserTypeAndCreatedAtAfter(
+            Long applicantUserId,
+            String proposerMembershipId,
+            ProposerVerification.EndorserType endorserType,
+            LocalDateTime time
     );
 
 }

@@ -25,8 +25,26 @@ public class ProposerVerificationService {
     @Autowired
     private MembershipRepository membershipRepository;
 
-//    send otp to proposer
-    public void sendProposerOtp(CustomUserDetails applicant , String proposerMembershipId, ProposerVerification.EndorserType type){
+
+    //send otp to proposer/seconder
+    public String sendProposerOtp(CustomUserDetails applicant , String proposerMembershipId, ProposerVerification.EndorserType type){
+
+        // rate limiting
+        LocalDateTime windowStart = LocalDateTime.now().minusMinutes(15);
+
+        long otpCount = proposerVerificationRepository
+                .countByApplicantUserIdAndProposerMembershipIdAndEndorserTypeAndCreatedAtAfter(
+                        applicant.getUserId(),
+                        proposerMembershipId,
+                        type,
+                        windowStart
+                );
+
+        if (otpCount >= 3) {
+            throw new BadRequestException(
+                    "OTP limit exceeded. Please try again after 15 minutes."
+            );
+        }
 
         // Invalidate any previous unverified OTPs if present
         proposerVerificationRepository.findTopByApplicantUserIdAndProposerMembershipIdAndEndorserTypeAndIsVerifiedFalseOrderByCreatedAtDesc(
@@ -60,6 +78,8 @@ public class ProposerVerificationService {
 
         // DEVELOPMENT ONLY (replace with SMS service later)
         System.out.println( type + proposer.getMembershipId() + " OTP : " + otp);
+
+        return proposer.getUser().getMobileNo().substring(7);
 
     }
 
@@ -111,7 +131,7 @@ public class ProposerVerificationService {
         response.setFirstName(membership.getUser().getFirstName());
         response.setMiddleName(membership.getUser().getMiddleName());
         response.setLastName(membership.getUser().getLastName());
-        response.setAddress(membership.getApplicantAddressLine1());
+        response.setAddress(membership.getApplicantAddressLine1()+ "," + membership.getApplicantAddressLine2());
         response.setMobile(membership.getUser().getMobileNo());
         response.setDesignation(membership.getApplicantMembershipCategory());
 

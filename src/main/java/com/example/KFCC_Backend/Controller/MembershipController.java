@@ -59,12 +59,12 @@ public class MembershipController {
             @AuthenticationPrincipal CustomUserDetails applicant,
             @PathVariable String membershipId, @PathVariable  ProposerVerification.EndorserType type) {
 
-        proposerVerificationService.sendProposerOtp( applicant, membershipId , type);
+        String mobileNo = proposerVerificationService.sendProposerOtp( applicant, membershipId , type);
 
-        return ResponseEntity.ok("OTP sent successfully");
+        return ResponseEntity.ok("OTP sent the Mobile Number Ending with " + mobileNo);
     }
 
-    // verify proposer otp
+    // verify proposer/seconder otp
     @PostMapping("endorsement/verify-otp")
     public ResponseEntity<ProposerDetailsResponseDTO> verifyOtp(
             @AuthenticationPrincipal CustomUserDetails applicant,
