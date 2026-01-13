@@ -5,6 +5,7 @@ import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationRequestDTO;
 import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationUpdateRequest;
 import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 
+import com.example.KFCC_Backend.Entity.Membership.ProposerVerification;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
@@ -54,17 +55,34 @@ public class MembershipApplicationService {
         }
     }
 
-    private void validateProposerVerification(Long applicantUserId) {
+    private void validateEndorserVerification(Long applicantUserId) {
 
-        boolean isVerified =
+        boolean proposerVerified =
                 proposerVerificationRepository
-                        .existsByApplicantUserIdAndIsVerifiedTrue(applicantUserId);
+                        .existsByApplicantUserIdAndEndorserTypeAndIsVerifiedTrue(
+                                applicantUserId,
+                                ProposerVerification.EndorserType.PROPOSER
+                        );
 
-        if (!isVerified) {
-            throw new RuntimeException(
-                    "Proposer verification is mandatory before submitting membership application"
-            );
+        boolean seconderVerified =
+                proposerVerificationRepository
+                        .existsByApplicantUserIdAndEndorserTypeAndIsVerifiedTrue(
+                                applicantUserId,
+                                ProposerVerification.EndorserType.SECONDER
+                        );
+
+        if (!proposerVerified && !seconderVerified) {
+            throw new BadRequestException("Proposer and Seconder verification are required");
         }
+
+        if (!proposerVerified) {
+            throw new BadRequestException("Proposer verification is required");
+        }
+
+        if (!seconderVerified) {
+            throw new BadRequestException("Seconder verification is required");
+        }
+        
     }
 
 
@@ -104,7 +122,7 @@ public class MembershipApplicationService {
         validateMember(request.getProposer().getProposerMembershipId());
         validateMember(request.getSeconder().getSeconderMembershipId());
 
-        validateProposerVerification(user.getId());
+        validateEndorserVerification(user.getId());
 
 
         // Ownership rules

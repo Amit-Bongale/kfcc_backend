@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.Controller;
 
 import com.example.KFCC_Backend.DTO.Membership.*;
+import com.example.KFCC_Backend.Entity.Membership.ProposerVerification;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
 import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 
@@ -52,20 +53,19 @@ public class MembershipController {
     }
 
 
-
-    //send otp to proposer
-    @PostMapping("proposer/send-otp/{membershipId}")
+    //send otp to proposer / seconder
+    @PostMapping("endorsement/send-otp/{membershipId}/{type}")
     public ResponseEntity<?> sendOtp(
             @AuthenticationPrincipal CustomUserDetails applicant,
-            @PathVariable String membershipId) {
+            @PathVariable String membershipId, @PathVariable  ProposerVerification.EndorserType type) {
 
-        proposerVerificationService.sendProposerOtp( applicant, membershipId );
+        proposerVerificationService.sendProposerOtp( applicant, membershipId , type);
 
         return ResponseEntity.ok("OTP sent successfully");
     }
 
     // verify proposer otp
-    @PostMapping("proposer/verify-otp")
+    @PostMapping("endorsement/verify-otp")
     public ResponseEntity<ProposerDetailsResponseDTO> verifyOtp(
             @AuthenticationPrincipal CustomUserDetails applicant,
             @Valid @RequestBody ProposerOtpVerifyRequestDTO request) {
@@ -74,6 +74,7 @@ public class MembershipController {
                 proposerVerificationService.verifyProposerOtp(
                         applicant,
                         request.getProposerMembershipId(),
+                        request.getType(),
                         request.getOtp()
                 );
 

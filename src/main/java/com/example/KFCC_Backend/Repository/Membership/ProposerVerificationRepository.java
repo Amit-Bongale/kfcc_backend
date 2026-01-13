@@ -10,11 +10,16 @@ import java.util.Optional;
 public interface ProposerVerificationRepository extends JpaRepository<ProposerVerification , Long> {
 
     Optional<ProposerVerification>
-    findTopByApplicantUserIdAndProposerMembershipIdAndIsVerifiedFalseOrderByCreatedAtDesc(
+    findTopByApplicantUserIdAndProposerMembershipIdAndEndorserTypeAndIsVerifiedFalseOrderByCreatedAtDesc(
             Long applicantUserId,
-            String proposerMembershipId
+            String proposerMembershipId,
+            ProposerVerification.EndorserType endorserType
     );
 
-    boolean existsByApplicantUserIdAndIsVerifiedTrue(Long applicantUserId);
+
+    boolean existsByApplicantUserIdAndEndorserTypeAndIsVerifiedTrue(
+            Long applicantUserId,
+            ProposerVerification.EndorserType endorserType
+    );
 
 }

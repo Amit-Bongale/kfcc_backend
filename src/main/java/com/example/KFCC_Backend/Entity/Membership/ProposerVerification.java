@@ -30,6 +30,14 @@ public class ProposerVerification {
 
     private LocalDateTime createdAt;
 
+    //store proposer or Seconder
+    @Enumerated(EnumType.STRING)
+    private EndorserType endorserType;
+
+    public enum EndorserType {
+        PROPOSER,
+        SECONDER
+    }
 
 //  getter and setters
 
@@ -113,5 +121,13 @@ public class ProposerVerification {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public EndorserType getEndorserType() {
+        return endorserType;
+    }
+
+    public void setEndorserType(EndorserType endorserType) {
+        this.endorserType = endorserType;
     }
 }

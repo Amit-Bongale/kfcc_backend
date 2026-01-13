@@ -26,13 +26,13 @@ public class ProposerVerificationService {
     private MembershipRepository membershipRepository;
 
 //    send otp to proposer
-    public void sendProposerOtp(CustomUserDetails applicant , String proposerMembershipId){
+    public void sendProposerOtp(CustomUserDetails applicant , String proposerMembershipId, ProposerVerification.EndorserType type){
 
         // Invalidate any previous unverified OTPs if present
-        proposerVerificationRepository
-                .findTopByApplicantUserIdAndProposerMembershipIdAndIsVerifiedFalseOrderByCreatedAtDesc(
+        proposerVerificationRepository.findTopByApplicantUserIdAndProposerMembershipIdAndEndorserTypeAndIsVerifiedFalseOrderByCreatedAtDesc(
                         applicant.getUserId(),
-                        proposerMembershipId
+                        proposerMembershipId,
+                        type
                 )
                 .ifPresent(old -> {
                     old.setOtpExpiresAt(LocalDateTime.now());
@@ -54,23 +54,24 @@ public class ProposerVerificationService {
         verification.setVerified(false);
         verification.setProposerUserId(proposer.getUser().getId());
         verification.setCreatedAt(LocalDateTime.now());
+        verification.setEndorserType(type);
 
         proposerVerificationRepository.save(verification);
 
         // DEVELOPMENT ONLY (replace with SMS service later)
-        System.out.println( proposer.getMembershipId() + "Proposer OTP : " + otp);
+        System.out.println( type + proposer.getMembershipId() + " OTP : " + otp);
 
     }
 
     public ProposerDetailsResponseDTO verifyProposerOtp(
             CustomUserDetails applicant,
             String proposerMembershipId,
+            ProposerVerification.EndorserType type,
             String otp
     ){
 
-        ProposerVerification verification = proposerVerificationRepository.
-                findTopByApplicantUserIdAndProposerMembershipIdAndIsVerifiedFalseOrderByCreatedAtDesc(
-                        applicant.getUserId(), proposerMembershipId
+        ProposerVerification verification = proposerVerificationRepository.findTopByApplicantUserIdAndProposerMembershipIdAndEndorserTypeAndIsVerifiedFalseOrderByCreatedAtDesc(
+                        applicant.getUserId(), proposerMembershipId , type
                 )
                 .orElseThrow(() -> new ResourceNotFoundException("OTP Not found"));
 
