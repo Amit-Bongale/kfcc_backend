@@ -9,8 +9,11 @@ import org.springframework.context.annotation.Configuration;
 public class MultiPartFileConfig {
     @Bean
     public WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatCustomizer() {
-        return factory -> factory.addConnectorCustomizers(connector ->
-                connector.setMaxParameterCount(10_000)
-        );
+        return factory -> factory.addConnectorCustomizers(connector -> {
+            connector.setMaxParameterCount(10_000);
+
+            // CRITICAL: Allows up to 100 multipart parts (files + form fields)
+            connector.setMaxPartCount(100);
+        });
     }
 }

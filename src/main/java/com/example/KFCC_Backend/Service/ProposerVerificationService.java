@@ -77,7 +77,7 @@ public class ProposerVerificationService {
         proposerVerificationRepository.save(verification);
 
         // DEVELOPMENT ONLY (replace with SMS service later)
-        System.out.println( type + proposer.getMembershipId() + " OTP : " + otp);
+        System.out.println( type + " : " + proposer.getMembershipId() + " OTP : " + otp);
 
         return proposer.getUser().getMobileNo().substring(7);
 

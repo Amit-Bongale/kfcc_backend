@@ -5,6 +5,7 @@ import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationRequestDTO;
 import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationUpdateRequest;
 import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 
+import com.example.KFCC_Backend.Entity.Membership.Partners;
 import com.example.KFCC_Backend.Entity.Membership.ProposerVerification;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
@@ -82,11 +83,11 @@ public class MembershipApplicationService {
         if (!seconderVerified) {
             throw new BadRequestException("Seconder verification is required");
         }
-        
+
     }
 
 
-    /*------ Need to fix Images ------------------- */
+    //submit membership application
     public MembershipApplication submitApplication(
             Users user,
             MembershipApplicationRequestDTO request,
@@ -142,9 +143,9 @@ public class MembershipApplicationService {
                 throw new BadRequestException("Maximum 6 partners allowed");
             }
 
-//            if (partnershipDeed == null || partnershipDeed.isEmpty()) {
-//                throw new IllegalArgumentException("Partnership deed is mandatory");
-//            }
+            if (partnershipDeed == null || partnershipDeed.isEmpty()) {
+                throw new BadRequestException("Partnership deed is mandatory");
+            }
 
         }
 
@@ -177,15 +178,16 @@ public class MembershipApplicationService {
 
         /* ---------------- FILE UPLOADS ---------------- */
 
-//        int totalFiles =
-//                1 + // applicant photo
-//                        5 + // applicant docs
-//                        (partnerPan != null ? partnerPan.length * 3 : 0) + // pan + aadhaar + signature
-//                        3; // deed + moa + aoa
-//
-//        if (totalFiles > 30) {
-//            throw new IllegalArgumentException("Too many documents uploaded");
-//        }
+        int totalFiles =
+                1 + // applicant photo
+                        5 + // applicant docs
+                        (partnerPan != null ? partnerPan.length * 3 : 0) + // pan + aadhaar + signature
+                        3; // deed + moa + aoa
+
+        // 30 files
+        if (totalFiles > 35) {
+            throw new BadRequestException("Too many documents uploaded");
+        }
 
         String appFolder = "membership/documents/APP-" + String.format("%06d", application.getApplicationId());
 
@@ -227,45 +229,45 @@ public class MembershipApplicationService {
 
         if (moa != null) {
             application.setMoa(fileStorageUtil.saveFile(appFolder, "ownership/moa", moa));
-
         }
+
         if (aoa != null) {
             application.setAoa(fileStorageUtil.saveFile(appFolder, "ownership/aoa", aoa));
         }
 
         /* ------------------  PARTNERS DOCUMENTS ------------ */
 
-//        if (!isProprietor && request.getPartners() != null) {
-//
-//            if (partnerPan.length != request.getPartners().size()
-//                    || partnerAadhaar.length != request.getPartners().size()
-//                    || partnerSignature.length != request.getPartners().size()) {
-//                throw new IllegalArgumentException("Partner document count mismatch");
-//            }
-//
-//            application.setPartnershipDeed(
-//                    fileStorageUtil.saveFile(appFolder, "ownership/partnership-deed", partnershipDeed)
-//            );
-//
-//            application.getPartners().clear();
-//
-//            for (int i = 0; i < request.getPartners().size(); i++) {
-//                Partners partner = request.getPartners().get(i);
-//                partner.setMembershipApplication(application);
-//
-//                partner.setPartnerPanImg(
-//                        fileStorageUtil.saveFile(appFolder, "partners/" + i + "/pan", partnerPan[i])
-//                );
-//                partner.setPartnerAadhaarImg(
-//                        fileStorageUtil.saveFile(appFolder, "partners/" + i + "/aadhaar", partnerAadhaar[i])
-//                );
-//                partner.setPartnerESignature(
-//                        fileStorageUtil.saveFile(appFolder, "partners/" + i + "/signature", partnerSignature[i])
-//                );
-//
-//                application.getPartners().add(partner);
-//            }
-//        }
+        if (!isProprietor && request.getPartners() != null) {
+
+            if (partnerPan.length != request.getPartners().size()
+                    || partnerAadhaar.length != request.getPartners().size()
+                    || partnerSignature.length != request.getPartners().size()) {
+                throw new org.apache.coyote.BadRequestException("Partner document count mismatch");
+            }
+
+            application.setPartnershipDeed(
+                    fileStorageUtil.saveFile(appFolder, "ownership/partnership-deed", partnershipDeed)
+            );
+
+            application.getPartners().clear();
+
+            for (int i = 0; i < request.getPartners().size(); i++) {
+                Partners partner = request.getPartners().get(i);
+                partner.setMembershipApplication(application);
+
+                partner.setPartnerPanImg(
+                        fileStorageUtil.saveFile(appFolder, "partners/" + i + "/pan", partnerPan[i])
+                );
+                partner.setPartnerAadhaarImg(
+                        fileStorageUtil.saveFile(appFolder, "partners/" + i + "/aadhaar", partnerAadhaar[i])
+                );
+                partner.setPartnerESignature(
+                        fileStorageUtil.saveFile(appFolder, "partners/" + i + "/signature", partnerSignature[i])
+                );
+
+                application.getPartners().add(partner);
+            }
+        }
 
         /* ---------------- CHILD ENTITIES ---------------- */
 
@@ -287,13 +289,11 @@ public class MembershipApplicationService {
         }
 
 
-
         request.getProposer().setMembershipApplication(finalApp);
         request.getSeconder().setMembershipApplication(finalApp);
 
         finalApp.setProposer(request.getProposer());
         finalApp.setSeconder(request.getSeconder());
-
 
         return membershipRepository.save(finalApp);
 
