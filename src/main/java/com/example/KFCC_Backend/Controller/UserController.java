@@ -49,6 +49,7 @@ public class UserController {
         return ResponseEntity.ok("User Role Updated Successfully");
     }
 
+    //delete user role
     @PostMapping("/remove/role")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN' )")
     public ResponseEntity<?> removeRole(@RequestBody UserRoleRequestDTO request){

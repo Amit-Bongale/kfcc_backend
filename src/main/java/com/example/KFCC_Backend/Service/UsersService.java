@@ -76,13 +76,13 @@ public class UsersService {
         return usersRepository.findUsersByRole(role);
     }
 
-    //fetch all details fo user
+    //fetch all details of the user
     public Users getUserAllDetails(CustomUserDetails user) {
         return usersRepository.findById(user.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not Found"));
     }
 
-
+    //assign new role to user
     public void assignRole(Long userId, UserRoles role){
         Users user = usersRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -99,16 +99,17 @@ public class UsersService {
         userRoleRepository.save(user_role);
     }
 
+    //delete user role
     @Transactional
     public void deleteUserRole(Long userId , UserRoles role){
 
         Users user = usersRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        UserRole userRole = userRoleRepository.findByUserAndRole(user , role)
-                .orElseThrow(() -> new ResourceNotFoundException("Roles not Assigned"));
-
-        System.out.println("Deleting: " + userRole.getUser().getId() + userRole.getRole());
+        UserRole userRole = user.getRoles().stream()
+                .filter(r -> r.getRole() == role)
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Role not assigned"));
 
         user.getRoles().remove(userRole);
 
