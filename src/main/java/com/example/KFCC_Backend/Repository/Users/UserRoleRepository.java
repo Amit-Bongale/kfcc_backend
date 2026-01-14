@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -33,6 +34,9 @@ public interface UserRoleRepository extends JpaRepository<UserRole , Long> {
     );
 
     boolean existsByUserAndRole(Users user, UserRoles role);
+
+
+    Optional<UserRole> findByUserAndRole(Users user, UserRoles role);
 
 
 }

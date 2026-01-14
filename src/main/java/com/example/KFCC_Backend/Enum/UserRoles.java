@@ -35,7 +35,9 @@ public enum UserRoles {
     DISTRIBUTOR,
     STUDIO,
     HONORARY_MEMBER,
-    TEMPORARY_MEMBER;
+    TEMPORARY_MEMBER,
 
+    //admin
+    SUPER_ADMIN;
 
 }

@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.Controller;
 
+import com.example.KFCC_Backend.DTO.UserRoleRequestDTO;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.UsersService;
@@ -8,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,7 +20,7 @@ public class UserController {
     @Autowired
     private UsersService usersService;
 
-    //get user details by token
+    //get user details by token for redux
     @GetMapping("/getDetail")
     public ResponseEntity<?> getUserDetails(){
         return ResponseEntity.ok(usersService.getUserDetails());
@@ -40,6 +38,22 @@ public class UserController {
     @GetMapping("/userDetails")
     public ResponseEntity<?> getUserAllDetailsOfUser(@AuthenticationPrincipal CustomUserDetails user){
         return  ResponseEntity.ok(usersService.getUserAllDetails(user));
+    }
+
+
+    //assign role to user
+    @PostMapping("/assign/role")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN' )")
+    public ResponseEntity<?> assignRole(@RequestBody UserRoleRequestDTO request){
+        usersService.assignRole(request.getUserID(),  request.getRole());
+        return ResponseEntity.ok("User Role Updated Successfully");
+    }
+
+    @PostMapping("/remove/role")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN' )")
+    public ResponseEntity<?> removeRole(@RequestBody UserRoleRequestDTO request){
+        usersService.deleteUserRole(request.getUserID(),  request.getRole());
+        return ResponseEntity.ok("User Role Deleted Successfully");
     }
 
 }
