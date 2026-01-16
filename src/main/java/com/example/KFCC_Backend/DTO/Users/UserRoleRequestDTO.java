@@ -1,4 +1,4 @@
-package com.example.KFCC_Backend.DTO;
+package com.example.KFCC_Backend.DTO.Users;
 
 import com.example.KFCC_Backend.Enum.UserRoles;
 

@@ -28,4 +28,6 @@ public interface UsersRepository extends JpaRepository<Users , Long> {
         where r.role = :role
     """)
     List<Users> findUsersByRole(@Param("role") UserRoles role);
+
+    boolean existsByMobileNo(String mobile);
 }

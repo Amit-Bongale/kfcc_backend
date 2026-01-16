@@ -1,6 +1,6 @@
 package com.example.KFCC_Backend.Controller;
 
-import com.example.KFCC_Backend.DTO.SignupRequestDTO;
+import com.example.KFCC_Backend.DTO.Users.SignupRequestDTO;
 import com.example.KFCC_Backend.Enum.UserRoles;
 
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;

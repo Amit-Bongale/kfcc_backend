@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.Controller;
 
-import com.example.KFCC_Backend.DTO.UserRoleRequestDTO;
+import com.example.KFCC_Backend.DTO.Users.AddUserDTO;
+import com.example.KFCC_Backend.DTO.Users.UserRoleRequestDTO;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.UsersService;
@@ -38,6 +39,14 @@ public class UserController {
     @GetMapping("/userDetails")
     public ResponseEntity<?> getUserAllDetailsOfUser(@AuthenticationPrincipal CustomUserDetails user){
         return  ResponseEntity.ok(usersService.getUserAllDetails(user));
+    }
+
+    //add a user with role
+    @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN' )")
+    public ResponseEntity<?> createUserWithRole(@RequestBody AddUserDTO request){
+        usersService.createUserWithRole(request);
+        return ResponseEntity.ok("User Added Successfully");
     }
 
 

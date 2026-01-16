@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.Service;
 
+import com.example.KFCC_Backend.DTO.Users.AddUserDTO;
 import com.example.KFCC_Backend.Entity.UserRole;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
@@ -115,6 +116,29 @@ public class UsersService {
 
     }
 
+    //add a user with role (Only for admin)
+    public void createUserWithRole(AddUserDTO request) {
 
+        boolean isExist = usersRepository.existsByMobileNo(request.getMobileNo());
 
+        if(isExist){
+            throw new BadRequestException("User Already Exists");
+        }
+
+        Users user = new Users();
+        user.setFirstName(request.getFirstName());
+        user.setMiddleName(request.getMiddleName());
+        user.setLastName(request.getLastName());
+        user.setDob(request.getDob());
+        user.setEmail(request.getEmail());
+        user.setBloodGroup(request.getBloodGroup());
+        user.setMobileNo(request.getMobileNo());
+
+        Users user1 = usersRepository.save(user);
+
+        UserRole userRole = new UserRole();
+        userRole.setUser(user1);
+        userRole.setRole(request.getRole());
+        userRoleRepository.save(userRole);
+    }
 }
