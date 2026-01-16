@@ -2,6 +2,7 @@ package com.example.KFCC_Backend.Controller;
 
 import com.example.KFCC_Backend.DTO.Users.AddUserDTO;
 import com.example.KFCC_Backend.DTO.Users.UserRoleRequestDTO;
+import com.example.KFCC_Backend.DTO.Users.UserWithRolesDTO;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.UsersService;
@@ -28,8 +29,8 @@ public class UserController {
     }
 
     @GetMapping("/role")
-    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'MANAGER' , 'PRESIDENT' )")
-    public ResponseEntity<List<Users>> getUsersByRole( @RequestParam UserRoles role ) {
+    @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'MANAGER' , 'PRESIDENT' , 'SUPER_ADMIN')")
+    public ResponseEntity<List<UserWithRolesDTO>> getUsersByRole(@RequestParam UserRoles role ) {
         return ResponseEntity.ok(
                 usersService.getUsersByRole(role)
         );

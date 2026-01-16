@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.DTO.Users.AddUserDTO;
+import com.example.KFCC_Backend.DTO.Users.UserWithRolesDTO;
 import com.example.KFCC_Backend.Entity.UserRole;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
@@ -73,8 +74,30 @@ public class UsersService {
 
     }
 
-    public List<Users> getUsersByRole(UserRoles role) {
-        return usersRepository.findUsersByRole(role);
+    public List<UserWithRolesDTO> getUsersByRole(UserRoles role) {
+        return usersRepository.findUsersByRole(role)
+                .stream()
+                .map(user -> {
+                    UserWithRolesDTO dto = new UserWithRolesDTO();
+                    dto.setId(user.getId());
+                    dto.setFirstName(user.getFirstName());
+                    dto.setMiddleName(user.getMiddleName());
+                    dto.setLastName(user.getLastName());
+                    dto.setMobileNo(user.getMobileNo());
+                    dto.setEmail(user.getEmail());
+                    dto.setBloodGroup(user.getBloodGroup());
+                    dto.setDob(user.getDob());
+
+                    dto.setRoles(
+                            user.getRoles()
+                                    .stream()
+                                    .map(UserRole::getRole)
+                                    .collect(Collectors.toSet())
+                    );
+
+                    return dto;
+                })
+                .toList();
     }
 
     //fetch all details of the user
