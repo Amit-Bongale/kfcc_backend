@@ -13,8 +13,12 @@ import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Entity.Users;
 import com.example.KFCC_Backend.Jwt.JwtUtil;
 import jakarta.transaction.Transactional;
-import org.jspecify.annotations.Nullable;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -142,10 +146,12 @@ public class UsersService {
     //add a user with role (Only for admin)
     public void createUserWithRole(AddUserDTO request) {
 
+        System.out.println("working on adding role");
+
         boolean isExist = usersRepository.existsByMobileNo(request.getMobileNo());
 
         if(isExist){
-            throw new BadRequestException("User Already Exists");
+            throw new BadRequestException("User Mobile number already Already Exists");
         }
 
         Users user = new Users();
@@ -164,4 +170,64 @@ public class UsersService {
         userRole.setRole(request.getRole());
         userRoleRepository.save(userRole);
     }
+
+    //return all users information
+    public Page<UserWithRolesDTO> getAllUsers(int page) {
+
+        Pageable pageable  = PageRequest.of(page , 25 , Sort.by("id").descending() );
+
+        return usersRepository.findAll(pageable)
+                .map(user -> {
+                    UserWithRolesDTO dto = new UserWithRolesDTO();
+                    dto.setId(user.getId());
+                    dto.setFirstName(user.getFirstName());
+                    dto.setMiddleName(user.getMiddleName());
+                    dto.setLastName(user.getLastName());
+                    dto.setMobileNo(user.getMobileNo());
+                    dto.setEmail(user.getEmail());
+                    dto.setBloodGroup(user.getBloodGroup());
+                    dto.setDob(user.getDob());
+
+                    dto.setRoles(
+                            user.getRoles()
+                                    .stream()
+                                    .map(UserRole::getRole)
+                                    .collect(Collectors.toSet())
+                    );
+
+                    return dto;
+                });
+
+    }
+
+
+    //get all users by role
+    public Page<UserWithRolesDTO> getAllUsersByRole(UserRoles role, int page) {
+
+        Pageable pageable = PageRequest.of(page, 25, Sort.by("id").descending());
+
+        return usersRepository.findAllUsersByRole(role, pageable)
+                .map(user -> {
+                    UserWithRolesDTO dto = new UserWithRolesDTO();
+                    dto.setId(user.getId());
+                    dto.setFirstName(user.getFirstName());
+                    dto.setMiddleName(user.getMiddleName());
+                    dto.setLastName(user.getLastName());
+                    dto.setMobileNo(user.getMobileNo());
+                    dto.setEmail(user.getEmail());
+                    dto.setBloodGroup(user.getBloodGroup());
+                    dto.setDob(user.getDob());
+
+                    dto.setRoles(
+                            user.getRoles()
+                                    .stream()
+                                    .map(UserRole::getRole)
+                                    .collect(Collectors.toSet())
+                    );
+
+                    return dto;
+                });
+    }
+
+
 }

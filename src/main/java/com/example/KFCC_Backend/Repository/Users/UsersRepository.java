@@ -2,6 +2,8 @@ package com.example.KFCC_Backend.Repository.Users;
 
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Entity.Users;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,7 +24,7 @@ public interface UsersRepository extends JpaRepository<Users , Long> {
     Optional<Users> findByIdWithRoles(@Param("userId") Long userId);
 
     @Query("""
-        select distinct u
+        select DISTINCT u
         from Users u
         join u.roles r
         where r.role = :role
@@ -30,6 +32,18 @@ public interface UsersRepository extends JpaRepository<Users , Long> {
     List<Users> findUsersByRole(@Param("role") UserRoles role);
 
 
+    @Query("""
+        SELECT DISTINCT u 
+        FROM Users u 
+        JOIN u.roles r 
+        WHERE r.role = :role
+    """)
+    Page<Users> findAllUsersByRole(
+            @Param("role") UserRoles role,
+            Pageable pageable
+    );
+
 
     boolean existsByMobileNo(String mobile);
+
 }

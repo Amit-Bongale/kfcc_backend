@@ -8,6 +8,7 @@ import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.UsersService;
 import com.example.KFCC_Backend.Entity.Users;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,11 +29,19 @@ public class UserController {
         return ResponseEntity.ok(usersService.getUserDetails());
     }
 
+    //get all the users
+    @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
+    public ResponseEntity<Page<UserWithRolesDTO>> getAllUsers(@RequestParam(defaultValue = "0") int page ){
+        return ResponseEntity.ok(usersService.getAllUsers(page));
+    }
+
+    //get all users based on roles
     @GetMapping("/role")
     @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'MANAGER' , 'PRESIDENT' , 'SUPER_ADMIN')")
-    public ResponseEntity<List<UserWithRolesDTO>> getUsersByRole(@RequestParam UserRoles role ) {
+    public ResponseEntity<Page<UserWithRolesDTO>> getUsersByRole(@RequestParam UserRoles role , @RequestParam(defaultValue = "0") int page) {
         return ResponseEntity.ok(
-                usersService.getUsersByRole(role)
+                usersService.getAllUsersByRole(role , page )
         );
     }
 
@@ -44,7 +53,7 @@ public class UserController {
 
     //add a user with role
     @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN' )")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
     public ResponseEntity<?> createUserWithRole(@RequestBody AddUserDTO request){
         usersService.createUserWithRole(request);
         return ResponseEntity.ok("User Added Successfully");
