@@ -59,6 +59,15 @@ public class UserController {
         return ResponseEntity.ok("User Added Successfully");
     }
 
+//    update user data
+    @PutMapping("update/{id}")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
+    public ResponseEntity<?> editUserDetails(@PathVariable Long id, @RequestBody AddUserDTO request){
+        usersService.updateUser(id,request);
+        return ResponseEntity.ok("User Details Edited Successfully");
+    }
+
+
 
     //assign role to user
     @PostMapping("/assign/role")

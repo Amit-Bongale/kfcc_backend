@@ -171,6 +171,30 @@ public class UsersService {
         userRoleRepository.save(userRole);
     }
 
+
+//    update user details
+    public Users updateUser(Long id, AddUserDTO request){
+
+        Users user = usersRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("User not found"));
+
+        user.setFirstName(request.getFirstName());
+        user.setMiddleName(request.getMiddleName());
+        user.setLastName(request.getLastName());
+        user.setMobileNo(request.getMobileNo());
+        user.setEmail(request.getEmail());
+
+        return usersRepository.save(user);
+    }
+
+//    delete user details
+//    public void deleteUser(Long id){
+//        Users user = usersRepository.findById(id)
+//                .orElseThrow(()->new RuntimeException("User not found"));
+//
+//         usersRepository.delete(user);
+//    }
+
     //return all users information
     public Page<UserWithRolesDTO> getAllUsers(int page) {
 
