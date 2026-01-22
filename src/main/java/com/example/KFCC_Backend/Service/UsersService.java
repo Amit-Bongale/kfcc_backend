@@ -187,6 +187,10 @@ public class UsersService {
         Users user = usersRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("User not found"));
 
+        if(request.getRoles().isEmpty()){
+            throw new BadRequestException("there must be least 1 role");
+        }
+
         user.setFirstName(request.getFirstName());
         user.setMiddleName(request.getMiddleName());
         user.setLastName(request.getLastName());
