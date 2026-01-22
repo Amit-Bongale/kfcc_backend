@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.DTO.Users.AddUserDTO;
+import com.example.KFCC_Backend.DTO.Users.UpdateUserDTO;
 import com.example.KFCC_Backend.DTO.Users.UserWithRolesDTO;
 import com.example.KFCC_Backend.Entity.UserRole;
 import com.example.KFCC_Backend.Enum.UserRoles;
@@ -127,7 +128,8 @@ public class UsersService {
         userRoleRepository.save(user_role);
     }
 
-    //delete user role
+
+    //delete user
     @Transactional
     public void deleteUserRole(Long userId , UserRoles role){
 
@@ -140,6 +142,11 @@ public class UsersService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role not assigned"));
 
         user.getRoles().remove(userRole);
+
+        // If no roles left  delete the user
+        if (user.getRoles().isEmpty()) {
+            usersRepository.delete(user);
+        }
 
     }
 
@@ -169,11 +176,13 @@ public class UsersService {
         userRole.setUser(user1);
         userRole.setRole(request.getRole());
         userRoleRepository.save(userRole);
+
     }
 
 
-//    update user details
-    public Users updateUser(Long id, AddUserDTO request){
+    //update user details
+    @Transactional
+    public void updateUser(Long id, UpdateUserDTO request){
 
         Users user = usersRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("User not found"));
@@ -182,18 +191,31 @@ public class UsersService {
         user.setMiddleName(request.getMiddleName());
         user.setLastName(request.getLastName());
         user.setMobileNo(request.getMobileNo());
-        user.setEmail(request.getEmail());
+        user.setBloodGroup(request.getBloodGroup());
+        user.setDob(request.getDob());
+        usersRepository.save(user);
 
-        return usersRepository.save(user);
+
+        // Remove all old roles
+        userRoleRepository.deleteByUserId(id);
+
+        if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+            List<UserRole> roles = request.getRoles()
+                    .stream()
+                    .distinct()
+                    .map(role -> {
+                        UserRole ur = new UserRole();
+                        ur.setUser(user);
+                        ur.setRole(role);
+                        return ur;
+                    })
+                    .toList();
+
+            userRoleRepository.saveAll(roles);
+        }
+
     }
 
-//    delete user details
-//    public void deleteUser(Long id){
-//        Users user = usersRepository.findById(id)
-//                .orElseThrow(()->new RuntimeException("User not found"));
-//
-//         usersRepository.delete(user);
-//    }
 
     //return all users information
     public Page<UserWithRolesDTO> getAllUsers(int page) {

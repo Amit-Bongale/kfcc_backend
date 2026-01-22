@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,4 +40,9 @@ public interface UserRoleRepository extends JpaRepository<UserRole , Long> {
     Optional<UserRole> findByUserAndRole(Users user, UserRoles role);
 
 
+    @Modifying
+    @Query("DELETE FROM UserRole ur WHERE ur.user.id = :userId")
+    void deleteByUserId(@Param("userId") Long userId);
+
+    List<UserRole> findByUserId(Long id);
 }

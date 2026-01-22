@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.Controller;
 
 import com.example.KFCC_Backend.DTO.Users.AddUserDTO;
+import com.example.KFCC_Backend.DTO.Users.UpdateUserDTO;
 import com.example.KFCC_Backend.DTO.Users.UserRoleRequestDTO;
 import com.example.KFCC_Backend.DTO.Users.UserWithRolesDTO;
 import com.example.KFCC_Backend.Enum.UserRoles;
@@ -59,10 +60,10 @@ public class UserController {
         return ResponseEntity.ok("User Added Successfully");
     }
 
-//    update user data
-    @PutMapping("update/{id}")
+    //update user data
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN')")
-    public ResponseEntity<?> editUserDetails(@PathVariable Long id, @RequestBody AddUserDTO request){
+    public ResponseEntity<?> editUserDetails(@PathVariable Long id, @RequestBody UpdateUserDTO request){
         usersService.updateUser(id,request);
         return ResponseEntity.ok("User Details Edited Successfully");
     }
