@@ -191,6 +191,7 @@ public class UsersService {
         user.setMiddleName(request.getMiddleName());
         user.setLastName(request.getLastName());
         user.setMobileNo(request.getMobileNo());
+        user.setEmail(request.getEmail());
         user.setBloodGroup(request.getBloodGroup());
         user.setDob(request.getDob());
         usersRepository.save(user);
