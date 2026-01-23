@@ -38,6 +38,7 @@ public enum UserRoles {
     TEMPORARY_MEMBER,
 
     //admin
+    ADMIN,
     SUPER_ADMIN;
 
 }

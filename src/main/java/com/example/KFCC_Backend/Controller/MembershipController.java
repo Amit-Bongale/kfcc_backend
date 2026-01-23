@@ -3,12 +3,11 @@ package com.example.KFCC_Backend.Controller;
 import com.example.KFCC_Backend.DTO.Membership.*;
 import com.example.KFCC_Backend.Entity.Membership.ProposerVerification;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
-import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.MembershipApplicationService;
 import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
-import com.example.KFCC_Backend.Entity.Users;
+
 import com.example.KFCC_Backend.Service.ProposerVerificationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,7 +159,7 @@ public class MembershipController {
     // Approve / Reject /  Remark Applications for all Roles
     @PostMapping("/{id}/action")
     @PreAuthorize("hasAnyRole('STAFF', 'ONM_COMMITTEE_LEADER' ,'SECRETARY' , 'PRESIDENT' )")
-    public ResponseEntity<?> ApplcationAction( @PathVariable Long id,
+    public ResponseEntity<?> applicationAction( @PathVariable Long id,
                                                @RequestBody @Valid ApplicationActionRequestDTO request,
                                                @AuthenticationPrincipal CustomUserDetails user){
         membershipApplicationService.MembershipApplicationAction(id , request, user);
@@ -179,6 +178,13 @@ public class MembershipController {
     public ResponseEntity<List<MembershipApplicationsResponseDTO>> getValidApplicationsByUerId(
             @AuthenticationPrincipal CustomUserDetails user){
         return  ResponseEntity.ok(membershipApplicationService.getActiveApplicationsByUserId(user));
+    }
+
+    //renew membership application
+    @PostMapping("/renew/{id}")
+    public ResponseEntity<?> reNewMembership(@PathVariable Long id){
+        membershipApplicationService.reNewMembership(id);
+        return ResponseEntity.ok("Membership ReNewed Successfully");
     }
 
 

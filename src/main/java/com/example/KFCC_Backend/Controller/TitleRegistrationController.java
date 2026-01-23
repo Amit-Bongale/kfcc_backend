@@ -1,6 +1,8 @@
 package com.example.KFCC_Backend.Controller;
 
 import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
+import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
+import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.TitleRegistrationService;
 import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -80,6 +83,15 @@ public class TitleRegistrationController {
                                                @AuthenticationPrincipal CustomUserDetails user){
         titleRegistrationService.TitleApplicationAction(id , request, user);
         return ResponseEntity.ok(Map.of("message" , "Application Status Updated"));
+    }
+
+
+    //renew title
+    @PostMapping("/renew/{id}")
+    @PreAuthorize("hasAnyRole('PRODUCER' )")
+    public ResponseEntity<?> reNewMembership(@PathVariable Long id){
+        titleRegistrationService.reNewTitle(id);
+        return ResponseEntity.ok("Title ReNewed Successfully");
     }
 
 }

@@ -5,18 +5,16 @@ import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationRequestDTO;
 import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationUpdateRequest;
 import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 
-import com.example.KFCC_Backend.Entity.Membership.Partners;
-import com.example.KFCC_Backend.Entity.Membership.ProposerVerification;
+import com.example.KFCC_Backend.Entity.Membership.*;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.OwnershipType;
+import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.Membership.MembershipRepository;
 import com.example.KFCC_Backend.Repository.Membership.ProposerVerificationRepository;
 import com.example.KFCC_Backend.Repository.Users.UsersRepository;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Utility.FileStorageUtil;
-import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
 
-import com.example.KFCC_Backend.Entity.Membership.Proprietor;
 import com.example.KFCC_Backend.Entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -353,6 +351,8 @@ public class MembershipApplicationService {
     }
 
 
+
+
     @Component
     public static class ApplicationFetchConfig {
         private static final Map<String, Set<MembershipStatus>> ROLE_STATUS_MAP =
@@ -576,7 +576,7 @@ public class MembershipApplicationService {
     }
 
 
-
+    /* --- update partner and nominee pending   --- */
 
     public void updateApplication(
             Long applicationId,
@@ -616,7 +616,21 @@ public class MembershipApplicationService {
             if (request.getNominees().size() > 2)
                 throw new IllegalArgumentException("Max 2 nominees allowed");
 
-//            application.updateNominees(request.getNominees());
+            // Clear existing nominees
+            application.getNominee().clear();
+
+            for (Nominee nomineeReq : request.getNominees()) {
+                Nominee nominee = new Nominee();
+                nominee.setNomineeFirstName(nomineeReq.getNomineeFirstName());
+                nominee.setNomineeMiddleName(nomineeReq.getNomineeMiddleName());
+                nominee.setNomineeLastName(nomineeReq.getNomineeLastName());
+                nominee.setNomineeMobileNo(nomineeReq.getNomineeMobileNo());
+                nominee.setNomineeEmail(nomineeReq.getNomineeEmail());
+
+                nominee.setMembershipApplication(application); // VERY IMPORTANT
+
+                application.getNominee().add(nominee);
+            }
         }
 
         //  Partners
@@ -624,10 +638,20 @@ public class MembershipApplicationService {
             if (request.getPartners() != null && request.getPartners().size() > 6)
                 throw new IllegalArgumentException("Max 6 partners allowed");
 
-//            application.updatePartners(request.getPartners());
+            application.getPartners().clear();
 
-        } else {
-//            application.clearPartners();
+            for (Partners partnerReq : request.getPartners()) {
+                Partners partner = new Partners();
+                partner.setPartnerAadhaarNo(partnerReq.getPartnerAadhaarNo());
+                partner.setPartnerAddress(partnerReq.getPartnerAddress());
+                partner.setPartnerBloodGroup(partnerReq.getPartnerBloodGroup());
+                partner.setPartnerName(partnerReq.getPartnerName());
+                partner.setPartnerDob(partner.getPartnerDob());
+                partner.setMembershipApplication(application);
+
+                application.getPartners().add(partner);
+            }
+
         }
 
         membershipRepository.save(application);
@@ -635,6 +659,22 @@ public class MembershipApplicationService {
     }
 
 
+    public void reNewMembership(Long id){
+        MembershipApplication application = membershipRepository.findByApplicationId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        LocalDate renewDate;
+
+        if(application.getMembershipExpiryDate().isBefore(LocalDate.now())){
+            renewDate = application.getMembershipExpiryDate().plusYears(1);
+        } else {
+            renewDate = LocalDate.now().plusYears(1);
+        }
+
+        application.setMembershipExpiryDate(renewDate);
+
+        membershipRepository.save(application);
+    }
 
 
 }

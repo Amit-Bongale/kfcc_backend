@@ -1,6 +1,7 @@
 package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
+import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
 import com.example.KFCC_Backend.Enum.UserRoles;
@@ -301,7 +302,22 @@ public class TitleRegistrationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Application not Found"));
 
         //update to be implemented
+        application.setTitle(request.getTitle());
+        application.setTitleInKannada(request.getTitleInKannada());
+        application.setCategory(request.getCategory());
+        application.setDirector(request.getDirector());
+        application.setFilmsByInstitutes(request.getFilmsByInstitutes());
+        application.setGstNo(request.getGstNo());
+        application.setFirstFilm(request.getFirstFilm());
+        application.setInstitution(request.getInstitution());
+        application.setLanguage(request.getLanguage());
+        application.setLeadActor(request.getLeadActor());
+        application.setMusicDirector(request.getMusicDirector());
+        application.setProducer(request.getProducer());
+        application.setPreviouslyRegisteredDetails(request.getPreviouslyRegisteredDetails());
+        application.setPreviouslyRegistered(request.getPreviouslyRegistered());
 
+        
         return application;
 
     }
@@ -310,6 +326,26 @@ public class TitleRegistrationService {
     public List<TitleRegistration> getApplicationsByUser(CustomUserDetails user) {
         Long userId = user.getUserId();
         return titleRegistrationRepository.findByProducerIdOrderByCreatedAtDesc(userId);
+    }
+
+
+    public void reNewTitle(Long id){
+
+        TitleRegistration application = titleRegistrationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        LocalDate renewDate;
+
+        if(application.getExpireDate().isBefore(LocalDate.now())){
+            renewDate = application.getExpireDate().plusYears(1);
+        } else {
+            renewDate = LocalDate.now().plusYears(1);
+        }
+
+        application.setExpireDate(renewDate);
+
+        titleRegistrationRepository.save(application);
+
     }
 }
 
