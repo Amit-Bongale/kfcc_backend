@@ -33,9 +33,9 @@ public class MembershipController {
     @Autowired
     private MembershipRepository membershipRepository;
 
-
     @Autowired
     private ProposerVerificationService proposerVerificationService;
+
 
     // get membership application details by ID
     @GetMapping("/{applicationId}")
@@ -61,6 +61,7 @@ public class MembershipController {
         return ResponseEntity.ok("OTP sent the Mobile Number Ending with " + mobileNo);
     }
 
+
     // verify proposer/seconder otp
     @PostMapping("endorsement/verify-otp")
     public ResponseEntity<ProposerDetailsResponseDTO> verifyOtp(
@@ -76,9 +77,8 @@ public class MembershipController {
                 );
 
         return ResponseEntity.ok(response);
+
     }
-
-
 
 
     // submit Membership Registration request
@@ -114,8 +114,6 @@ public class MembershipController {
 
     ) throws IOException {
 
-
-
         MembershipApplication app =
                 membershipApplicationService.submitApplication(
                         applicant,
@@ -141,6 +139,7 @@ public class MembershipController {
                 "applicationId", app.getApplicationId(),
                 "status", "SUBMITTED"
         ));
+
     }
 
 
@@ -149,12 +148,9 @@ public class MembershipController {
     @PreAuthorize("hasAnyRole('STAFF','ONM_COMMITTEE_VOTER', 'ONM_COMMITTEE_LEADER', 'EC_MEMBER','SECRETARY' , 'PRESIDENT' )")
     public ResponseEntity<List<MembershipApplicationsResponseDTO>> getPendingApplications(
             @AuthenticationPrincipal CustomUserDetails user) {
-
-        System.out.println("user:" + user);
-        return ResponseEntity.ok(
-                membershipApplicationService.getPendingApplications(user)
-        );
+        return ResponseEntity.ok(membershipApplicationService.getPendingApplications(user));
     }
+
 
     // Approve / Reject /  Remark Applications for all Roles
     @PostMapping("/{id}/action")
@@ -166,6 +162,7 @@ public class MembershipController {
         return ResponseEntity.ok(Map.of("message" , "Application Status Updated"));
     }
 
+
     // get all applications applied by user
     @GetMapping("/user/applications")
     public ResponseEntity<List<MembershipApplicationsResponseDTO>> getApplicationsByUerId(
@@ -173,12 +170,14 @@ public class MembershipController {
          return  ResponseEntity.ok(membershipApplicationService.getApplicationsByUserId(user));
     }
 
+
     //get only valid/active membership of user
     @GetMapping("/user/activeMemberships")
     public ResponseEntity<List<MembershipApplicationsResponseDTO>> getValidApplicationsByUerId(
             @AuthenticationPrincipal CustomUserDetails user){
         return  ResponseEntity.ok(membershipApplicationService.getActiveApplicationsByUserId(user));
     }
+
 
     //renew membership application
     @PostMapping("/renew/{id}")

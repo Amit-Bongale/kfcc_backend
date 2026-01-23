@@ -1,8 +1,5 @@
 package com.example.KFCC_Backend.Controller;
-
 import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
-import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
-import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Service.CustomUserDetails.CustomUserDetails;
 import com.example.KFCC_Backend.Service.TitleRegistrationService;
 import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
@@ -13,11 +10,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping("/titleRegistration")
@@ -32,7 +28,6 @@ public class TitleRegistrationController {
     public ResponseEntity<?> getTitleDetails(@PathVariable Long applicationId){
 
         TitleRegistration application = titleRegistrationService.getApplicationDetailsById(applicationId);
-
         return ResponseEntity.ok(application);
 
     }
@@ -42,7 +37,6 @@ public class TitleRegistrationController {
     public ResponseEntity<List<TitleRegistration>> getApplicaitonsByUserID(@AuthenticationPrincipal CustomUserDetails user){
 
         List<TitleRegistration> applictions = titleRegistrationService.getApplicationsByUser(user);
-
         return ResponseEntity.ok(applictions);
     }
 
@@ -69,9 +63,8 @@ public class TitleRegistrationController {
     public ResponseEntity<List<TitleRegistration>> getPendingApplications(
             @AuthenticationPrincipal CustomUserDetails user) {
 
-        return ResponseEntity.ok(
-                titleRegistrationService.getPendingApplications(user)
-        );
+        return ResponseEntity.ok(titleRegistrationService.getPendingApplications(user));
+
     }
 
 
@@ -83,6 +76,7 @@ public class TitleRegistrationController {
                                                @AuthenticationPrincipal CustomUserDetails user){
         titleRegistrationService.TitleApplicationAction(id , request, user);
         return ResponseEntity.ok(Map.of("message" , "Application Status Updated"));
+
     }
 
 
@@ -90,8 +84,11 @@ public class TitleRegistrationController {
     @PostMapping("/renew/{id}")
     @PreAuthorize("hasAnyRole('PRODUCER' )")
     public ResponseEntity<?> reNewMembership(@PathVariable Long id){
+
         titleRegistrationService.reNewTitle(id);
         return ResponseEntity.ok("Title ReNewed Successfully");
+
     }
+
 
 }

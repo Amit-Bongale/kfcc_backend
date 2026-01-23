@@ -46,7 +46,7 @@ public class UserController {
         );
     }
 
-    //get user details
+    //get user details [fetch for update]
     @GetMapping("/userDetails")
     public ResponseEntity<?> getUserAllDetailsOfUser(@AuthenticationPrincipal CustomUserDetails user){
         return  ResponseEntity.ok(usersService.getUserAllDetails(user));

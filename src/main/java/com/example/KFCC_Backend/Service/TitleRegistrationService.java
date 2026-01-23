@@ -194,6 +194,7 @@ public class TitleRegistrationService {
         }
     }
 
+
     private void requireRemarks(ApplicationActionRequestDTO request) {
         if (request.getRemark() == null || request.getRemark().isBlank()) {
             throw new IllegalArgumentException("Remarks required");
@@ -230,6 +231,7 @@ public class TitleRegistrationService {
                 }
                 default -> throw new IllegalStateException("Invalid action");
             };
+
         }
 
         //  Title Committee STAGE
@@ -296,6 +298,7 @@ public class TitleRegistrationService {
     }
 
 
+    //Update application
     public TitleRegistration updateApplication(Long applicationId , TitleRegistration request){
 
         TitleRegistration application = titleRegistrationRepository.findById(applicationId)
@@ -317,7 +320,7 @@ public class TitleRegistrationService {
         application.setPreviouslyRegisteredDetails(request.getPreviouslyRegisteredDetails());
         application.setPreviouslyRegistered(request.getPreviouslyRegistered());
 
-        
+
         return application;
 
     }
@@ -329,23 +332,24 @@ public class TitleRegistrationService {
     }
 
 
+    //renew titles
     public void reNewTitle(Long id){
 
         TitleRegistration application = titleRegistrationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
-        LocalDate renewDate;
+        LocalDate today = LocalDate.now();
+        LocalDate expiry = application.getExpireDate();
 
-        if(application.getExpireDate().isBefore(LocalDate.now())){
-            renewDate = application.getExpireDate().plusYears(1);
-        } else {
-            renewDate = LocalDate.now().plusYears(1);
-        }
+        LocalDate renewDate = expiry.isBefore(today)
+                ? today.plusYears(1)
+                : expiry.plusYears(1);
 
         application.setExpireDate(renewDate);
 
         titleRegistrationRepository.save(application);
 
     }
-}
 
+
+}

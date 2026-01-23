@@ -22,6 +22,7 @@ public class MembershipApplicationsResponseDTO {
     private String remarkedBy;
     private LocalDate expiryDate;
     private String membershipId;
+    private LocalDate acceptanceDate;
 
     public MembershipApplicationsResponseDTO(
             Long applicationId,
@@ -34,7 +35,8 @@ public class MembershipApplicationsResponseDTO {
             String remark,
             String remarkedBy,
             LocalDate expiryDate,
-            String membershipId
+            String membershipId,
+            LocalDate acceptanceDate
     ) {
         this.applicationId = applicationId;
         this.userId = userId;
@@ -47,6 +49,7 @@ public class MembershipApplicationsResponseDTO {
         this.remarkedBy = remarkedBy;
         this.expiryDate = expiryDate;
         this.membershipId = membershipId;
+        this.acceptanceDate = acceptanceDate;
     }
 
 
@@ -120,5 +123,29 @@ public class MembershipApplicationsResponseDTO {
 
     public void setRemarkedBy(String remarkedBy) {
         this.remarkedBy = remarkedBy;
+    }
+
+    public LocalDate getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public String getMembershipId() {
+        return membershipId;
+    }
+
+    public void setMembershipId(String membershipId) {
+        this.membershipId = membershipId;
+    }
+
+    public LocalDate getAcceptanceDate() {
+        return acceptanceDate;
+    }
+
+    public void setAcceptanceDate(LocalDate acceptanceDate) {
+        this.acceptanceDate = acceptanceDate;
     }
 }

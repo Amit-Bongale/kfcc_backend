@@ -321,7 +321,8 @@ public class MembershipApplicationService {
                         app.getRemark(),
                         app.getRemarkedBy(),
                         app.getMembershipExpiryDate(),
-                        app.getMembershipId()
+                        app.getMembershipId(),
+                        app.getMembershipAcceptanceDate()
                 ))
                 .collect(Collectors.toList());
     }
@@ -345,7 +346,8 @@ public class MembershipApplicationService {
                         app.getRemark(),
                         app.getRemarkedBy(),
                         app.getMembershipExpiryDate(),
-                        app.getMembershipId()
+                        app.getMembershipId(),
+                        app.getMembershipAcceptanceDate()
                 ))
                 .collect(Collectors.toList());
     }
@@ -409,7 +411,8 @@ public class MembershipApplicationService {
                         app.getRemark(),
                         app.getRemarkedBy(),
                         app.getMembershipExpiryDate(),
-                        null
+                        null,
+                        app.getMembershipAcceptanceDate()
                 ))
                 .collect(Collectors.toList());
     }
@@ -660,16 +663,16 @@ public class MembershipApplicationService {
 
 
     public void reNewMembership(Long id){
+
         MembershipApplication application = membershipRepository.findByApplicationId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
-        LocalDate renewDate;
+        LocalDate today = LocalDate.now();
+        LocalDate expiry = application.getMembershipExpiryDate();
 
-        if(application.getMembershipExpiryDate().isBefore(LocalDate.now())){
-            renewDate = application.getMembershipExpiryDate().plusYears(1);
-        } else {
-            renewDate = LocalDate.now().plusYears(1);
-        }
+        LocalDate renewDate = expiry.isBefore(today)
+                ? today.plusYears(1)
+                : expiry.plusYears(1);
 
         application.setMembershipExpiryDate(renewDate);
 
