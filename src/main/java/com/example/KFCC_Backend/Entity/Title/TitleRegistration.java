@@ -4,6 +4,7 @@ import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
 import com.example.KFCC_Backend.Enum.UserRoles;
 import com.example.KFCC_Backend.Entity.Users;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,7 +49,8 @@ public class TitleRegistration {
 
     @OneToMany(
             mappedBy = "application",
-            fetch = FetchType.LAZY
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
     )
     private List<TitleRegistrationDocuments> documents;
 
@@ -60,10 +62,10 @@ public class TitleRegistration {
     private String remark;
     private UserRoles remarkedBy;
 
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-
 
 
     public Long getId() {

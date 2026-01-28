@@ -45,7 +45,7 @@ public class TitleRegistrationController {
     @PreAuthorize("hasAnyRole('PRODUCER')")
     @RequestMapping("/apply")
     public ResponseEntity<?> submitTitleApplication( @RequestPart("request") TitleRegistration request,
-                                                    @RequestPart("files") List<MultipartFile> files,
+                                                    @RequestPart(value = "files", required = false ) List<MultipartFile> files,
                                                     @AuthenticationPrincipal CustomUserDetails userDetails) throws IOException {
 
         TitleRegistration application = titleRegistrationService.submitApplication(request , userDetails , files);
@@ -88,6 +88,13 @@ public class TitleRegistrationController {
         titleRegistrationService.reNewTitle(id);
         return ResponseEntity.ok("Title ReNewed Successfully");
 
+    }
+
+
+    @DeleteMapping("/delete/pending")
+    public ResponseEntity<?> deleltePendign(){
+        titleRegistrationService.deleteAllTitlePendingRecords();
+        return ResponseEntity.ok("Records Deleted");
     }
 
 

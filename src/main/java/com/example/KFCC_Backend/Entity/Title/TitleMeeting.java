@@ -2,6 +2,7 @@ package com.example.KFCC_Backend.Entity.Title;
 
 import com.example.KFCC_Backend.Entity.Users;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,10 +30,11 @@ public class TitleMeeting {
     @Enumerated(EnumType.STRING)
     private MeetingStatus status;
 
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
+
     private LocalDateTime terminatedAt;
-
-
 
 
     public Long getId() {

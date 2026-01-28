@@ -79,6 +79,21 @@ public class UsersService {
 
     }
 
+    public Users updateUserDetails(CustomUserDetails user , Users request){
+        Users u = usersRepository.findById(user.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not Found"));
+
+        u.setFirstName(request.getFirstName());
+        u.setMiddleName(request.getMiddleName());
+        u.setLastName(request.getLastName());
+        u.setDob(request.getDob());
+        u.setEmail(request.getEmail());
+        u.setBloodGroup(request.getBloodGroup());
+
+        return usersRepository.save(u);
+
+    }
+
     public List<UserWithRolesDTO> getUsersByRole(UserRoles role) {
         return usersRepository.findUsersByRole(role)
                 .stream()
@@ -180,7 +195,7 @@ public class UsersService {
     }
 
 
-    //update user details
+    //update user details for super admin
     @Transactional
     public void updateUser(Long id, UpdateUserDTO request){
 

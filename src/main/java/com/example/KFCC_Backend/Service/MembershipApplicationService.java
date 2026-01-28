@@ -30,6 +30,7 @@ import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -175,7 +176,7 @@ public class MembershipApplicationService {
                 request.getMembershipFee() + request.getKalyanNidhi()
         );
 
-        application.setMembershipStatus(MembershipStatus.SUBMITTED);
+        application.setMembershipStatus(MembershipStatus.PENDING_PAYMENT);
 
         final MembershipApplication finalApp = membershipRepository.save(application);
 
@@ -303,6 +304,18 @@ public class MembershipApplicationService {
 
     }
 
+
+
+    //mark application to tbe submitted after payment is success
+    public void markAsPaid(Long applicationId) {
+        MembershipApplication app = membershipRepository
+                .findByApplicationId(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        app.setMembershipStatus(MembershipStatus.SUBMITTED);
+        membershipRepository.save(app);
+    }
+
     // return all applications applied by a user
     public List<MembershipApplicationsResponseDTO> getApplicationsByUserId(CustomUserDetails user) {
 
@@ -351,7 +364,6 @@ public class MembershipApplicationService {
                 ))
                 .collect(Collectors.toList());
     }
-
 
 
 
@@ -662,6 +674,7 @@ public class MembershipApplicationService {
     }
 
 
+    // re-new Membership Applications
     public void reNewMembership(Long id){
 
         MembershipApplication application = membershipRepository.findByApplicationId(id)
@@ -677,6 +690,14 @@ public class MembershipApplicationService {
         application.setMembershipExpiryDate(renewDate);
 
         membershipRepository.save(application);
+    }
+
+
+    //delete all the records with pending payments
+    @Transactional
+    public void deleteAllMembershipPendingRecords() {
+        membershipRepository
+                .deleteByMembershipStatusAndSubmittedAtBefore(MembershipStatus.PENDING_PAYMENT , LocalDateTime.now().minusHours(24));
     }
 
 

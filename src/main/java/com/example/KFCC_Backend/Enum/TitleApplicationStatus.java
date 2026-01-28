@@ -1,6 +1,9 @@
 package com.example.KFCC_Backend.Enum;
 
 public enum TitleApplicationStatus {
+
+    PENDING_PAYMENT,
+
     DRAFT,
     SUBMITTED,
     STAFF_APPROVED,

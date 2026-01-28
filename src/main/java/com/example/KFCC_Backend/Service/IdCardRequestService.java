@@ -4,6 +4,7 @@ import com.example.KFCC_Backend.DTO.IdCard.IdCardResponseDTO;
 import com.example.KFCC_Backend.Entity.IdCardRequests;
 import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.Entity.Users;
+import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.IdCard.IdCardRequestRepository;
@@ -104,10 +105,20 @@ public class IdCardRequestService {
         request.setUser(user);
         request.setApplication(application);
         request.setSubmittedAt(LocalDate.now());
-        request.setStatus(IdCardRequests.IdCardStatus.REQUESTED);
+        request.setStatus(IdCardRequests.IdCardStatus.PENDING_PAYMENT);
         request.setApplicantImage(path);
 
         return mapToDto( idCardRequestRepository.save(request));
+    }
+
+    //mark application to tbe submitted after payment is success
+    public void markAsPaid(Long applicationId) {
+        IdCardRequests app = idCardRequestRepository
+                .findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        app.setStatus(IdCardRequests.IdCardStatus.REQUESTED);
+        idCardRequestRepository.save(app);
     }
 
     //show all pending requests

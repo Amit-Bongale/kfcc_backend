@@ -52,6 +52,11 @@ public class UserController {
         return  ResponseEntity.ok(usersService.getUserAllDetails(user));
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUserDetails(@AuthenticationPrincipal CustomUserDetails user, @RequestBody Users request){
+        return ResponseEntity.ok(usersService.updateUserDetails(user , request));
+    }
+
     //add a user with role
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN')")

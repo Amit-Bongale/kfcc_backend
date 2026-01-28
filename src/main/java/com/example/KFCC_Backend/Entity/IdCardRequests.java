@@ -31,6 +31,7 @@ public class IdCardRequests {
     private LocalDate submittedAt;
 
     public enum IdCardStatus {
+        PENDING_PAYMENT,
         REQUESTED,
         PRINTED,
         ISSUED

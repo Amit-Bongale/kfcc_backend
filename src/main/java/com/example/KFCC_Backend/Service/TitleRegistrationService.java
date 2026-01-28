@@ -86,42 +86,53 @@ public class TitleRegistrationService {
         app.setCategory(request.getCategory());
         app.setGstNo(request.getGstNo());
 
-        app.setStatus(TitleApplicationStatus.SUBMITTED);
+        app.setStatus(TitleApplicationStatus.PENDING_PAYMENT);
         app.setCreatedAt(LocalDateTime.now());
         app.setUpdatedAt(LocalDateTime.now());
 
         TitleRegistration application =  titleRegistrationRepository.save(app);
 
+        if(files != null) {
 
-        if(files.size() > 5){
-            throw new BadRequestException("Max 5 Documents can be Uploaded");
-        }
+            if (files.size() > 5) {
+                throw new BadRequestException("Max 5 Documents can be Uploaded");
+            }
 
-        for (MultipartFile file : files) {
+            for (MultipartFile file : files) {
 
-            if (file.isEmpty()) continue;
+                if (file.isEmpty()) continue;
 
-//            String folderName = "TitleRegistration/" + application.getId().toString();
+                // String folderName = "TitleRegistration/" + application.getId().toString();
 
-            //  UTILITY
-            String storedPath = fileStorageUtil.saveFile(
-                    "TitleRegistration/Documents",
-                    application.getId().toString(),
-                    file
-            );
+                //  UTILITY
+                String storedPath = fileStorageUtil.saveFile(
+                        "TitleRegistration/Documents",
+                        application.getId().toString(),
+                        file
+                );
 
-            if (storedPath == null) continue;
+                if (storedPath == null) continue;
 
-            TitleRegistrationDocuments doc = new TitleRegistrationDocuments();
-            doc.setApplication(application);
-            doc.setPath(storedPath);
+                TitleRegistrationDocuments doc = new TitleRegistrationDocuments();
+                doc.setApplication(application);
+                doc.setPath(storedPath);
 
-            documentsRepository.save(doc);
+                documentsRepository.save(doc);
+            }
         }
 
 
         return application;
 
+    }
+
+    public void markAsPaid(Long titleId) {
+        TitleRegistration title = titleRegistrationRepository
+                .findById(titleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not Found"));
+
+        title.setStatus(TitleApplicationStatus.SUBMITTED);
+        titleRegistrationRepository.save(title);
     }
 
     // get Application Details by Id
@@ -351,5 +362,11 @@ public class TitleRegistrationService {
 
     }
 
+
+    @Transactional
+    public void deleteAllTitlePendingRecords() {
+        titleRegistrationRepository
+                .deleteByStatusAndCreatedAtBefore(TitleApplicationStatus.PENDING_PAYMENT , LocalDateTime.now());
+    }
 
 }

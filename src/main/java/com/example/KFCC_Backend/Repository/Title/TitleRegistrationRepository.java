@@ -1,12 +1,15 @@
 package com.example.KFCC_Backend.Repository.Title;
 
+import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
 import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +26,9 @@ public interface TitleRegistrationRepository extends JpaRepository<TitleRegistra
     ORDER BY a.createdAt DESC
     """)
     List<TitleRegistration> findByCurrentStatusIn(@Param("statuses") Set<TitleApplicationStatus> statuses);
+
+    @Modifying
+    void deleteByStatusAndCreatedAtBefore(TitleApplicationStatus status , LocalDateTime time);
 
 
 }

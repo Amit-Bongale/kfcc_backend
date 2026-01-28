@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.Repository.Membership;
 
+import com.example.KFCC_Backend.Entity.Payments;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.Entity.Users;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -79,4 +81,7 @@ public interface MembershipRepository  extends JpaRepository <MembershipApplicat
             @Param("status") MembershipStatus status,
             @Param("today") LocalDate today
     );
+
+    void deleteByMembershipStatusAndSubmittedAtBefore(MembershipStatus status , LocalDateTime time);
+
 }

@@ -20,6 +20,7 @@ public class OtpVerification {
     private int attempts;
     private LocalDateTime lastSentAt;
 
+
     public int getId() {
         return id;
     }

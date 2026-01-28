@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -144,7 +145,8 @@ public class MembershipApplication {
     // Set ONLY when application is APPROVED [1yrs]
     private LocalDate membershipExpiryDate;
 
-
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime submittedAt = LocalDateTime.now();
 
 
@@ -179,8 +181,6 @@ public class MembershipApplication {
     public void setDate(LocalDate date) {
         this.date = date;
     }
-
-
 
     public String getApplicantAddressLine1() {
         return applicantAddressLine1;
