@@ -22,6 +22,7 @@ public class TitleRegistrationController {
     @Autowired
     private TitleRegistrationService titleRegistrationService;
 
+
     //get particular application details by ID
     @GetMapping("/{applicationId}")
     @PreAuthorize("hasAnyRole( 'PRODUCER' , 'STAFF','TITLE_COMMITTEE_VOTER', 'TITLE_COMMITTEE_LEADER', 'EC_MEMBER', 'SECRETARY' , 'PRESIDENT' )")
