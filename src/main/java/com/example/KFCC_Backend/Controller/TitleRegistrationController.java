@@ -26,9 +26,10 @@ public class TitleRegistrationController {
     //get particular application details by ID
     @GetMapping("/{applicationId}")
     @PreAuthorize("hasAnyRole( 'PRODUCER' , 'STAFF','TITLE_COMMITTEE_VOTER', 'TITLE_COMMITTEE_LEADER', 'EC_MEMBER', 'SECRETARY' , 'PRESIDENT' )")
-    public ResponseEntity<?> getTitleDetails(@PathVariable Long applicationId){
+    public ResponseEntity<?> getTitleDetails(@PathVariable Long applicationId ,
+                                             @AuthenticationPrincipal CustomUserDetails user){
 
-        TitleRegistration application = titleRegistrationService.getApplicationDetailsById(applicationId);
+        TitleRegistration application = titleRegistrationService.getApplicationDetailsById(applicationId , user);
         return ResponseEntity.ok(application);
 
     }

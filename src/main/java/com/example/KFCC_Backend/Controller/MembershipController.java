@@ -41,10 +41,11 @@ public class MembershipController {
     @GetMapping("/{applicationId}")
     @PreAuthorize("hasAnyRole('USER','STAFF','ONM_COMMITTEE_VOTER','ONM_COMMITTEE_LEADER','EC_MEMBER','SECRETARY','PRESIDENT')")
     public ResponseEntity<?> getMembershipApplicationById(
-            @PathVariable Long applicationId
+            @PathVariable Long applicationId,
+            @AuthenticationPrincipal CustomUserDetails user
     ) {
         MembershipApplication application =
-                membershipApplicationService.getApplicationDetailsByID(applicationId);
+                membershipApplicationService.getApplicationDetailsByID(applicationId , user);
 
         return ResponseEntity.ok(application);
     }

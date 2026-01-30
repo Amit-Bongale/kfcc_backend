@@ -3,6 +3,7 @@ package com.example.KFCC_Backend.DTO.IdCard;
 import com.example.KFCC_Backend.Enum.MembershipCategory;
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class IdCardResponseDTO {
@@ -28,10 +29,16 @@ public class IdCardResponseDTO {
     private String applicantImage;
     private String status;
     private LocalDate issuedAt;
-    private LocalDate submittedAt;
+    private LocalDateTime submittedAt;
 
 
-    public IdCardResponseDTO(String firstName, String middleName, String lastName, String bloodGroup, LocalDate dob, String mobileNo, MembershipCategory membershipCategory, String membershipNumber, String firmName, String addressLine1, String addressLine2, LocalDate membershipExpiryDate, Long id, String applicantImage, String status, LocalDate issuedAt, LocalDate submittedAt) {
+    public IdCardResponseDTO(
+            String firstName, String middleName, String lastName, String bloodGroup,
+            LocalDate dob, String mobileNo, MembershipCategory membershipCategory,
+            String membershipNumber, String firmName, String addressLine1,
+            String addressLine2, LocalDate membershipExpiryDate, Long id,
+            String applicantImage, String status, LocalDate issuedAt, LocalDateTime submittedAt) {
+
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;

@@ -1,5 +1,6 @@
 package com.example.KFCC_Backend.Scheduler;
 
+import com.example.KFCC_Backend.Service.IdCardRequestService;
 import com.example.KFCC_Backend.Service.MembershipApplicationService;
 import com.example.KFCC_Backend.Service.TitleRegistrationService;
 import jakarta.transaction.Transactional;
@@ -16,12 +17,16 @@ public class ApplicationCleanupScheduler {
     @Autowired
     private TitleRegistrationService titleRegistrationService;
 
+    @Autowired
+    private IdCardRequestService idCardRequestService;
+
     //clean all old payment pending applications at night 2AM
     @Scheduled(cron = "0 0 2 * * *")
     @Transactional
     public void removeExpiredApplications(){
         membershipApplicationService.deleteAllMembershipPendingRecords();
         titleRegistrationService.deleteAllTitlePendingRecords();
+        idCardRequestService.deleteAllIdPendingRecords();
     }
 
 

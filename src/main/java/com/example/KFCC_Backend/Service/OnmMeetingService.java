@@ -91,8 +91,7 @@ public class OnmMeetingService {
         Page<OnmMeeting> page =
                 onmMeetingRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        List<OnmMeeting> meetings = page.getContent();
-        return meetings;
+        return page.getContent();
     }
 
     // Fetch meetings by status

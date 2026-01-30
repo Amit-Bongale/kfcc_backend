@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class IdCardRequests {
@@ -28,7 +29,8 @@ public class IdCardRequests {
     private IdCardStatus status;
 
     private LocalDate issuedAt;
-    private LocalDate submittedAt;
+
+    private LocalDateTime submittedAt = LocalDateTime.now();
 
     public enum IdCardStatus {
         PENDING_PAYMENT,
@@ -85,11 +87,11 @@ public class IdCardRequests {
         this.issuedAt = issuedAt;
     }
 
-    public LocalDate getSubmittedAt() {
+    public LocalDateTime getSubmittedAt() {
         return submittedAt;
     }
 
-    public void setSubmittedAt(LocalDate submittedAt) {
+    public void setSubmittedAt(LocalDateTime submittedAt) {
         this.submittedAt = submittedAt;
     }
 }

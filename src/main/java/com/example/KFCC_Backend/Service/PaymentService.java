@@ -1,7 +1,6 @@
 package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.Entity.Payments;
-import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
 import com.example.KFCC_Backend.Entity.Users;
 import com.example.KFCC_Backend.Enum.PaymentModule;
 import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;

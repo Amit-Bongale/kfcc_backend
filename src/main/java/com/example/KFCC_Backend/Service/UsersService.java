@@ -20,9 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,36 +40,25 @@ public class UsersService {
     private JwtUtil jwtUtil;
 
     // return user details by token for redux
-    public Map<String, Object> getUserDetails() {
+    public Map<String, Object> getUserDetails(CustomUserDetails user) {
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AccessDeniedException("Unauthenticated user");
-        }
-
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
-
-        Users user = usersRepository.findByIdWithRoles(userDetails.getUserId())
+        Users u = usersRepository.findByIdWithRoles(user.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        Set<String> roles = user.getRoles()
+        Set<String> roles = u.getRoles()
                 .stream()
                 .map(r -> r.getRole().name())
                 .collect(Collectors.toSet());
 
-
         String token = jwtUtil.generateToken(
-                userDetails,
+                user,
                 roles
         );
 
         return Map.of(
-                "userId", user.getId(),
-                "firstName", user.getFirstName(),
-                "mobile", user.getMobileNo(),
+                "userId", u.getId(),
+                "firstName", u.getFirstName(),
+                "mobile", u.getMobileNo(),
                 "roles", roles,
                 "token" , token
         );

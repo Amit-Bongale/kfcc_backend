@@ -26,8 +26,8 @@ public class UserController {
 
     //get user details by token for redux
     @GetMapping("/getDetail")
-    public ResponseEntity<?> getUserDetails(){
-        return ResponseEntity.ok(usersService.getUserDetails());
+    public ResponseEntity<?> getUserDetails(@AuthenticationPrincipal CustomUserDetails user){
+        return ResponseEntity.ok(usersService.getUserDetails(user));
     }
 
     //get all the users

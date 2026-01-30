@@ -17,7 +17,6 @@ import com.example.KFCC_Backend.Entity.PublicityClearance.PublicityClearanceAppl
 import com.example.KFCC_Backend.Entity.PublicityClearance.PublicityClearanceDocuments;
 import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
 import com.example.KFCC_Backend.Entity.Users;
-import com.sun.jdi.event.StepEvent;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;

@@ -4,7 +4,6 @@ import com.example.KFCC_Backend.DTO.IdCard.IdCardResponseDTO;
 import com.example.KFCC_Backend.Entity.IdCardRequests;
 import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.Entity.Users;
-import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 import com.example.KFCC_Backend.ExceptionHandlers.ResourceNotFoundException;
 import com.example.KFCC_Backend.Repository.IdCard.IdCardRequestRepository;
@@ -20,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.rmi.AccessException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -104,7 +104,7 @@ public class IdCardRequestService {
         IdCardRequests request = new IdCardRequests();
         request.setUser(user);
         request.setApplication(application);
-        request.setSubmittedAt(LocalDate.now());
+        request.setSubmittedAt(LocalDateTime.now());
         request.setStatus(IdCardRequests.IdCardStatus.PENDING_PAYMENT);
         request.setApplicantImage(path);
 
@@ -143,6 +143,13 @@ public class IdCardRequestService {
         requests.setIssuedAt(LocalDate.now());
 
         idCardRequestRepository.save(requests);
+    }
+
+    //delete all the records with pending payments
+    @Transactional
+    public void deleteAllIdPendingRecords() {
+        idCardRequestRepository
+                .deleteByStatusAndSubmittedAtBefore(IdCardRequests.IdCardStatus.PENDING_PAYMENT , LocalDateTime.now().minusHours(24));
     }
 
 }

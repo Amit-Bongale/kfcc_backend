@@ -101,8 +101,8 @@ public class TitleMeetingService {
         Page<TitleMeeting> page =
                 titleMeetingRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        List<TitleMeeting> meetings = page.getContent();
-        return meetings;
+        return page.getContent();
+
     }
 
     // Fetch meetings by status

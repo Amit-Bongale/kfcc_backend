@@ -20,12 +20,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.example.KFCC_Backend.ExceptionHandlers.BadRequestException;
 
 import java.io.IOException;
@@ -137,13 +134,11 @@ public class MembershipApplicationService {
                 request.getApplicantOwnershipType() == OwnershipType.PROPRIETOR;
 
         if (isProprietor) {
-            if (request.getProprietor() == null) {
-                throw new BadRequestException("Proprietor details are mandatory");
-            }
             if (request.getPartners() != null && !request.getPartners().isEmpty()) {
                 throw new BadRequestException("Proprietor cannot have partners");
             }
         } else {
+
             if (request.getPartners() != null && request.getPartners().size() > 6) {
                 throw new BadRequestException("Maximum 6 partners allowed");
             }
@@ -216,6 +211,7 @@ public class MembershipApplicationService {
             );
 
             application.setProprietor(proprietor);
+
         }
 
         /* ---- applicant Documents ---*/
@@ -243,6 +239,10 @@ public class MembershipApplicationService {
         /* ------------------  PARTNERS DOCUMENTS ------------ */
 
         if (!isProprietor && request.getPartners() != null) {
+
+            if (partnerPan == null) {
+                throw new IllegalArgumentException("partnerPan cannot be null");
+            }
 
             if (partnerPan.length != request.getPartners().size()
                     || partnerAadhaar.length != request.getPartners().size()
@@ -432,27 +432,21 @@ public class MembershipApplicationService {
 
 
     // get application details on ID
-    public MembershipApplication getApplicationDetailsByID(Long applicationId) {
-        Authentication authentication = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
-
-        CustomUserDetails currentUser =
-                (CustomUserDetails) authentication.getPrincipal();
+    public MembershipApplication getApplicationDetailsByID(Long applicationId , CustomUserDetails user) {
 
         MembershipApplication application =
                 membershipRepository.findByApplicationId(applicationId)
                         .orElseThrow(() ->
                                 new RuntimeException("Membership application not found"));
 
-        Set<String> roles = currentUser.getRoles();
+        Set<String> roles = user.getRoles();
 
         boolean isOnlyUser =  roles.size() == 1 && roles.contains("USER");
 
         if (isOnlyUser) {
             Long applicationUserId = application.getUser().getId();
 
-            if (!applicationUserId.equals(currentUser.getUserId())) {
+            if (!applicationUserId.equals(user.getUserId())) {
                 throw new AccessDeniedException(
                         "You are not allowed to view this application"
                 );

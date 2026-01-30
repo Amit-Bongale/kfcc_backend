@@ -1,7 +1,6 @@
 package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
-import com.example.KFCC_Backend.Entity.Membership.MembershipApplication;
 import com.example.KFCC_Backend.Enum.MembershipStatus;
 import com.example.KFCC_Backend.Enum.TitleApplicationStatus;
 import com.example.KFCC_Backend.Enum.UserRoles;
@@ -19,8 +18,6 @@ import com.example.KFCC_Backend.Entity.Users;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -121,7 +118,6 @@ public class TitleRegistrationService {
             }
         }
 
-
         return application;
 
     }
@@ -136,27 +132,20 @@ public class TitleRegistrationService {
     }
 
     // get Application Details by Id
-    public TitleRegistration getApplicationDetailsById(Long applicationId) {
-
-        Authentication authentication = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
-
-        CustomUserDetails currentUser =
-                (CustomUserDetails) authentication.getPrincipal();
+    public TitleRegistration getApplicationDetailsById(Long applicationId , CustomUserDetails user) {
 
 
         TitleRegistration application =  titleRegistrationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
-        Set<String> roles = currentUser.getRoles();
+        Set<String> roles = user.getRoles();
 
         boolean isOnlyUser = roles.contains("USER") && roles.contains("PRODUCER") && roles.size() == 2;;
 
         if (isOnlyUser) {
             Long applicationUserId = application.getProducer().getId();
 
-            if (!applicationUserId.equals(currentUser.getUserId())) {
+            if (!applicationUserId.equals(user.getUserId())) {
                 throw new AccessDeniedException(
                         "You are not allowed to view this application"
                 );
@@ -336,7 +325,7 @@ public class TitleRegistrationService {
 
     }
 
-
+    // Get applications by user
     public List<TitleRegistration> getApplicationsByUser(CustomUserDetails user) {
         Long userId = user.getUserId();
         return titleRegistrationRepository.findByProducerIdOrderByCreatedAtDesc(userId);
@@ -362,11 +351,12 @@ public class TitleRegistrationService {
 
     }
 
-
+    // Delete all the records with status Payment Pending
     @Transactional
     public void deleteAllTitlePendingRecords() {
         titleRegistrationRepository
                 .deleteByStatusAndCreatedAtBefore(TitleApplicationStatus.PENDING_PAYMENT , LocalDateTime.now());
     }
+
 
 }
