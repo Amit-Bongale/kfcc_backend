@@ -4,19 +4,15 @@ public enum MembershipStatus {
 
     PENDING_PAYMENT,
 
-    DRAFT,                 // user editable
-    SUBMITTED,              // submitted by user && payment is sucess
+    DRAFT,                 // user editable (remarked state)
+    SUBMITTED,              // submitted by user && payment is success
     STAFF_REJECTED,
-    STAFF_REMARKED,
     STAFF_APPROVED,
 
-    ONM_VOTING,
     ONM_REJECTED,
-    ONM_REMARKED,
     ONM_APPROVED,
 
     EC_REJECTED,
-    EC_REMARKED,
     EC_HOLD,
 
     FINAL_APPROVED

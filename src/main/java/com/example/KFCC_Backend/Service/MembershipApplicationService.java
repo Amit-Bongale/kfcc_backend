@@ -2,7 +2,6 @@ package com.example.KFCC_Backend.Service;
 
 import com.example.KFCC_Backend.DTO.Membership.ApplicationActionRequestDTO;
 import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationRequestDTO;
-import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationUpdateRequest;
 import com.example.KFCC_Backend.DTO.Membership.MembershipApplicationsResponseDTO;
 
 import com.example.KFCC_Backend.Entity.Membership.*;
@@ -164,6 +163,8 @@ public class MembershipApplicationService {
         application.setApplicantDistrict(request.getApplicantDistrict());
         application.setApplicantState(request.getApplicantState());
         application.setApplicantPinCode(request.getApplicantPinCode());
+        application.setApplicantAadhaarNo(request.getApplicantAadhaarNo());
+        application.setApplicantPanNo(request.getApplicantPanNo());
 
         application.setMembershipFee(request.getMembershipFee());
         application.setKalyanNidhi(request.getKalyanNidhi());
@@ -437,13 +438,26 @@ public class MembershipApplicationService {
         MembershipApplication application =
                 membershipRepository.findByApplicationId(applicationId)
                         .orElseThrow(() ->
-                                new RuntimeException("Membership application not found"));
+                                new ResourceNotFoundException("Membership application not found"));
 
         Set<String> roles = user.getRoles();
 
-        boolean isOnlyUser =  roles.size() == 1 && roles.contains("USER");
+        Set<String> privilegedRoles = Set.of(
+                "STAFF",
+                "ONM_COMMITTEE",
+                "ONM_COMMITTEE_VOTER",
+                "ONM_COMMITTEE_LEADER",
+                "EC_MEMBER",
+                "SECRETARY",
+                "PRESIDENT",
+                "ADMIN",
+                "SUPER_ADMIN"
+        );
 
-        if (isOnlyUser) {
+        boolean isPrivilegedUser =
+                roles.stream().anyMatch(privilegedRoles::contains);
+
+        if (!isPrivilegedUser) {
             Long applicationUserId = application.getUser().getId();
 
             if (!applicationUserId.equals(user.getUserId())) {
@@ -482,7 +496,6 @@ public class MembershipApplicationService {
         Set<String> roles = user.getRoles();
 
         MembershipStatus newStatus;
-
 
         // Staff stage
         if(currentStatus ==  MembershipStatus.SUBMITTED){
@@ -544,14 +557,12 @@ public class MembershipApplicationService {
                     application.setRemarkedBy("EC_MEMBERS");
                     yield MembershipStatus.DRAFT;
                 }
-                default -> throw new BadRequestException("Invalid action");
             };
         }
 
         else {
             throw new BadRequestException( "Application not in actionable state");
         }
-
 
         application.setMembershipStatus(newStatus);
 
@@ -562,7 +573,7 @@ public class MembershipApplicationService {
         membershipRepository.save(application);
 
 
-        /* ----- implement a extra table if log is required  in future --------- */
+        /* ----- implement an extra table if logs are required in future --------- */
 
 //        logAction(app, request, user);
 
@@ -587,85 +598,163 @@ public class MembershipApplicationService {
 
     /* --- update partner and nominee pending   --- */
 
-    public void updateApplication(
+    public MembershipApplication updateApplication(
+
+            CustomUserDetails applicant,
             Long applicationId,
-            MembershipApplicationUpdateRequest request,
-            CustomUserDetails userDetails
-    ) {
+            MembershipApplicationRequestDTO request,
 
-        MembershipApplication application =
-                membershipRepository.findById(applicationId)
-                        .orElseThrow(() -> new RuntimeException("Application not found"));
+            MultipartFile applicantPhoto,
+            MultipartFile applicantPan,
+            MultipartFile applicantAadhaar,
+            MultipartFile applicantAddressProof,
+            MultipartFile applicantSignature,
+            MultipartFile firmSeal,
 
-        // Ownership validation
-        if (!application.getUser().getId().equals(userDetails.getUserId())) {
-            throw new AccessDeniedException("You cannot edit this application");
+            MultipartFile proprietorPan,
+            MultipartFile proprietorAadhaar,
+            MultipartFile proprietorESignature,
+
+            MultipartFile[] partnerPan,
+            MultipartFile[] partnerAadhaar,
+            MultipartFile[] partnerSignature,
+
+            MultipartFile partnershipDeed,
+            MultipartFile moa,
+            MultipartFile aoa
+
+    ) throws IOException {
+
+        MembershipApplication application = membershipRepository.findById(applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        if (!application.getUser().getId().equals(applicant.getUserId())) {
+            throw new BadRequestException("Unauthorized update attempt");
         }
 
-        //  Status validation
-        if (application.getMembershipStatus() != MembershipStatus.DRAFT)  {
-            throw new IllegalStateException("Applications cannot be edited");
+        if (application.getMembershipStatus() != MembershipStatus.PENDING_PAYMENT
+                && application.getMembershipStatus() != MembershipStatus.DRAFT) {
+            throw new BadRequestException("Application cannot be updated");
         }
 
-        // Update simple fields
-        application.setApplicantDistrict(request.getDistrict());
-        application.setApplicantState(request.getState());
-        application.setApplicantPinCode(request.getPinCode());
-        application.setApplicantGstNo(request.getGstNo());
+        /* ---------- BASIC DETAILS UPDATE ---------- */
 
-        application.setApplicantMembershipCategory(request.getCategory());
-        application.setApplicantOwnershipType(request.getOwnershipType());
-        application.setApplicantFirmName(request.getFirmName());
-        application.setApplicantAddressLine1(request.getAddressLine1());
-        application.setApplicantAddressLine2(request.getAddressLine2());
+        application.setApplicantFirmName(request.getApplicantFirmName());
+        application.setApplicantGstNo(request.getApplicantGstNo());
+        application.setApplicantAddressLine1(request.getApplicantAddressLine1());
+        application.setApplicantAddressLine2(request.getApplicantAddressLine2());
+        application.setApplicantDistrict(request.getApplicantDistrict());
+        application.setApplicantState(request.getApplicantState());
+        application.setApplicantPinCode(request.getApplicantPinCode());
+        application.setApplicantAadhaarNo(request.getApplicantAadhaarNo());
+        application.setApplicantPanNo(request.getApplicantPanNo());
+        application.setRemark(null);
+        application.setRemarkedBy(null);
 
+        /* ---------- STATUS LOGIC ---------- */
 
-        // Nominees
-        if (request.getNominees() != null) {
-            if (request.getNominees().size() > 2)
-                throw new IllegalArgumentException("Max 2 nominees allowed");
-
-            // Clear existing nominees
-            application.getNominee().clear();
-
-            for (Nominee nomineeReq : request.getNominees()) {
-                Nominee nominee = new Nominee();
-                nominee.setNomineeFirstName(nomineeReq.getNomineeFirstName());
-                nominee.setNomineeMiddleName(nomineeReq.getNomineeMiddleName());
-                nominee.setNomineeLastName(nomineeReq.getNomineeLastName());
-                nominee.setNomineeMobileNo(nomineeReq.getNomineeMobileNo());
-                nominee.setNomineeEmail(nomineeReq.getNomineeEmail());
-
-                nominee.setMembershipApplication(application); // VERY IMPORTANT
-
-                application.getNominee().add(nominee);
-            }
+        if (application.getMembershipStatus() == MembershipStatus.PENDING_PAYMENT) {
+            application.setMembershipStatus(MembershipStatus.PENDING_PAYMENT);
+        } else {
+            application.setMembershipStatus(MembershipStatus.SUBMITTED);
         }
 
-        //  Partners
-        if (request.getOwnershipType() != OwnershipType.PROPRIETOR) {
-            if (request.getPartners() != null && request.getPartners().size() > 6)
-                throw new IllegalArgumentException("Max 6 partners allowed");
+        String appFolder = "membership/documents/APP-" +
+                String.format("%06d", application.getApplicationId());
+
+        /* ---------- FILE UPDATES (ONLY IF SENT) ---------- */
+
+        if (applicantPhoto != null)
+            application.setApplicantImage(
+                    fileStorageUtil.saveFile(appFolder, "applicant", applicantPhoto));
+
+        if (applicantPan != null)
+            application.setApplicantPan(
+                    fileStorageUtil.saveFile(appFolder, "applicant/pan", applicantPan));
+
+        if (applicantAadhaar != null)
+            application.setApplicantAadhaar(
+                    fileStorageUtil.saveFile(appFolder, "applicant/aadhaar", applicantAadhaar));
+
+        if (applicantAddressProof != null)
+            application.setApplicantAddressProof(
+                    fileStorageUtil.saveFile(appFolder, "applicant/address-proof", applicantAddressProof));
+
+        if (applicantSignature != null)
+            application.setApplicantSignature(
+                    fileStorageUtil.saveFile(appFolder, "applicant/signature", applicantSignature));
+
+        if (firmSeal != null)
+            application.setFirmSeal(
+                    fileStorageUtil.saveFile(appFolder, "applicant/firm-seal", firmSeal));
+
+        if (moa != null)
+            application.setMoa(
+                    fileStorageUtil.saveFile(appFolder, "ownership/moa", moa));
+
+        if (aoa != null)
+            application.setAoa(
+                    fileStorageUtil.saveFile(appFolder, "ownership/aoa", aoa));
+
+        /* ---------- PROPRIETOR UPDATE ---------- */
+
+        if (request.getProprietor() != null && application.getProprietor() != null) {
+
+            if (proprietorPan != null)
+                application.getProprietor().setProprietorPanImg(
+                        fileStorageUtil.saveFile(appFolder, "proprietor", proprietorPan));
+
+            if (proprietorAadhaar != null)
+                application.getProprietor().setProprietorAadhaarImg(
+                        fileStorageUtil.saveFile(appFolder, "proprietor", proprietorAadhaar));
+
+            if (proprietorESignature != null)
+                application.getProprietor().setProprietorESignature(
+                        fileStorageUtil.saveFile(appFolder, "proprietor", proprietorESignature));
+        }
+
+        /* ---------- PARTNERS UPDATE ---------- */
+
+        if (request.getPartners() != null && !request.getPartners().isEmpty()) {
 
             application.getPartners().clear();
 
-            for (Partners partnerReq : request.getPartners()) {
-                Partners partner = new Partners();
-                partner.setPartnerAadhaarNo(partnerReq.getPartnerAadhaarNo());
-                partner.setPartnerAddress(partnerReq.getPartnerAddress());
-                partner.setPartnerBloodGroup(partnerReq.getPartnerBloodGroup());
-                partner.setPartnerName(partnerReq.getPartnerName());
-                partner.setPartnerDob(partner.getPartnerDob());
+            for (int i = 0; i < request.getPartners().size(); i++) {
+                Partners partner = request.getPartners().get(i);
                 partner.setMembershipApplication(application);
+
+                if (partnerPan != null)
+                    partner.setPartnerPanImg(
+                            fileStorageUtil.saveFile(appFolder, "partners/" + i + "/pan", partnerPan[i]));
+
+                if (partnerAadhaar != null)
+                    partner.setPartnerAadhaarImg(
+                            fileStorageUtil.saveFile(appFolder, "partners/" + i + "/aadhaar", partnerAadhaar[i]));
+
+                if (partnerSignature != null)
+                    partner.setPartnerESignature(
+                            fileStorageUtil.saveFile(appFolder, "partners/" + i + "/signature", partnerSignature[i]));
 
                 application.getPartners().add(partner);
             }
 
+            if (partnershipDeed != null)
+                application.setPartnershipDeed(
+                        fileStorageUtil.saveFile(appFolder, "ownership/partnership-deed", partnershipDeed));
         }
 
-        membershipRepository.save(application);
+        /* ---------- NOMINEES UPDATE ---------- */
+
+        application.getNominee().clear();
+        request.getNominees().forEach(n -> {
+            n.setMembershipApplication(application);
+            application.getNominee().add(n);
+        });
+
+        return membershipRepository.save(application);
 
     }
+
 
 
     // re-new Membership Applications

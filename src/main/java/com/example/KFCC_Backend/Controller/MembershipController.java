@@ -39,7 +39,7 @@ public class MembershipController {
 
     // get membership application details by ID
     @GetMapping("/{applicationId}")
-    @PreAuthorize("hasAnyRole('USER','STAFF','ONM_COMMITTEE_VOTER','ONM_COMMITTEE_LEADER','EC_MEMBER','SECRETARY','PRESIDENT')")
+    @PreAuthorize("hasAnyRole('USER','STAFF','ONM_COMMITTEE','EC_MEMBER','SECRETARY','PRESIDENT','ADMIN','SUPER_ADMIN')")
     public ResponseEntity<?> getMembershipApplicationById(
             @PathVariable Long applicationId,
             @AuthenticationPrincipal CustomUserDetails user
@@ -139,6 +139,71 @@ public class MembershipController {
         return ResponseEntity.ok(Map.of(
                 "applicationId", app.getApplicationId(),
                 "status", "SUBMITTED"
+        ));
+
+    }
+
+
+    // update Membership Registration request
+    @PutMapping(value = "/update/{applicationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateApplication(
+
+            @PathVariable Long applicationId,
+
+            @RequestPart("request") MembershipApplicationRequestDTO request,
+
+            // Applicant
+            @RequestPart(value = "applicantPhoto", required = false) MultipartFile applicantPhoto,
+            @RequestPart(value = "applicantPan", required = false) MultipartFile applicantPan,
+            @RequestPart(value = "applicantAadhaar", required = false) MultipartFile applicantAadhaar,
+            @RequestPart(value = "applicantAddressProof", required = false) MultipartFile applicantAddressProof,
+            @RequestPart(value = "applicantSignature", required = false) MultipartFile applicantSignature,
+            @RequestPart(value = "firmSeal", required = false) MultipartFile firmSeal,
+
+            // Proprietor
+            @RequestPart(value = "proprietorPan", required = false) MultipartFile proprietorPan,
+            @RequestPart(value = "proprietorAadhaar", required = false) MultipartFile proprietorAadhaar,
+            @RequestPart(value = "proprietorESignature", required = false) MultipartFile proprietorESignature,
+
+            // Partners
+            @RequestPart(value = "partnerPan", required = false) MultipartFile[] partnerPan,
+            @RequestPart(value = "partnerAadhaar", required = false) MultipartFile[] partnerAadhaar,
+            @RequestPart(value = "partnerSignature", required = false) MultipartFile[] partnerSignature,
+
+            // Ownership documents
+            @RequestPart(value = "partnershipDeed", required = false) MultipartFile partnershipDeed,
+            @RequestPart(value = "moa", required = false) MultipartFile moa,
+            @RequestPart(value = "aoa", required = false) MultipartFile aoa,
+
+            @AuthenticationPrincipal CustomUserDetails applicant
+
+    ) throws IOException {
+
+        MembershipApplication app =
+                membershipApplicationService.updateApplication(
+                        applicant,
+                        applicationId,
+                        request,
+                        applicantPhoto,
+                        applicantPan,
+                        applicantAadhaar,
+                        applicantAddressProof,
+                        applicantSignature,
+                        firmSeal,
+                        proprietorPan,
+                        proprietorAadhaar,
+                        proprietorESignature,
+                        partnerPan,
+                        partnerAadhaar,
+                        partnerSignature,
+                        partnershipDeed,
+                        moa,
+                        aoa
+                );
+
+        return ResponseEntity.ok(Map.of(
+                "applicationId", app.getApplicationId(),
+                "status", app.getMembershipStatus().name()
         ));
 
     }

@@ -56,8 +56,11 @@ public class MembershipApplication {
     @NotBlank(message = "State is required")
     private String applicantState;
 
-@NotNull(message = "Pin code is required ")
+    @NotNull(message = "Pin code is required ")
     private Integer applicantPinCode;
+
+    private Long applicantAadhaarNo;
+    private String applicantPanNo;
 
     @Enumerated(EnumType.STRING)
     @NotBlank(message = "Membership category is required")
@@ -443,4 +446,19 @@ public class MembershipApplication {
         this.submittedAt = submittedAt;
     }
 
+    public Long getApplicantAadhaarNo() {
+        return applicantAadhaarNo;
+    }
+
+    public void setApplicantAadhaarNo(Long applicantAadhaarNo) {
+        this.applicantAadhaarNo = applicantAadhaarNo;
+    }
+
+    public String getApplicantPanNo() {
+        return applicantPanNo;
+    }
+
+    public void setApplicantPanNo(String applicantPanNo) {
+        this.applicantPanNo = applicantPanNo;
+    }
 }

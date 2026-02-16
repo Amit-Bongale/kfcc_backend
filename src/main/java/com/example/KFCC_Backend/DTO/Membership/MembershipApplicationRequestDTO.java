@@ -19,7 +19,8 @@ public class MembershipApplicationRequestDTO {
     private String applicantDistrict;
     private String applicantState;
     private Integer applicantPinCode;
-
+    private Long applicantAadhaarNo;
+    private String applicantPanNo;
 
     private Integer membershipFee;
     private Integer kalyanNidhi;
@@ -96,7 +97,8 @@ public class MembershipApplicationRequestDTO {
         return applicantPinCode;
     }
 
-    public void setApplicantPinCode(Integer applicantPinCode) {
-        this.applicantPinCode = applicantPinCode;
-    }
+    public Long getApplicantAadhaarNo() { return applicantAadhaarNo; }
+
+    public String getApplicantPanNo() { return applicantPanNo; }
+
 }
