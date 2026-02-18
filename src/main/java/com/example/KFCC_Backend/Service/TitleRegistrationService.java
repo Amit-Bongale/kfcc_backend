@@ -299,31 +299,114 @@ public class TitleRegistrationService {
 
 
     //Update application
-    public TitleRegistration updateApplication(Long applicationId , TitleRegistration request){
+    public TitleRegistration updateApplication(
+            Long applicationId,
+            TitleRegistration request,
+            CustomUserDetails userDetails,
+            List<MultipartFile> newFiles,
+            List<Long> deletedDocumentIds
+    ) throws IOException {
+
+        Long producerId = userDetails.getUserId();
 
         TitleRegistration application = titleRegistrationRepository.findById(applicationId)
-                .orElseThrow(() -> new ResourceNotFoundException("Application not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application Not Found"));
 
-        //update to be implemented
-        application.setTitle(request.getTitle());
+        // Ensure logged-in producer owns this application
+        if (!application.getProducer().getId().equals(producerId)) {
+            throw new BadRequestException("You are not authorized to update this application");
+        }
+
+        //  Allow update only in editable statuses
+        if (!(application.getStatus() == TitleApplicationStatus.PENDING_PAYMENT
+                || application.getStatus() == TitleApplicationStatus.DRAFT)) {
+            throw new BadRequestException("Application cannot be edited at this stage");
+        }
+
+        // If title changed, check uniqueness
+        if (!application.getTitle().equalsIgnoreCase(request.getTitle().trim())) {
+
+            if (titleRegistrationRepository.existsByTitleIgnoreCase(request.getTitle().trim())) {
+                throw new BadRequestException("Title already registered or in process");
+            }
+
+            application.setTitle(request.getTitle().trim());
+        }
+
+        
+        // Update other fields
         application.setTitleInKannada(request.getTitleInKannada());
-        application.setCategory(request.getCategory());
-        application.setDirector(request.getDirector());
-        application.setFilmsByInstitutes(request.getFilmsByInstitutes());
-        application.setGstNo(request.getGstNo());
         application.setFirstFilm(request.getFirstFilm());
         application.setInstitution(request.getInstitution());
         application.setLanguage(request.getLanguage());
-        application.setLeadActor(request.getLeadActor());
-        application.setMusicDirector(request.getMusicDirector());
-        application.setProducer(request.getProducer());
-        application.setPreviouslyRegisteredDetails(request.getPreviouslyRegisteredDetails());
         application.setPreviouslyRegistered(request.getPreviouslyRegistered());
+        application.setPreviouslyRegisteredDetails(request.getPreviouslyRegisteredDetails());
+        application.setFilmsByInstitutes(request.getFilmsByInstitutes());
+        application.setDirector(request.getDirector());
+        application.setMusicDirector(request.getMusicDirector());
+        application.setLeadActor(request.getLeadActor());
+        application.setCategory(request.getCategory());
+        application.setGstNo(request.getGstNo());
+        application.setUpdatedAt(LocalDateTime.now());
+
+        if (application.getStatus() == TitleApplicationStatus.PENDING_PAYMENT) {
+            application.setStatus(TitleApplicationStatus.PENDING_PAYMENT);
+        } else {
+            application.setStatus(TitleApplicationStatus.SUBMITTED);
+            application.setRemark(null);
+            application.setRemarkedBy(null);
+        }
+
+        TitleRegistration updatedApp = titleRegistrationRepository.save(application);
 
 
-        return application;
+        // Handle File Uploads
+        if (deletedDocumentIds != null && !deletedDocumentIds.isEmpty()) {
 
+            List<TitleRegistrationDocuments> docsToDelete =
+                    documentsRepository.findAllById(deletedDocumentIds);
+
+            for (TitleRegistrationDocuments doc : docsToDelete) {
+
+                // delete file from server
+                fileStorageUtil.deleteFile(doc.getPath());
+
+                documentsRepository.delete(doc);
+            }
+        }
+
+        // Check total count
+        Long existingCount = documentsRepository.countByApplicationId(applicationId);
+        int newFilesCount = newFiles != null ? newFiles.size() : 0;
+
+        if (existingCount + newFilesCount > 5) {
+            throw new BadRequestException("Maximum 5 documents allowed");
+        }
+
+        // Save new files
+        if (newFiles != null) {
+
+            for (MultipartFile file : newFiles) {
+
+                if (file.isEmpty()) continue;
+
+                String storedPath = fileStorageUtil.saveFile(
+                        "TitleRegistration/Documents",
+                        application.getId().toString(),
+                        file
+                );
+
+                TitleRegistrationDocuments doc = new TitleRegistrationDocuments();
+                doc.setApplication(application);
+                doc.setPath(storedPath);
+
+                documentsRepository.save(doc);
+            }
+        }
+
+        return updatedApp;
     }
+
 
     // Get applications by user
     public List<TitleRegistration> getApplicationsByUser(CustomUserDetails user) {

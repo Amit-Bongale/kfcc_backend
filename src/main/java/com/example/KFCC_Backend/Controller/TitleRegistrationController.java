@@ -5,6 +5,7 @@ import com.example.KFCC_Backend.Service.TitleRegistrationService;
 import com.example.KFCC_Backend.Entity.Title.TitleRegistration;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -93,11 +94,29 @@ public class TitleRegistrationController {
     }
 
 
-    @DeleteMapping("/delete/pending")
-    public ResponseEntity<?> deleltePendign(){
-        titleRegistrationService.deleteAllTitlePendingRecords();
-        return ResponseEntity.ok("Records Deleted");
+    //update title registrations
+    @PreAuthorize("hasAnyRole('PRODUCER')")
+    @PutMapping(value = "/update/{applicationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateTitleApplication(
+
+            @PathVariable Long applicationId,
+            @RequestPart("request") TitleRegistration request,
+//            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestPart(value = "newFiles", required = false) List<MultipartFile> newFiles,
+            @RequestPart(value = "deletedDocumentIds", required = false) List<Long> deletedDocumentIds
+
+    ) throws IOException {
+
+        TitleRegistration updatedApplication =
+                titleRegistrationService.updateApplication(applicationId, request, userDetails, newFiles , deletedDocumentIds);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "Title Registration Updated Successfully",
+                "application", updatedApplication
+        ));
     }
+
 
 
 }

@@ -35,4 +35,24 @@ public class FileStorageUtil {
         return filePath.toString();
     }
 
+    
+    public void deleteFile(String filePath) {
+
+        if (filePath == null || filePath.isBlank()) {
+            return;
+        }
+
+        try {
+            Path path = Paths.get(filePath);
+
+            if (Files.exists(path)) {
+                Files.delete(path);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete file: " + filePath, e);
+        }
+    }
+
+
 }

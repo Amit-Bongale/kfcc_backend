@@ -664,53 +664,74 @@ public class MembershipApplicationService {
 
         /* ---------- FILE UPDATES (ONLY IF SENT) ---------- */
 
-        if (applicantPhoto != null)
+        if (applicantPhoto != null) {
+            fileStorageUtil.deleteFile(application.getApplicantImage());
             application.setApplicantImage(
                     fileStorageUtil.saveFile(appFolder, "applicant", applicantPhoto));
+        }
 
-        if (applicantPan != null)
+        if (applicantPan != null) {
+            fileStorageUtil.deleteFile(application.getApplicantPan());
             application.setApplicantPan(
                     fileStorageUtil.saveFile(appFolder, "applicant/pan", applicantPan));
+        }
 
-        if (applicantAadhaar != null)
+        if (applicantAadhaar != null) {
+            fileStorageUtil.deleteFile(application.getApplicantAadhaar());
             application.setApplicantAadhaar(
                     fileStorageUtil.saveFile(appFolder, "applicant/aadhaar", applicantAadhaar));
+        }
 
-        if (applicantAddressProof != null)
+        if (applicantAddressProof != null) {
+            fileStorageUtil.deleteFile(application.getApplicantAadhaar());
             application.setApplicantAddressProof(
                     fileStorageUtil.saveFile(appFolder, "applicant/address-proof", applicantAddressProof));
+        }
 
-        if (applicantSignature != null)
+        if (applicantSignature != null) {
+            fileStorageUtil.deleteFile(application.getApplicantSignature());
             application.setApplicantSignature(
                     fileStorageUtil.saveFile(appFolder, "applicant/signature", applicantSignature));
+        }
 
-        if (firmSeal != null)
+
+        if (firmSeal != null) {
+            fileStorageUtil.deleteFile(application.getFirmSeal());
             application.setFirmSeal(
                     fileStorageUtil.saveFile(appFolder, "applicant/firm-seal", firmSeal));
-
-        if (moa != null)
+        }
+        if (moa != null) {
+            fileStorageUtil.deleteFile(application.getMoa());
             application.setMoa(
                     fileStorageUtil.saveFile(appFolder, "ownership/moa", moa));
-
-        if (aoa != null)
+        }
+        if (aoa != null) {
+            fileStorageUtil.deleteFile(application.getAoa());
             application.setAoa(
                     fileStorageUtil.saveFile(appFolder, "ownership/aoa", aoa));
+        }
 
         /* ---------- PROPRIETOR UPDATE ---------- */
 
         if (request.getProprietor() != null && application.getProprietor() != null) {
 
-            if (proprietorPan != null)
+            if (proprietorPan != null) {
+                fileStorageUtil.deleteFile(application.getProprietor().getProprietorPanImg());
                 application.getProprietor().setProprietorPanImg(
                         fileStorageUtil.saveFile(appFolder, "proprietor", proprietorPan));
+            }
 
-            if (proprietorAadhaar != null)
+            if (proprietorAadhaar != null) {
+                fileStorageUtil.deleteFile(application.getProprietor().getProprietorAadhaarImg());
                 application.getProprietor().setProprietorAadhaarImg(
                         fileStorageUtil.saveFile(appFolder, "proprietor", proprietorAadhaar));
+            }
 
-            if (proprietorESignature != null)
+            if (proprietorESignature != null) {
+                fileStorageUtil.deleteFile(application.getProprietor().getProprietorESignature());
                 application.getProprietor().setProprietorESignature(
                         fileStorageUtil.saveFile(appFolder, "proprietor", proprietorESignature));
+            }
         }
 
         /* ---------- PARTNERS UPDATE ---------- */
@@ -723,25 +744,36 @@ public class MembershipApplicationService {
                 Partners partner = request.getPartners().get(i);
                 partner.setMembershipApplication(application);
 
-                if (partnerPan != null)
+                if (partnerPan != null) {
+                    fileStorageUtil.deleteFile(partner.getPartnerPanImg());
                     partner.setPartnerPanImg(
                             fileStorageUtil.saveFile(appFolder, "partners/" + i + "/pan", partnerPan[i]));
+                }
 
-                if (partnerAadhaar != null)
+                if (partnerAadhaar != null) {
+                    fileStorageUtil.deleteFile(partner.getPartnerAadhaarImg());
                     partner.setPartnerAadhaarImg(
                             fileStorageUtil.saveFile(appFolder, "partners/" + i + "/aadhaar", partnerAadhaar[i]));
+                }
 
-                if (partnerSignature != null)
+                if (partnerSignature != null) {
+                    fileStorageUtil.deleteFile(partner.getPartnerESignature());
                     partner.setPartnerESignature(
                             fileStorageUtil.saveFile(appFolder, "partners/" + i + "/signature", partnerSignature[i]));
+                }
 
                 application.getPartners().add(partner);
+
             }
 
-            if (partnershipDeed != null)
+            if (partnershipDeed != null) {
+                fileStorageUtil.deleteFile(application.getPartnershipDeed());
                 application.setPartnershipDeed(
                         fileStorageUtil.saveFile(appFolder, "ownership/partnership-deed", partnershipDeed));
+            }
+
         }
+
 
         /* ---------- NOMINEES UPDATE ---------- */
 

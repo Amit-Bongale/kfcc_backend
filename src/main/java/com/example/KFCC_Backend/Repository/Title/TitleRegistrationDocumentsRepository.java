@@ -11,5 +11,6 @@ public interface TitleRegistrationDocumentsRepository extends JpaRepository<Titl
 
     Long countByApplicationId(Long applicationId);
     List<TitleRegistrationDocuments> findByApplicationId(Long applicationId);
-    
+
+
 }
